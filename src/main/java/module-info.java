@@ -5,5 +5,6 @@ module org.tuni.stargazer {
     requires com.gluonhq.maps;
 
     opens org.tuni.stargazer to javafx.fxml;
-    exports org.tuni.stargazer;
+    exports org.tuni.stargazer.view;
+    opens org.tuni.stargazer.view to javafx.fxml;
 }

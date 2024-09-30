@@ -1,4 +1,4 @@
-package org.tuni.stargazer;
+package org.tuni.stargazer.view;
 
 import com.gluonhq.maps.MapView;
 import javafx.fxml.FXML;

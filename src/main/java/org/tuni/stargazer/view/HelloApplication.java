@@ -1,4 +1,4 @@
-package org.tuni.stargazer;
+package org.tuni.stargazer.view;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
