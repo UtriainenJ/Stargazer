@@ -1,10 +1,10 @@
-package project.viewmodel;
+package ryhma5.viewmodel;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import project.model.User;
+import ryhma5.model.User;
 
 public class UserViewModel {
     private final StringProperty name = new SimpleStringProperty();

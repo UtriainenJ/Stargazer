@@ -1,4 +1,4 @@
-package project.view;
+package ryhma5.view;
 
 import com.gluonhq.maps.MapView;
 import javafx.fxml.FXML;
@@ -7,8 +7,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import javafx.util.converter.NumberStringConverter;
-import project.model.User;
-import project.viewmodel.UserViewModel;
+import ryhma5.model.User;
+import ryhma5.viewmodel.UserViewModel;
 
 public class HelloController {
     @FXML

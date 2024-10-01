@@ -1,10 +1,10 @@
-package project;
+package ryhma5;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import project.view.HelloController;
+import ryhma5.view.HelloController;
 
 import java.io.IOException;
 

@@ -1,11 +1,11 @@
-module org.tuni.stargazer {
+module ryhma5 {
     requires javafx.fxml;
 
     requires org.controlsfx.controls;
     requires com.gluonhq.maps;
 
-    opens project to javafx.fxml;
-    exports project.view;
-    exports project;
-    opens project.view to javafx.fxml;
+    opens ryhma5 to javafx.fxml;
+    exports ryhma5.view;
+    exports ryhma5;
+    opens ryhma5.view to javafx.fxml;
 }

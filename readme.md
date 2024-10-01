@@ -1,7 +1,4 @@
-# readme.md
+# Software Design - Group assignment
 
-images diagrams and other non source code files can be put to documents folder
-
-## running the application
-* tested with java version temurin-21.0.4 and intellij idea.
-* https://www.jetbrains.com/idea/
+# Link to the SW Design document:
+ - https://tuni-my.sharepoint.com/:w:/g/personal/eetu_soronen_tuni_fi/EZ2DO-il1ZBFjdFH6XT_QB4BenZ55-PFOVK5dK4ccq8VqQ?e=dCFKWM
