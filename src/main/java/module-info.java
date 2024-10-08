@@ -5,6 +5,11 @@ module ryhma5 {
     requires com.dlsc.gmapsfx;
     requires javafx.fxml;
     requires javafx.web;
+    requires javafx.svg;
+    requires svg.salamander;
+    requires javafx.swing;
+    requires com.github.weisj.jsvg;
+    requires batik.all;
 
     opens ryhma5 to javafx.fxml;
     exports ryhma5.view;

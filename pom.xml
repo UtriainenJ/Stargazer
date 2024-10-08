@@ -54,6 +54,38 @@
             <version>11.0.7</version>
         </dependency>
 
+        <!-- SVG IMAGE LOADING       -->
+        <dependency>
+            <groupId>de.bixilon.javafx</groupId>
+            <artifactId>javafx-svg</artifactId>
+            <version>0.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-all</artifactId>
+            <version>1.14</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.kitfox.svg/svg-salamander -->
+        <dependency>
+            <groupId>com.kitfox.svg</groupId>
+            <artifactId>svg-salamander</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.weisj</groupId>
+            <artifactId>jsvg</artifactId>
+            <version>1.6.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-all</artifactId>
+            <version>1.14</version>
+        </dependency>
+
     </dependencies>
 
     <build>

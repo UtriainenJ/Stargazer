@@ -1,134 +1,94 @@
 package ryhma5.view;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
+import javafx.scene.Node;
+import javafx.scene.layout.Pane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import org.controlsfx.control.WorldMapView;
+import javafx.scene.shape.Circle;
+import ryhma5.viewmodel.SVGMap;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapController {
 
     @FXML
-    Button confirmButton;
+    private Pane mapPane; // This is the Pane from your map-view.fxml
+
+    private final String SVG_FILE_PATH = "/images/BlankMap_World_simple_Robinson_projection.svg";
+    private SVGMap svgMap;
+    private ImageView mapImageView;
+
+    // Store markers with their latitude and longitude
+    private final List<Marker> markers = new ArrayList<>();
 
     @FXML
-    TextField coordinateInput;
+    public void initialize() {
+        // Initialize SVGMap
+        svgMap = new SVGMap(SVG_FILE_PATH);
 
-    @FXML
-    AnchorPane mapPane;
+        // Load the map image and bind it to the Pane's size
+        mapImageView = svgMap.loadMap(mapPane);
+        if (mapImageView != null) {
+            mapPane.getChildren().add(mapImageView);
 
-    WorldMapView worldMapView = new WorldMapView();
-
-    @FXML
-    private void initialize() {
-        mapPane.getChildren().add(worldMapView);
-
-        // Disable dragging (and everything else)
-        //worldMapView.setMouseTransparent(true);
-
-        // Add listeners to adjust the aspect ratio
-        mapPane.heightProperty().addListener((obs, oldVal, newVal) -> adjustAspectRatio());
-        mapPane.widthProperty().addListener((obs, oldVal, newVal) -> adjustAspectRatio());
-        // anchor the mapview to mappane
-        AnchorPane.setBottomAnchor(worldMapView, 0.0);
-        AnchorPane.setTopAnchor(worldMapView, 0.0);
-        AnchorPane.setLeftAnchor(worldMapView, 0.0);
-        AnchorPane.setRightAnchor(worldMapView, 0.0);
-
-
-        // deep blue land
-        worldMapView.setStyle("-fx-background-color: #01001f");
-
-        mapPane.widthProperty().addListener((obs, oldVal, newVal) -> worldMapView.setPrefWidth(newVal.doubleValue()));
-        mapPane.heightProperty().addListener((obs, oldVal, newVal) -> worldMapView.setPrefHeight(newVal.doubleValue()));
-
-
-        configureCountryAndLocationViewFactories();
-
-    }
-
-    private void configureCountryAndLocationViewFactories() {
-        worldMapView.setCountryViewFactory(country -> {
-            WorldMapView.CountryView view = new WorldMapView.CountryView(country);
-            view.setStyle("-fx-fill: #00468c;"); // Night blue color
-            return view;
-        });
-
-        worldMapView.setLocationViewFactory(location -> {
-            Image starIcon = new Image(getClass().getResourceAsStream("/icons/slowerstar.gif"));
-            ImageView starIconView = new ImageView(starIcon);
-            starIconView.setFitWidth(20);  // Set the width of the icon
-            starIconView.setFitHeight(20); // Set the height of the icon
-            starIconView.setTranslateX(-8); // Center the icon horizontally
-            starIconView.setTranslateY(-8); // Center the icon vertically
-            return starIconView;
-        });
-    }
-
-
-    private void adjustAspectRatio() {
-        // map should always be 198:120 aspect ratio
-        // while being as large as possible
-        double width = mapPane.getWidth();
-        double height = mapPane.getHeight();
-
-        if (width / height > 198.0 / 120.0) {
-            worldMapView.setPrefWidth(height * 198.0 / 120.0);
-            worldMapView.setPrefWidth(height);
-        } else {
-            worldMapView.setPrefWidth(width);
-            worldMapView.setPrefHeight(width * 120.0 / 198.0);
+            // Add mouse click event handler to the image
+            mapImageView.setOnMouseClicked(this::handleMapClick);
         }
 
+        // Reposition markers when the Pane size changes
+        mapPane.widthProperty().addListener((obs, oldVal, newVal) -> updateMarkers());
+        mapPane.heightProperty().addListener((obs, oldVal, newVal) -> updateMarkers());
     }
 
-    private void printCoordinates(MouseEvent event) {
-        // print the coordinates of the mouse click
-        System.out.println(event.getX() + ", " + event.getY());
+    // Method to handle clicks on the map
+    private void handleMapClick(MouseEvent event) {
+        // Get the X and Y position of the click relative to the ImageView
+        double x = event.getX();
+        double y = event.getY();
+
+        // Convert the X, Y position to latitude and longitude
+        double[] latLong = svgMap.xyToLatLong(x, y, mapImageView);
+
+        // Add a marker (red dot) at the clicked location
+        Circle marker = (Circle) svgMap.addMarker(latLong[0], latLong[1], mapImageView);
+        markers.add(new Marker(marker, latLong[0], latLong[1])); // Save the marker with its lat/long
+        mapPane.getChildren().add(marker);
     }
 
-    private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Invalid Input");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    // Update the marker positions when the image size changes
+    private void updateMarkers() {
+        for (Marker marker : markers) {
+            // Recalculate the marker's position based on the new image size
+            double[] newCoords = svgMap.latLongToXY(marker.getLatitude(), marker.getLongitude(), mapImageView);
+            marker.getCircle().setCenterX(newCoords[0]);
+            marker.getCircle().setCenterY(newCoords[1]);
+        }
     }
 
-    @FXML
-    private void setCoordinates(ActionEvent event) {
-        // when confirm button is pressed, coordinateInput is read and printed
-        event.consume();
-        System.out.println(coordinateInput.getText());
+    // Helper class to store markers with their geographical data
+    public static class Marker {
+        private final Circle circle;
+        private final double latitude;
+        private final double longitude;
 
-        // Parse the coordinates from the input
-        String[] coords = coordinateInput.getText().split(",");
-        if (coords.length == 2) {
-            try {
-                double latitude = Double.parseDouble(coords[0].trim());
-                double longitude = Double.parseDouble(coords[1].trim());
+        public Marker(Circle circle, double latitude, double longitude) {
+            this.circle = circle;
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
 
-                // Validate the coordinates
-                if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
-                    throw new NumberFormatException("Coordinates out of range");
-                }
+        public Circle getCircle() {
+            return circle;
+        }
 
-                // Create a new location and add it to the map
-                WorldMapView.Location location = new WorldMapView.Location("Marker", latitude, longitude);
-                worldMapView.getLocations().add(location);
-            } catch (NumberFormatException e) {
-                showAlert("Invalid coordinates format. Latitude must be between -90 and 90, and longitude must be between -180 and 180.");
-            }
-        } else {
-            showAlert("Invalid coordinates format. Please enter coordinates in the format: latitude, longitude.");
+        public double getLatitude() {
+            return latitude;
+        }
+
+        public double getLongitude() {
+            return longitude;
         }
     }
 }
