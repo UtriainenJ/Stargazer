@@ -12,14 +12,16 @@ public class MapController {
     @FXML
     private Pane mapPane;
 
-    private final String SVG_FILE_PATH = "/images/BlankMap_World_simple_Robinson_projection.svg";
+    private final Projections PROJECTION = Projections.EQUIRECTANGULAR;
+    private String MAP_FILE_PATH = PROJECTION.getMapFilePath();
     private SVGMap svgMap;
     private ImageView mapImageView;
+
 
     @FXML
     public void initialize() {
         // Initialize SVGMap with the selected projection (e.g., Robinson)
-        svgMap = new SVGMap(SVG_FILE_PATH, Projections.ROBINSON);
+        svgMap = new SVGMap(MAP_FILE_PATH, PROJECTION);
 
         // Load the map and set it in the Pane
         mapImageView = svgMap.loadMap(mapPane);

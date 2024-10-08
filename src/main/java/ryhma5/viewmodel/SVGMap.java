@@ -27,8 +27,8 @@ public class SVGMap {
                 projector = new RobinsonProjector();  // Use Robinson projection
                 break;
             // Future case for Mercator (when it's implemented)
-            case MERCATOR:
-                // projectionHelper = new MercatorProjector();
+            case EQUIRECTANGULAR:
+                projector = new EquirectangularProjector();
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported projection type");

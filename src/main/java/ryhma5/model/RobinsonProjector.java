@@ -2,8 +2,10 @@ package ryhma5.model;
 
 import org.locationtech.proj4j.ProjCoordinate;
 import org.locationtech.proj4j.proj.RobinsonProjection;
+import ryhma5.model.Projector;
 
 public class RobinsonProjector implements Projector {
+
     private final RobinsonProjection projection;
 
     public RobinsonProjector() {
@@ -38,6 +40,9 @@ public class RobinsonProjector implements Projector {
         projection.projectInverse(normalizedX, normalizedY, latLong);
 
         // Convert radians to degrees
-        return new double[]{Math.toDegrees(latLong.y), Math.toDegrees(latLong.x)};
+        double latitude = Math.toDegrees(latLong.y);
+        double longitude = Math.toDegrees(latLong.x);
+
+        return new double[]{latitude, longitude};
     }
 }
