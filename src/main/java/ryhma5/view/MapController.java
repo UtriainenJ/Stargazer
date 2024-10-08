@@ -1,7 +1,6 @@
 package ryhma5.view;
 
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -20,7 +19,7 @@ public class MapController {
     private SVGMap svgMap;
     private ImageView mapImageView;
 
-    // Store markers with their latitude and longitude
+    // Store markers with their relative positions (relative to image dimensions)
     private final List<Marker> markers = new ArrayList<>();
 
     @FXML
@@ -33,7 +32,8 @@ public class MapController {
         if (mapImageView != null) {
             mapPane.getChildren().add(mapImageView);
 
-            // Add mouse click event handler to the image
+            // Add mouse click event handler to the image (register clicks on the entire map)
+            mapImageView.setPickOnBounds(true);  // Ensure clicks register even in transparent areas
             mapImageView.setOnMouseClicked(this::handleMapClick);
         }
 
@@ -51,44 +51,62 @@ public class MapController {
         // Convert the X, Y position to latitude and longitude
         double[] latLong = svgMap.xyToLatLong(x, y, mapImageView);
 
-        // Add a marker (red dot) at the clicked location
-        Circle marker = (Circle) svgMap.addMarker(latLong[0], latLong[1], mapImageView);
-        markers.add(new Marker(marker, latLong[0], latLong[1])); // Save the marker with its lat/long
+        // Print the latitude and longitude (for debugging)
+        System.out.println("Clicked Latitude: " + latLong[0] + ", Longitude: " + latLong[1]);
+
+        // Get the current image dimensions
+        double imageWidth = mapImageView.getBoundsInParent().getWidth();
+        double imageHeight = mapImageView.getBoundsInParent().getHeight();
+
+        // Calculate the relative position of the marker (relative to the image size)
+        double relativeX = x / imageWidth;
+        double relativeY = y / imageHeight;
+
+        // Add a marker (red dot) at the clicked pixel position (X, Y)
+        Circle marker = new Circle(x, y, 5);
+        marker.setFill(javafx.scene.paint.Color.RED);
+        markers.add(new Marker(marker, relativeX, relativeY));  // Save the marker with its relative position
         mapPane.getChildren().add(marker);
     }
 
     // Update the marker positions when the image size changes
     private void updateMarkers() {
+        double imageWidth = mapImageView.getBoundsInParent().getWidth();
+        double imageHeight = mapImageView.getBoundsInParent().getHeight();
+
         for (Marker marker : markers) {
-            // Recalculate the marker's position based on the new image size
-            double[] newCoords = svgMap.latLongToXY(marker.getLatitude(), marker.getLongitude(), mapImageView);
-            marker.getCircle().setCenterX(newCoords[0]);
-            marker.getCircle().setCenterY(newCoords[1]);
+            // Recalculate the marker's position based on its stored relative position
+            double newX = marker.getRelativeX() * imageWidth;
+            double newY = marker.getRelativeY() * imageHeight;
+
+            // Update marker's X and Y position based on the resized image
+            marker.getCircle().setCenterX(newX);
+            marker.getCircle().setCenterY(newY);
         }
     }
 
-    // Helper class to store markers with their geographical data
+    // Helper class to store markers with their relative positions
     public static class Marker {
         private final Circle circle;
-        private final double latitude;
-        private final double longitude;
+        private final double relativeX;
+        private final double relativeY;
 
-        public Marker(Circle circle, double latitude, double longitude) {
+        public Marker(Circle circle, double relativeX, double relativeY) {
             this.circle = circle;
-            this.latitude = latitude;
-            this.longitude = longitude;
+            this.relativeX = relativeX;
+            this.relativeY = relativeY;
         }
 
         public Circle getCircle() {
             return circle;
         }
 
-        public double getLatitude() {
-            return latitude;
+        public double getRelativeX() {
+            return relativeX;
         }
 
-        public double getLongitude() {
-            return longitude;
+        public double getRelativeY() {
+            return relativeY;
         }
     }
 }
