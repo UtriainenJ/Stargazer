@@ -1,13 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 
-<BorderPane fx:id="rootPane" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ryhma5.view.MainViewController" style="-fx-background-color: grey;">
+<BorderPane fx:id="rootPane" style="-fx-background-color: grey;" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ryhma5.view.MainViewController">
+    <left>
+        <!-- Sidebar and button container -->
+        <HBox fx:id="sidebarContainer" style="-fx-background-color: #42018e;">
+            <!-- Sidebar -->
+            <VBox fx:id="sidebar" prefHeight="979.0" prefWidth="533.0" style="-fx-background-color: d282f0;">
+                <children>
+                    <GridPane prefHeight="187.0" prefWidth="460.0">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="267.0" minWidth="10.0" prefWidth="236.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="225.0" minWidth="10.0" prefWidth="224.0" />
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints maxHeight="95.0" minHeight="10.0" prefHeight="82.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="117.0" minHeight="10.0" prefHeight="93.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="57.0" minHeight="7.0" prefHeight="7.0" vgrow="SOMETIMES" />
+                        </rowConstraints>
+                        <children>
+                            <TextField alignment="CENTER" maxWidth="200.0" prefHeight="25.0" prefWidth="161.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                            <TextField alignment="CENTER" maxWidth="200.0" prefHeight="25.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                            <VBox minWidth="0.0" prefHeight="92.0" prefWidth="456.0" GridPane.columnSpan="2">
+                                <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Search" textAlignment="CENTER" wrappingWidth="455.26171875" />
+                                    <TextField alignment="CENTER" minWidth="0.0" prefHeight="25.0" prefWidth="374.0">
+                                        <padding>
+                                            <Insets left="10.0" right="10.0" />
+                                        </padding>
+                                    </TextField>
+                                </children>
+                            </VBox>
+                        </children>
+                    </GridPane>
+                    <VBox prefHeight="769.0" prefWidth="460.0">
+                        <children>
+                            <Pane prefHeight="205.0" prefWidth="272.0" style="-fx-background-color: c862ef;" />
+                            <Pane prefHeight="200.0" prefWidth="200.0" />
+                            <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: c862ef;" />
+                        </children>
+                    </VBox>
+                </children>
+            </VBox>
+
+            <!-- Toggle Button -->
+            <Button fx:id="toggleButton" prefHeight="87.0" prefWidth="84.0" style="-fx-background-color: d282f0; -fx-font-size: 30; -fx-text-fill: FFFFFF; -fx-background-radius: 0;" text="☰" textAlignment="JUSTIFY" />
+        </HBox>
+    </left>
     <center>
         <StackPane>
-            <fx:include source="map-view.fxml"/>
+            <fx:include source="map-view.fxml" />
         </StackPane>
     </center>
 </BorderPane>

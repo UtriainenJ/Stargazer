@@ -2,7 +2,8 @@ package ryhma5.model;
 
 public enum Projections {
     ROBINSON("/maps/BlankMap_World_simple_Robinson_projection.svg"),
-    EQUIRECTANGULAR("/maps/BlankMap-World-Equirectangular.svg");
+    //EQUIRECTANGULAR("/maps/BlankMap-World-Equirectangular.svg");
+    EQUIRECTANGULAR("/maps/Equirectangular_projection_world_map_without_borders.svg");
 
     private final String mapFilePath;
 

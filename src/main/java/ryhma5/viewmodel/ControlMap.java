@@ -6,6 +6,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import org.controlsfx.control.WorldMapView;
 
+/**
+ * using controlsfx library, useless by itself but serves as a grim reminder of wasted hours
+ *
+ * @author Eetu Soronen
+ */
 public class ControlMap {
 
     WorldMapView worldmap;
