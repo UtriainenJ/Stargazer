@@ -1,8 +1,11 @@
 package ryhma5.viewmodel;
 
+import javafx.application.Platform;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import ryhma5.model.*;
 
@@ -46,18 +49,25 @@ public class SVGMap {
         return mapImageView;
     }
 
+
     public void addMarker(double x, double y, ImageView mapImageView, Pane mapPane) {
-        // Place the marker directly at the clicked pixel coordinates
-        Circle markerCircle = new Circle(x, y, 5);  // Size 5 for the marker
-        markerCircle.setFill(Color.RED);
+        Platform.runLater(() -> {
+            double imageWidth = mapImageView.getBoundsInParent().getWidth();
+            double imageHeight = mapImageView.getBoundsInParent().getHeight();
 
-        // Store marker with relative pixel positions
-        double imageWidth = mapImageView.getBoundsInParent().getWidth();
-        double imageHeight = mapImageView.getBoundsInParent().getHeight();
-        Marker marker = new Marker(markerCircle, x / imageWidth, y / imageHeight);
+            if (imageWidth > 0 && imageHeight > 0) {
+                // Calculate the relative position of the marker and set size immediately
+                Marker marker = new Marker(x / imageWidth, y / imageHeight, imageWidth, imageHeight);
+                markers.add(marker);
 
-        markers.add(marker);
-        mapPane.getChildren().add(markerCircle);
+                // Set the marker's initial position
+                marker.getCircle().setCenterX(x);
+                marker.getCircle().setCenterY(y);
+
+                // Add the marker to the mapPane
+                mapPane.getChildren().add(marker.getCircle());
+            }
+        });
     }
 
 
@@ -67,19 +77,31 @@ public class SVGMap {
         double imageWidth = mapImageView.getBoundsInParent().getWidth();
         double imageHeight = mapImageView.getBoundsInParent().getHeight();
 
+        // Calculate the radius as 3% of the smaller dimension of the image
+        double newRadius = Marker.calculateRadius(imageWidth, imageHeight);
+
+        // Now update the position and radius of each marker
         for (Marker marker : markers) {
             double newX = marker.getRelativeX() * imageWidth;
             double newY = marker.getRelativeY() * imageHeight;
+
+            // Update marker position
             marker.getCircle().setCenterX(newX);
             marker.getCircle().setCenterY(newY);
+
+            // Update marker radius based on the new image size
+            marker.getCircle().setRadius(newRadius);
         }
     }
+
+
+
+
 
     public double[] getLatLongFromXY(double x, double y, double imageWidth, double imageHeight) {
         // Delegate to the projector (use pixel coordinates and map dimensions to get lat/long)
         return projector.xyToLatLong(x, y, imageWidth, imageHeight);
     }
-
 
 
 }
