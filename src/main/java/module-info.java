@@ -1,6 +1,9 @@
 module ryhma5 {
 
     requires org.controlsfx.controls;
+    requires com.gluonhq.maps;
+    requires com.google.gson;
+    opens project.model to com.google.gson;
     requires javafx.fxml;
     requires batik.all;
     requires proj4j;
