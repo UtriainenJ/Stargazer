@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.Pane?>
+<Pane fx:id="mapPane" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ryhma5.view.MapController"
+      style="-fx-background-color: cyan;"
+      minWidth="0.0" minHeight="0.0"
+      maxWidth="1.7976931348623157E308" maxHeight="1.7976931348623157E308">
+</Pane>
