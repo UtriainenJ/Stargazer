@@ -1,11 +1,11 @@
-package project.model;
+package ryhma5.model;
 
 public class UserPreferences {
 
-    public String dateStart;
-    public String dateEnd;
-    public double latitude;
-    public double longitude;
+    private String dateStart;
+    private String dateEnd;
+    private double latitude;
+    private double longitude;
 
     public UserPreferences(String dateStart, String dateEnd, double latitude, double longitude){
         this.dateStart = dateStart;

@@ -1,20 +1,4 @@
-// add to pom.xml
-//<dependency>
-//        <groupId>com.google.code.gson</groupId>
-//        <artifactId>gson</artifactId>
-//        <version>2.8.9</version>
-//</dependency>
-
-//add to module-info.json
-//requires com.google.gson;
-//opens project.model to com.google.gson;
-
-//public void loadData(String filePath) {
-    // load
-//}
-
-
-package project.model;
+package ryhma5.model;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -27,11 +11,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DataManager{
+
     private String directoryPath = "src/main/resources/savedUserPreferencesData/";
 
     public void saveData(Map<String, Object> data, String fileName){
         String filePath = directoryPath + fileName +".json";
-
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         try (FileWriter writer = new FileWriter(filePath)){
