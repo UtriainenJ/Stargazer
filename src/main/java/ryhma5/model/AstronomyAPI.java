@@ -10,12 +10,16 @@ import com.google.gson.Gson;
 
 public class AstronomyAPI {
 
-    public static AstronomyEvent fetchAstronomyEvent(String latitude, String longitude, String elevation, String date, String time) throws Exception {
+    public static AstronomyEvent fetchAstronomyEvent(String body,
+                                                     String latitude,
+                                                     String longitude,
+                                                     String elevation,
+                                                     String fromDate,
+                                                     String toDate,
+                                                     String time) throws Exception {
+
         String applicationId = "a8b19fa3-5fd9-4285-994f-5704eb84baf5";
         String applicationSecret = "593aea4dedd5e83e7f58605ab827e97fb2ddc9325769915eec568a2e31aabf39d602bc87216783f49ec5d10f1e2877f9343106d473c661d0e76d75ff673587e960e3f7aa6c4870662f4a600cc28abbe0026813a4dd170c84a7820aeb543b7f5477641fd74436302c01dd72628c0089cc";
-
-        // Define the body for the API request
-        String body = "sun"; // Can be replaced with other celestial bodies as needed
 
         // Construct the API URL without parameters
         String apiUrl = String.format("https://api.astronomyapi.com/api/v2/bodies/events/%s", body);
@@ -25,12 +29,13 @@ public class AstronomyAPI {
         String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
 
         // Set up the connection
-        URL url = new URL(apiUrl + String.format("?latitude=%s&longitude=%s&elevation=%s&from_date=%s&to_date=%s&time=%s",
+        URL url = new URL(apiUrl + String.format(
+                "?latitude=%s&longitude=%s&elevation=%s&from_date=%s&to_date=%s&time=%s",
                 URLEncoder.encode(latitude, "UTF-8"),
                 URLEncoder.encode(longitude, "UTF-8"),
                 URLEncoder.encode(elevation, "UTF-8"),
-                URLEncoder.encode(date, "UTF-8"),
-                URLEncoder.encode(date, "UTF-8"), // Assuming from_date and to_date are the same
+                URLEncoder.encode(fromDate, "UTF-8"),
+                URLEncoder.encode(toDate, "UTF-8"),
                 URLEncoder.encode(time, "UTF-8")));
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();

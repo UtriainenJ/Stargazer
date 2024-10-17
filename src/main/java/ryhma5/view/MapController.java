@@ -63,10 +63,13 @@ public class MapController {
 
         System.out.println("---------------------------- API TEST ------------------------------------");
         AstronomyViewModel avm = new AstronomyViewModel();
-        AstronomyEvent eve = avm.getAstronomyEvent(
-                Double.toString(latLong[0]), Double.toString(latLong[1]), "10", "2024-10-07", "12:00:00");
-        System.out.println(eve.getData().getObserver().getLocation().getLatitude());
-        System.out.println(eve.getData().getObserver().getLocation().getLongitude());
+        AstronomyEvent testEvent = avm.getAstronomyEvent(
+                "sun", Double.toString(latLong[0]), Double.toString(latLong[1]), "10",
+                "2024-10-07","2024-10-08", "12:00:00");
+
+        System.out.println(testEvent.getData().getObserver().getLocation().getLatitude());
+        System.out.println(testEvent.getData().getObserver().getLocation().getLongitude());
+        System.out.println(testEvent.getData().getTable().getRows()[0].getCells()[0].getType());
 
         System.out.println("---------------------------------------------------------------------------");
     }

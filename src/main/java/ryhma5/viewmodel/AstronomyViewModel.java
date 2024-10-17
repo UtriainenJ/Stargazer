@@ -17,23 +17,42 @@ public class AstronomyViewModel {
         events = new Vector<>();
     }
 
-    public AstronomyEvent getAstronomyEvent(String latitude, String longitude, String elevation, String date, String time) {
+    public AstronomyEvent getAstronomyEvent(String body,
+                                            String latitude,
+                                            String longitude,
+                                            String elevation,
+                                            String fromDate,
+                                            String toDate,
+                                            String time) {
+
+        // nasty looking comparison but way faster than another API call
         for (AstronomyEvent event : events) {
             AstronomyEvent.Data data = event.getData(); // Access the data object
 
             if (data != null &&
-                    String.valueOf(data.getObserver().getLocation().getLatitude()).equals(latitude) &&
-                    String.valueOf(data.getObserver().getLocation().getLongitude()).equals(longitude) &&
-                    String.valueOf(data.getObserver().getLocation().getElevation()).equals(elevation) &&
-                    data.getDates().getFrom().startsWith(date) && // Compare only the date part
-                    time.equals(data.getTable().getRows()[0].getCells()[0].getRise())) { // Adjust this if you want a different time check
+                    data.getObserver().getLocation().getLatitude() == Double.parseDouble(latitude) &&
+                    data.getObserver().getLocation().getLongitude() == Double.parseDouble(longitude) &&
+                    data.getObserver().getLocation().getElevation() == Integer.parseInt(elevation) &&
+                    data.getDates().getFrom().startsWith(fromDate) &&
+                    data.getDates().getTo().startsWith(toDate) &&
+                    (data.getTable().getRows() != null &&
+                            data.getTable().getRows().length > 0 &&
+                            data.getTable().getRows()[0].getEntry().getName().equals(body))) {
+
                 // Event found, return it
                 return event;
             }
+
         }
 
         try {
-            AstronomyEvent newEvent = AstronomyAPI.fetchAstronomyEvent(latitude, longitude, elevation, date, time);
+            AstronomyEvent newEvent = AstronomyAPI.fetchAstronomyEvent(body,
+                                                                        latitude,
+                                                                        longitude,
+                                                                        elevation,
+                                                                        fromDate,
+                                                                        toDate,
+                                                                        time);
 
             // If the new event is not null, add it to the events vector
             if (newEvent != null) {
