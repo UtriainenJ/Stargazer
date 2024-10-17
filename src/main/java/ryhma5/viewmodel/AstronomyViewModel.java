@@ -30,14 +30,14 @@ public class AstronomyViewModel {
             AstronomyEvent.Data data = event.getData(); // Access the data object
 
             if (data != null &&
-                    data.getObserver().getLocation().getLatitude() == Double.parseDouble(latitude) &&
-                    data.getObserver().getLocation().getLongitude() == Double.parseDouble(longitude) &&
+                    Double.compare(data.getObserver().getLocation().getLatitude(), Double.parseDouble(latitude)) == 0 &&
+                    Double.compare(data.getObserver().getLocation().getLongitude(), Double.parseDouble(longitude)) == 0 &&
                     data.getObserver().getLocation().getElevation() == Integer.parseInt(elevation) &&
                     data.getDates().getFrom().startsWith(fromDate) &&
                     data.getDates().getTo().startsWith(toDate) &&
                     (data.getTable().getRows() != null &&
-                            data.getTable().getRows().length > 0 &&
-                            data.getTable().getRows()[0].getEntry().getName().equals(body))) {
+                        data.getTable().getRows().length > 0 &&
+                        data.getTable().getRows()[0].getEntry().getName().equals(body))) {
 
                 // Event found, return it
                 return event;
@@ -61,7 +61,7 @@ public class AstronomyViewModel {
             return newEvent;
         } catch (Exception e) {
             e.printStackTrace();
-            return null;  // Handle errors appropriately
+            return null;
         }
     }
 
