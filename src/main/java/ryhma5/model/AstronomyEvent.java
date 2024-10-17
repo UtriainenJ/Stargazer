@@ -1,4 +1,4 @@
-package project.model;
+package ryhma5.model;
 
 public class AstronomyEvent {
     private String latitude;

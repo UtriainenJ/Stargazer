@@ -1,6 +1,6 @@
-package project.viewmodel;
+package ryhma5.viewmodel;
 
-import project.model.*;
+import ryhma5.model.*;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

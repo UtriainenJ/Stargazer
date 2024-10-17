@@ -1,4 +1,4 @@
-package project.model;
+package ryhma5.model;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
