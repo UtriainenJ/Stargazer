@@ -17,26 +17,34 @@ public class AstronomyViewModel {
         events = new Vector<>();
     }
 
-    public AstronomyEvent getAstronomyEvent(String latitude, String longitude, String elevation, String date, String time){
-
+    public AstronomyEvent getAstronomyEvent(String latitude, String longitude, String elevation, String date, String time) {
         for (AstronomyEvent event : events) {
-            if (event.getLatitude().equals(latitude) &&
-                    event.getLongitude().equals(longitude) &&
-                    event.getElevation().equals(elevation) &&
-                    event.getDate().equals(date) &&
-                    event.getTime().equals(time)) {
+            AstronomyEvent.Data data = event.getData(); // Access the data object
+
+            if (data != null &&
+                    String.valueOf(data.getObserver().getLocation().getLatitude()).equals(latitude) &&
+                    String.valueOf(data.getObserver().getLocation().getLongitude()).equals(longitude) &&
+                    String.valueOf(data.getObserver().getLocation().getElevation()).equals(elevation) &&
+                    data.getDates().getFrom().startsWith(date) && // Compare only the date part
+                    time.equals(data.getTable().getRows()[0].getCells()[0].getRise())) { // Adjust this if you want a different time check
                 // Event found, return it
                 return event;
             }
         }
+
         try {
             AstronomyEvent newEvent = AstronomyAPI.fetchAstronomyEvent(latitude, longitude, elevation, date, time);
-            // Add the new event to the vector
-            events.add(newEvent);
+
+            // If the new event is not null, add it to the events vector
+            if (newEvent != null) {
+                events.add(newEvent);
+            }
             return newEvent;
         } catch (Exception e) {
             e.printStackTrace();
             return null;  // Handle errors appropriately
         }
     }
+
+
 }
