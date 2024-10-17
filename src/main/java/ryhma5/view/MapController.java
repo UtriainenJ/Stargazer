@@ -4,7 +4,9 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import ryhma5.model.AstronomyEvent;
 import ryhma5.model.Projections;
+import ryhma5.viewmodel.AstronomyViewModel;
 import ryhma5.viewmodel.SVGMap;
 
 public class MapController {
@@ -58,6 +60,15 @@ public class MapController {
 
         // Print the real-world coordinates
         System.out.println("Latitude: " + latLong[0] + ", Longitude: " + latLong[1]);
+
+        System.out.println("---------------------------- API TEST ------------------------------------");
+        AstronomyViewModel avm = new AstronomyViewModel();
+        AstronomyEvent eve = avm.getAstronomyEvent(
+                Double.toString(latLong[0]), Double.toString(latLong[1]), "10", "2024-10-07", "12:00:00");
+        System.out.println(eve.getData().getObserver().getLocation().getLatitude());
+        System.out.println(eve.getData().getObserver().getLocation().getLongitude());
+
+        System.out.println("---------------------------------------------------------------------------");
     }
 
 
