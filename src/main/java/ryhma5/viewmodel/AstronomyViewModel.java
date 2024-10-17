@@ -12,9 +12,11 @@ import java.util.Vector;
 public class AstronomyViewModel {
 
     private Vector<AstronomyEvent> events;
+    private Vector<AstronomyBody> bodies;
 
     public AstronomyViewModel(){
         events = new Vector<>();
+        bodies = new Vector<>();
     }
 
     public AstronomyEvent getAstronomyEvent(String body,
@@ -35,9 +37,8 @@ public class AstronomyViewModel {
                     data.getObserver().getLocation().getElevation() == Integer.parseInt(elevation) &&
                     data.getDates().getFrom().startsWith(fromDate) &&
                     data.getDates().getTo().startsWith(toDate) &&
-                    (data.getTable().getRows() != null &&
-                        data.getTable().getRows().length > 0 &&
-                        data.getTable().getRows()[0].getEntry().getName().equals(body))) {
+                    !data.getTable().getRows().isEmpty() &&
+                    data.getTable().getRows().get(0).getEntry().getName().equals(body)) {
 
                 // Event found, return it
                 return event;
@@ -65,5 +66,50 @@ public class AstronomyViewModel {
         }
     }
 
+    public AstronomyBody getAstronomyBody(String body,
+                                   String latitude,
+                                   String longitude,
+                                   String elevation,
+                                   String fromDate,
+                                   String toDate,
+                                   String time) {
 
+        // Check if the body information is already cached
+        for (AstronomyBody cachedBody : bodies) {
+            AstronomyBody.Data data = cachedBody.getData();
+
+            if (data != null &&
+                    Double.compare(data.getObserver().getLocation().getLatitude(), Double.parseDouble(latitude)) == 0 &&
+                    Double.compare(data.getObserver().getLocation().getLongitude(), Double.parseDouble(longitude)) == 0 &&
+                    data.getObserver().getLocation().getElevation() == Integer.parseInt(elevation) &&
+                    data.getDates().getFrom().startsWith(fromDate) &&
+                    data.getDates().getTo().startsWith(toDate) &&
+                    !data.getRows().isEmpty()  &&
+                    data.getRows().get(0).getBody().getName().equals(body)) {
+
+
+                // Matching body information found, return it
+                return cachedBody;
+            }
+        }
+
+        // Fetch new body information if not cached
+        try {
+            AstronomyBody newBody = AstronomyAPI.fetchAstronomyBody(body,
+                                                                    latitude,
+                                                                    longitude,
+                                                                    elevation,
+                                                                    fromDate,
+                                                                    toDate,
+                                                                    time);
+
+            if (newBody != null) {
+                bodies.add(newBody);
+            }
+            return newBody;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // Handle API or parsing errors
+        }
+    }
 }
