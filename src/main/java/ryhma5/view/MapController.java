@@ -69,7 +69,7 @@ public class MapController {
 
         System.out.println(testEvent.getData().getObserver().getLocation().getLatitude());
         System.out.println(testEvent.getData().getObserver().getLocation().getLongitude());
-        System.out.println(testEvent.getData().getTable().getRows()[0].getCells()[0].getType());
+        System.out.println(testEvent.getData().getTable().getRows().get(0).getCells()[0].getType());
 
         System.out.println("---------------------------------------------------------------------------");
     }

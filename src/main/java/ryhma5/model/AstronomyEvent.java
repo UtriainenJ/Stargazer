@@ -1,5 +1,7 @@
 package ryhma5.model;
 
+import java.util.List;
+
 public class AstronomyEvent {
     private Data data;
 
@@ -66,13 +68,13 @@ public class AstronomyEvent {
 
     public static class Table {
         private String[] header;
-        private Row[] rows;
+        private List<Row> rows;
 
         public String[] getHeader() {
             return header;
         }
 
-        public Row[] getRows() {
+        public List<Row> getRows() {
             return rows;
         }
 
