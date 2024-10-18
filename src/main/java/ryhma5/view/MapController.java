@@ -4,10 +4,13 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import ryhma5.model.AstronomyBody;
 import ryhma5.model.AstronomyEvent;
+import ryhma5.model.ISSInfo;
 import ryhma5.model.Projections;
 import ryhma5.viewmodel.AstronomyViewModel;
 import ryhma5.viewmodel.SVGMap;
+import ryhma5.viewmodel.WhereISSViewModel;
 
 public class MapController {
 
@@ -61,17 +64,41 @@ public class MapController {
         // Print the real-world coordinates
         System.out.println("Latitude: " + latLong[0] + ", Longitude: " + latLong[1]);
 
+        /*
         System.out.println("---------------------------- API TEST ------------------------------------");
         AstronomyViewModel avm = new AstronomyViewModel();
         AstronomyEvent testEvent = avm.getAstronomyEvent(
                 "sun", Double.toString(latLong[0]), Double.toString(latLong[1]), "10",
                 "2024-10-07","2024-10-08", "12:00:00");
 
-        System.out.println(testEvent.getData().getObserver().getLocation().getLatitude());
-        System.out.println(testEvent.getData().getObserver().getLocation().getLongitude());
-        System.out.println(testEvent.getData().getTable().getRows().get(0).getCells()[0].getType());
+        System.out.println("Obsever lon: " + testEvent.getData().getObserver().getLocation().getLatitude());
+        System.out.println("Observer lat: " + testEvent.getData().getObserver().getLocation().getLongitude());
+        System.out.println("Test event type: " + testEvent.getData().getTable().getRows().get(0).getCells()[0].getType());
 
+        System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx       BODIES       xxxxxxxxxxxxxxxxxxxxxxxxxx");
+        String bodyIdToTestFor = "saturn";
+        AstronomyBody testBody = avm.getAstronomyBody(
+                bodyIdToTestFor, Double.toString(latLong[0]), Double.toString(latLong[1]), "10",
+                "2024-10-07","2024-10-08", "12:00:00");
+        System.out.println("Testing getAstronomyBody - Distance from Earth to " + bodyIdToTestFor + ":"
+                + testBody.getData().getRows().get(0).getPositions().get(0).getDistance().getFromEarth().getKm());
+
+        AstronomyBody testBody2 = avm.getAllAstronomyBodies(Double.toString(latLong[0]), Double.toString(latLong[1]), "10",
+                "2024-10-07","2024-10-08", "12:00:00");
+
+        int bodyIndexToTestFor = 4;
+        System.out.println("Body (" + bodyIndexToTestFor + ") from getAllBodies: "
+                + testBody2.getData().getRows().get(bodyIndexToTestFor).getBody().getName());
+
+        System.out.println("ooooooooooooooooooooooooooooooo  ISS oooooooooooooooooooooooooooooooooooooo");
+
+        WhereISSViewModel issVM = new WhereISSViewModel();
+
+        ISSInfo issTest = issVM.getISS("kilometers", 1364069476L);
+        System.out.println("ISS velocity at timestamp 1713240000: " + issTest.getVelocity());
         System.out.println("---------------------------------------------------------------------------");
+        
+         */
     }
 
 
