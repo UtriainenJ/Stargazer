@@ -5,10 +5,7 @@
     import java.net.HttpURLConnection;
     import java.net.URL;
     import java.net.URLEncoder;
-    import java.util.ArrayList;
-    import java.util.Arrays;
     import java.util.Base64;
-    import java.util.List;
 
     import com.google.gson.*;
 
