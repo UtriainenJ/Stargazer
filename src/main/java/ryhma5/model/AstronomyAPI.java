@@ -5,8 +5,12 @@
     import java.net.HttpURLConnection;
     import java.net.URL;
     import java.net.URLEncoder;
+    import java.util.ArrayList;
+    import java.util.Arrays;
     import java.util.Base64;
-    import com.google.gson.Gson;
+    import java.util.List;
+
+    import com.google.gson.*;
 
     public class AstronomyAPI {
 
@@ -128,7 +132,7 @@
                 in.close();
 
                 // Parse the response and return the result
-                return parseBodyPosition(response.toString());
+                return parseAstronomyBody(response.toString());
             } else {
                 String errorMessage = String.format("Failed to retrieve data: HTTP response code %d", responseCode);
                 System.err.println(errorMessage);
@@ -137,7 +141,7 @@
         }
 
         // Parsing function for the singular body position
-        private static AstronomyBody parseBodyPosition(String jsonResponse) {
+        private static AstronomyBody parseAstronomyBody(String jsonResponse) {
             System.out.println("API Response: " + jsonResponse);
 
             Gson gson = new Gson();
@@ -154,4 +158,62 @@
             // Handle the case where response is null or data is missing
             return null; // Or throw an exception as appropriate
         }
+
+        public static AstronomyBody fetchAllBodies(String latitude,
+                                                         String longitude,
+                                                         String elevation,
+                                                         String fromDate,
+                                                         String toDate,
+                                                         String time) throws Exception {
+
+
+            // Combine application ID and secret for authorization
+            String auth = APPLICATIONID + ":" + APPLICATIONSECRET;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+
+            // Construct the API URL for fetching the positions of all bodies
+            String apiUrl = "https://api.astronomyapi.com/api/v2/bodies/positions";
+
+            // Construct the full URL with query parameters
+            URL url = new URL(apiUrl + String.format(
+                    "?latitude=%s&longitude=%s&elevation=%s&from_date=%s&to_date=%s&time=%s&output=%s",
+                    URLEncoder.encode(latitude, "UTF-8"),
+                    URLEncoder.encode(longitude, "UTF-8"),
+                    URLEncoder.encode(elevation, "UTF-8"),
+                    URLEncoder.encode(fromDate, "UTF-8"),
+                    URLEncoder.encode(toDate, "UTF-8"),
+                    URLEncoder.encode(time, "UTF-8"),
+                    URLEncoder.encode("rows", "UTF-8")  // Using "rows" as the output format
+            ));
+
+            // Open the connection
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", "Basic " + encodedAuth);
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) { // Success
+                // Read the response from the input stream
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+
+                // Parse the response and return the list of bodies
+                return parseAstronomyBody(response.toString());
+
+            } else {
+                String errorMessage = String.format("Failed to retrieve data: HTTP response code %d", responseCode);
+                System.err.println(errorMessage);
+                throw new Exception(errorMessage);
+            }
+
+        }
+
+
     }

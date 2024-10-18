@@ -2,6 +2,7 @@ package ryhma5.model;
 
 import java.util.List;
 
+
 public class AstronomyBody {
 
     private Data data;

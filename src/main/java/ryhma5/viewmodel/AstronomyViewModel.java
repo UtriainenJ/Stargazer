@@ -6,17 +6,18 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Vector;
+import java.util.List;
 
 public class AstronomyViewModel {
 
-    private Vector<AstronomyEvent> events;
-    private Vector<AstronomyBody> bodies;
+    private List<AstronomyEvent> events;
+    private List<AstronomyBody> bodies;
 
     public AstronomyViewModel(){
-        events = new Vector<>();
-        bodies = new Vector<>();
+        events = new ArrayList<>();
+        bodies = new ArrayList<>();
     }
 
     public AstronomyEvent getAstronomyEvent(String body,
@@ -112,4 +113,31 @@ public class AstronomyViewModel {
             return null; // Handle API or parsing errors
         }
     }
+    public AstronomyBody getAllAstronomyBodies(String latitude,
+                                                     String longitude,
+                                                     String elevation,
+                                                     String fromDate,
+                                                     String toDate,
+                                                     String time) {
+
+
+        // Fetch new body information if not cached
+        try {
+            AstronomyBody newBody = AstronomyAPI.fetchAllBodies(latitude,
+                                                                    longitude,
+                                                                    elevation,
+                                                                    fromDate,
+                                                                    toDate,
+                                                                    time);
+
+            if (newBody != null) {
+                bodies.add(newBody);
+            }
+            return newBody;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // Handle API or parsing errors
+        }
+    }
+
 }
