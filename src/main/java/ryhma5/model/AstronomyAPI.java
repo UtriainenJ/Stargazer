@@ -71,7 +71,7 @@
 
         private static AstronomyEvent parseAstronomyEvent(String jsonResponse) {
 
-            System.out.println("API Response: " + jsonResponse);
+            // System.out.println("API Response: " + jsonResponse);
 
             Gson gson = new Gson();
 
@@ -142,7 +142,7 @@
 
         // Parsing function for the singular body position
         private static AstronomyBody parseAstronomyBody(String jsonResponse) {
-            System.out.println("API Response: " + jsonResponse);
+            // System.out.println("API Response: " + jsonResponse);
 
             Gson gson = new Gson();
 
