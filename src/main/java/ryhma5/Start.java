@@ -1,12 +1,12 @@
 package ryhma5;
 
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import ryhma5.view.MainViewController;
-
-import java.io.IOException;
 
 public class Start extends Application {
     @Override
@@ -27,3 +27,4 @@ public class Start extends Application {
         launch();
     }
 }
+ 
