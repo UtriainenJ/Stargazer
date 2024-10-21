@@ -1,5 +1,11 @@
 package ryhma5.model;
 
+
+/**
+ * EquirectangularProjector is a simple implementation of the Projector interface that uses an equirectangular
+ * projection to convert between geographic coordinates and pixel coordinates.
+ * Equirectunglar projection: simple 2:1 map with no stretching or distortion.
+ */
 public class EquirectangularProjector implements Projector {
 
     // Define constants for the projection (standard projection covers -180 to 180 longitude, -90 to 90 latitude)

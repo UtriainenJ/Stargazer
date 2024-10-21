@@ -1,10 +1,12 @@
 package ryhma5.model;
 
+/**
+ * Projector calculates and converts geographic lat-long to XY-cordinates on the map and vice versa.
+ * Different maps porjections calculate the conversion differently.
+ */
 public interface Projector {
 
-    // Convert latitude and longitude to projected X, Y coordinates (for placing markers)
     double[] latLongToXY(double latitude, double longitude, double imageWidth, double imageHeight);
 
-    // Convert pixel X, Y coordinates back to latitude and longitude (for printing real coordinates)
     double[] xyToLatLong(double x, double y, double imageWidth, double imageHeight);
 }

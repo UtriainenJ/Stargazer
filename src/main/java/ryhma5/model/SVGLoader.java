@@ -12,6 +12,9 @@ import org.apache.batik.transcoder.image.ImageTranscoder;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 
+/**
+ * Uses Apache Batik to load and transcode an SVG file to a JavaFX Node (ImageView)
+ */
 public class SVGLoader {
 
     private final String svgFilePath;

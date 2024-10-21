@@ -4,6 +4,10 @@ import org.locationtech.proj4j.ProjCoordinate;
 import org.locationtech.proj4j.proj.RobinsonProjection;
 import ryhma5.model.Projector;
 
+/**
+ * Robinson projection is a map projection which distorts the edges.
+ * TODO: fix or delete
+ */
 public class RobinsonProjector implements Projector {
 
     private final RobinsonProjection projection;

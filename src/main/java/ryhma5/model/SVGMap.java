@@ -13,6 +13,8 @@ public class SVGMap {
     private Projector projector;
     private final List<Marker> markers = new ArrayList<>();
 
+    private double markerRelativeSize = 0.03;
+
     public SVGMap(String svgFilePath, Projections projection) {
         this.svgLoader = new SVGLoader(svgFilePath);
         setProjection(projection);  // Set the initial projection
@@ -50,9 +52,10 @@ public class SVGMap {
             double imageWidth = mapImageView.getBoundsInParent().getWidth();
             double imageHeight = mapImageView.getBoundsInParent().getHeight();
 
+            double markerRadius = markerRelativeSize * Math.min(imageWidth, imageHeight);
             if (imageWidth > 0 && imageHeight > 0) {
                 // Calculate the relative position of the marker and set size immediately
-                Marker marker = new Marker(x / imageWidth, y / imageHeight, imageWidth, imageHeight);
+                Marker marker = new Marker(x / imageWidth, y / imageHeight, markerRadius);
                 markers.add(marker);
 
                 // Set the marker's initial position
@@ -72,8 +75,7 @@ public class SVGMap {
         double imageWidth = mapImageView.getBoundsInParent().getWidth();
         double imageHeight = mapImageView.getBoundsInParent().getHeight();
 
-        // Calculate the radius as 3% of the smaller dimension of the image
-        double newRadius = Marker.calculateRadius(imageWidth, imageHeight);
+        double newRadius = markerRelativeSize * Math.min(imageWidth, imageHeight);
 
         // Now update the position and radius of each marker
         for (Marker marker : markers) {

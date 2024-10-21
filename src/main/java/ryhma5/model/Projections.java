@@ -1,5 +1,9 @@
 package ryhma5.model;
 
+/**
+ * Enum class to define the different map projections available for the application.
+ * Maybe some day user could change the projection/map
+ */
 public enum Projections {
     ROBINSON("/maps/BlankMap_World_simple_Robinson_projection.svg"),
     //EQUIRECTANGULAR("/maps/BlankMap-World-Equirectangular.svg");

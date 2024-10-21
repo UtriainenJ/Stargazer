@@ -13,7 +13,6 @@ public class Marker {
     private final double relativeY;
 
     private static final String ICON_PATH = "/images/slowerstar.gif";
-    private static final double SIZE_PERCENTAGE = 0.03; // 3% of the map image's smaller dimension
     private static Image iconImage = null; // Static field to hold the icon image
     private static boolean iconLoadAttempted = false; // Track if the load was attempted
 
@@ -34,15 +33,13 @@ public class Marker {
         }
     }
 
-    public Marker(double relativeX, double relativeY, double imageWidth, double imageHeight) {
-        this.circle = createStyledCircle(imageWidth, imageHeight);
+    public Marker(double relativeX, double relativeY, double radius) {
+        this.circle = createStyledCircle(radius);
         this.relativeX = relativeX;
         this.relativeY = relativeY;
     }
 
-    private Circle createStyledCircle(double imageWidth, double imageHeight) {
-        // Calculate the radius as 3% of the smaller dimension of the image
-        double radius = SIZE_PERCENTAGE * Math.min(imageWidth, imageHeight);
+    private Circle createStyledCircle(double radius) {
 
         Circle circle = new Circle(radius); // Set the initial radius
 
@@ -66,10 +63,5 @@ public class Marker {
 
     public double getRelativeY() {
         return relativeY;
-    }
-
-    // Static method to calculate the radius based on the map size
-    public static double calculateRadius(double imageWidth, double imageHeight) {
-        return SIZE_PERCENTAGE * Math.min(imageWidth, imageHeight); // 3% of the smaller dimension
     }
 }
