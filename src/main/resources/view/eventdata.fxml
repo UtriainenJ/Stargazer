@@ -12,7 +12,7 @@
    <children>
       <ImageView fitHeight="129.0" fitWidth="120.0" layoutX="53.0" layoutY="29.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="40.0">
          <image>
-            <Image url="@../../icons/meteor.png" />
+            <Image url="@../icons/meteor.png" />
          </image>
       </ImageView>
       <Text layoutX="40.0" layoutY="240.0" strokeType="OUTSIDE" strokeWidth="0.0" text="METEORS" wrappingWidth="194.0">
@@ -29,7 +29,7 @@
          <graphic>
             <ImageView fitHeight="87.0" fitWidth="91.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../icons/stars.png" />
+                  <Image url="@../icons/stars.png" />
                </image>
             </ImageView>
          </graphic>

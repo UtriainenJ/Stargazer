@@ -15,7 +15,7 @@
 <?import javafx.scene.text.Text?>
 
 
-<StackPane fx:id="rootPane" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ryhma5.view.MainViewController">
+<StackPane fx:id="rootPane" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ryhma5.controller.MainViewController">
    <children>
       <AnchorPane prefHeight="1004.0" prefWidth="1579.0">
          <children>
@@ -43,7 +43,7 @@
                                           <graphic>
                                              <ImageView fitHeight="41.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                                                 <image>
-                                                   <Image url="@../../icons/search.png" />
+                                                   <Image url="@../icons/search.png" />
                                                 </image>
                                              </ImageView>
                                           </graphic>

@@ -1,4 +1,4 @@
-package ryhma5.viewmodel;
+package ryhma5.model;
 
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;

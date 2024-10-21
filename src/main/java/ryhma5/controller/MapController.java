@@ -1,11 +1,11 @@
-package ryhma5.view;
+package ryhma5.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import ryhma5.model.Projections;
-import ryhma5.viewmodel.SVGMap;
+import ryhma5.model.SVGMap;
 
 public class MapController {
 

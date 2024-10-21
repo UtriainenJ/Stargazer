@@ -9,7 +9,7 @@ module ryhma5 {
     requires javafx.swing;
 
     opens ryhma5 to javafx.fxml;
-    exports ryhma5.view;
+    exports ryhma5.controller;
     exports ryhma5;
-    opens ryhma5.view to javafx.fxml;
+    opens ryhma5.controller to javafx.fxml;
 }

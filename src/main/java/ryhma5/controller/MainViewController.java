@@ -1,4 +1,4 @@
-package ryhma5.view;
+package ryhma5.controller;
 
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
