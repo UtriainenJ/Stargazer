@@ -11,27 +11,39 @@ public class Marker {
     private final Circle circle;
     private final double relativeX;
     private final double relativeY;
+    private boolean isSelected = false;
 
-    private static final String ICON_PATH = "/images/slowerstar.gif";
+    private static final String ICON_PATH = "/icons/mariostar_stillnoeyes.gif";
+    private static final String SELECTED_ICON_PATH = "/icons/slowerstar.gif";
     private static Image iconImage = null; // Static field to hold the icon image
+    private static Image selectedIconImage = null;
     private static boolean iconLoadAttempted = false; // Track if the load was attempted
 
     static {
         // Try to load the icon once
-        tryLoadIcon();
+        tryLoadIcons();
     }
 
-    private static void tryLoadIcon() {
+    private static void tryLoadIcons() {
         if (!iconLoadAttempted) {
             InputStream iconStream = Marker.class.getResourceAsStream(ICON_PATH);
+            InputStream selectedIconStream = Marker.class.getResourceAsStream(SELECTED_ICON_PATH);
+
             if (iconStream != null) {
                 iconImage = new Image(iconStream);
-            } else {
-                System.err.println("Failed to load marker icon from " + ICON_PATH);
             }
-            iconLoadAttempted = true; // Mark that we've attempted the load
+            if (selectedIconStream != null) {
+                selectedIconImage = new Image(selectedIconStream);
+            }
+
+            if (iconImage == null || selectedIconImage == null) {
+                System.err.println("Failed to load one or more marker icons");
+            }
+
+            iconLoadAttempted = true;
         }
     }
+
 
     public Marker(double relativeX, double relativeY, double radius) {
         this.circle = createStyledCircle(radius);
@@ -52,6 +64,29 @@ public class Marker {
 
         return circle;
     }
+
+    public void selectMarker() {
+        if (!isSelected) {
+            if (selectedIconImage != null) {
+                circle.setFill(new ImagePattern(selectedIconImage));
+            } else {
+                circle.setFill(Color.YELLOW);
+            }
+            isSelected = true;
+        }
+    }
+
+    public void deSelectMarker() {
+        if (isSelected) {
+            if (iconImage != null) {
+                circle.setFill(new ImagePattern(iconImage));
+            } else {
+                circle.setFill(Color.RED);
+            }
+            isSelected = false;
+        }
+    }
+
 
     public Circle getCircle() {
         return circle;

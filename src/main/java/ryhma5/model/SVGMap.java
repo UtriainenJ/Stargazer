@@ -17,6 +17,7 @@ public class SVGMap {
     private final SVGLoader svgLoader;
     private Projector projector;
     private final List<Marker> markers = new ArrayList<>();
+    private Marker selectedMarker = null;
 
     private double markerRelativeSize = 0.03;
 
@@ -70,8 +71,9 @@ public class SVGMap {
                 // Add the marker to the mapPane
                 mapPane.getChildren().add(marker.getCircle());
 
+                selectMarker(marker, mapPane);
                 marker.getCircle().setOnMouseClicked(event -> {
-                    destroyMarker(marker, mapPane);
+                    selectMarker(marker, mapPane);
                 });
 
                 Timeline timeline = new Timeline(
@@ -83,9 +85,19 @@ public class SVGMap {
         });
     }
 
+
+    public void selectMarker(Marker marker, Pane mapPane) {
+        if (selectedMarker != null && selectedMarker != marker) {
+            selectedMarker.deSelectMarker();
+        }
+
+        marker.selectMarker();
+        selectedMarker = marker;
+    }
     /**
      * Plays a short animation to shrink the marker and then remove it
-     * @param marker The marker to remove
+     *
+     * @param marker  The marker to remove
      * @param mapPane The Pane containing the map
      */
     public void destroyMarker(Marker marker, Pane mapPane) {
@@ -104,7 +116,6 @@ public class SVGMap {
 
         timeline.play();
     }
-
 
 
     // Update the marker positions when the window is resized
