@@ -70,13 +70,39 @@ public class SVGMap {
                 // Add the marker to the mapPane
                 mapPane.getChildren().add(marker.getCircle());
 
+                marker.getCircle().setOnMouseClicked(event -> {
+                    destroyMarker(marker, mapPane);
+                });
+
                 Timeline timeline = new Timeline(
                         new KeyFrame(Duration.ZERO, new KeyValue(marker.getCircle().radiusProperty(), markerRadius * 0.1)),
-                        new KeyFrame(Duration.seconds(1), new KeyValue(marker.getCircle().radiusProperty(), markerRadius, Interpolator.LINEAR))
+                        new KeyFrame(Duration.seconds(0.5), new KeyValue(marker.getCircle().radiusProperty(), markerRadius, Interpolator.LINEAR))
                 );
                 timeline.play();
             }
         });
+    }
+
+    /**
+     * Plays a short animation to shrink the marker and then remove it
+     * @param marker The marker to remove
+     * @param mapPane The Pane containing the map
+     */
+    public void destroyMarker(Marker marker, Pane mapPane) {
+        double markerRadius = marker.getCircle().getRadius();
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.ZERO, new KeyValue(marker.getCircle().radiusProperty(), markerRadius)),
+                new KeyFrame(Duration.seconds(0.5), new KeyValue(marker.getCircle().radiusProperty(), 0, Interpolator.EASE_OUT))
+        );
+
+        timeline.setOnFinished(event -> {
+            Platform.runLater(() -> {
+                mapPane.getChildren().remove(marker.getCircle());
+                markers.remove(marker);
+            });
+        });
+
+        timeline.play();
     }
 
 
