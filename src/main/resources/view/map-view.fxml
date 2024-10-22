@@ -3,7 +3,7 @@
 <?import javafx.scene.layout.Pane?>
 <Pane fx:id="mapPane" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="ryhma5.controller.MapController"
-      style="-fx-background-color: #2e94eb;"
+      style="-fx-background-color: #603e8e;"
       minWidth="0.0" minHeight="0.0"
       maxWidth="1.7976931348623157E308" maxHeight="1.7976931348623157E308">
 </Pane>

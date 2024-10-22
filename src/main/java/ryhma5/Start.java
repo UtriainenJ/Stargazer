@@ -22,25 +22,6 @@ public class Start extends Application {
         stage.setMinWidth(800);
         stage.setMinHeight(400);
 
-        // Add a listener to enforce the 2:1 aspect ratio
-        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
-            if (!adjusting) {
-                adjusting = true;
-                double newWidth = newVal.doubleValue();
-                stage.setHeight(newWidth / 2);
-                adjusting = false;
-            }
-        });
-
-        stage.heightProperty().addListener((obs, oldVal, newVal) -> {
-            if (!adjusting) {
-                adjusting = true;
-                double newHeight = newVal.doubleValue();
-                stage.setWidth(newHeight * 2);
-                adjusting = false;
-            }
-        });
-
 
         stage.setTitle("Ryhmä 5");
         stage.setScene(scene);

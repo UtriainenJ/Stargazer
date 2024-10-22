@@ -1,8 +1,13 @@
 package ryhma5.model;
 
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +69,12 @@ public class SVGMap {
 
                 // Add the marker to the mapPane
                 mapPane.getChildren().add(marker.getCircle());
+
+                Timeline timeline = new Timeline(
+                        new KeyFrame(Duration.ZERO, new KeyValue(marker.getCircle().radiusProperty(), markerRadius * 0.1)),
+                        new KeyFrame(Duration.seconds(1), new KeyValue(marker.getCircle().radiusProperty(), markerRadius, Interpolator.LINEAR))
+                );
+                timeline.play();
             }
         });
     }
@@ -90,10 +101,6 @@ public class SVGMap {
             marker.getCircle().setRadius(newRadius);
         }
     }
-
-
-
-
 
     public double[] getLatLongFromXY(double x, double y, double imageWidth, double imageHeight) {
         // Delegate to the projector (use pixel coordinates and map dimensions to get lat/long)
