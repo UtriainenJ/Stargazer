@@ -135,7 +135,7 @@ public class AstronomyViewModel {
         }
     }
 
-    public String getStarChart(double latitude, double longitude, String date, String constellationId) {
+    public String getConstellationStarChart(double latitude, double longitude, String date, String constellationId) {
         try {
             return AstronomyAPI.generateConstellationStarChart(latitude, longitude, date, constellationId);
         } catch (Exception e) {
@@ -143,5 +143,15 @@ public class AstronomyViewModel {
             return null;
         }
     }
+
+    public String getAreaStarChart(double latitude, double longitude, String date, Double rightAscension, Double declination, Integer zoom) {
+        try {
+            return AstronomyAPI.generateAreaStarChart(latitude, longitude, date, rightAscension, declination, zoom);
+        } catch (Exception e) {
+            System.err.println("Error generating area star chart: " + e.getMessage());
+            return null;
+        }
+    }
+
 
 }

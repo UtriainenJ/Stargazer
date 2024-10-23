@@ -27,10 +27,8 @@
                                                          String toDate,
                                                          String time) throws Exception {
 
-            // Construct the API URL without parameters
             String apiUrl = String.format("https://api.astronomyapi.com/api/v2/bodies/events/%s", body);
 
-            // Base64 encode the APPLICATIONID:APPLICATIONSECRET for Basic Auth
             String auth = APPLICATIONID + ":" + APPLICATIONSECRET;
             String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
 
@@ -69,22 +67,13 @@
         }
 
         private static AstronomyEvent parseAstronomyEvent(String jsonResponse) {
-
-            // System.out.println("API Response: " + jsonResponse);
-
             Gson gson = new Gson();
-
-            // Parse the entire JSON response into an AstronomyEvent object
             AstronomyEvent response = gson.fromJson(jsonResponse, AstronomyEvent.class);
 
-            // Check if response and data are not null
             if (response != null && response.getData() != null) {
-                // Now we have the data filled in the response
-                return response; // Return the filled AstronomyEvent instance
+                return response;
             }
-
-            // Handle the case where response is null or data is missing
-            return null; // Or throw an exception as appropriate
+            return null;
         }
 
 
@@ -99,10 +88,8 @@
             String auth = APPLICATIONID + ":" + APPLICATIONSECRET;
             String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
 
-            // Construct the API URL for fetching the position of a singular body
             String apiUrl = String.format("https://api.astronomyapi.com/api/v2/bodies/positions/%s", body);
 
-            // Construct the full URL with the query parameters
             URL url = new URL(apiUrl + String.format(
                     "?latitude=%s&longitude=%s&elevation=%s&from_date=%s&to_date=%s&time=%s&output=%s",
                     URLEncoder.encode(latitude, "UTF-8"),
@@ -130,7 +117,6 @@
                 }
                 in.close();
 
-                // Parse the response and return the result
                 return parseAstronomyBody(response.toString());
             } else {
                 String errorMessage = String.format("Failed to retrieve data: HTTP response code %d", responseCode);
@@ -141,21 +127,15 @@
 
         // Parsing function for the singular body position
         private static AstronomyBody parseAstronomyBody(String jsonResponse) {
-            // System.out.println("API Response: " + jsonResponse);
-
             Gson gson = new Gson();
 
-            // Parse the JSON response into an AstronomyBody object
             AstronomyBody response = gson.fromJson(jsonResponse, AstronomyBody.class);
 
-            // Check if response and data are not null
             if (response != null && response.getData() != null) {
-                // Return the parsed data as an AstronomyBody object
                 return response;
             }
 
-            // Handle the case where response is null or data is missing
-            return null; // Or throw an exception as appropriate
+            return null;
         }
 
         public static AstronomyBody fetchAllBodies(String latitude,
@@ -166,14 +146,12 @@
                                                          String time) throws Exception {
 
 
-            // Combine application ID and secret for authorization
+
             String auth = APPLICATIONID + ":" + APPLICATIONSECRET;
             String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
 
-            // Construct the API URL for fetching the positions of all bodies
             String apiUrl = "https://api.astronomyapi.com/api/v2/bodies/positions";
 
-            // Construct the full URL with query parameters
             URL url = new URL(apiUrl + String.format(
                     "?latitude=%s&longitude=%s&elevation=%s&from_date=%s&to_date=%s&time=%s&output=%s",
                     URLEncoder.encode(latitude, "UTF-8"),
@@ -202,8 +180,6 @@
                 }
                 in.close();
 
-
-                // Parse the response and return the list of bodies
                 return parseAstronomyBody(response.toString());
 
             } else {
@@ -218,15 +194,13 @@
             String auth = APPLICATIONID + ":" + APPLICATIONSECRET;
             String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
 
-            // Construct the API URL for generating the star chart
             String apiUrl = "https://api.astronomyapi.com/api/v2/studio/star-chart";
 
-            // Create the request body as a JSON string for constellation view
             String requestBody = String.format(Locale.US,
                     "{ \"style\": \"default\", " +
                             "\"observer\": { " +
-                            "\"latitude\": %.6f, " +  // Correct formatting with decimal
-                            "\"longitude\": %.6f, " + // Correct formatting with decimal
+                            "\"latitude\": %.6f, " +
+                            "\"longitude\": %.6f, " +
                             "\"date\": \"%s\" " +
                             "}, " +
                             "\"view\": { " +
@@ -238,10 +212,6 @@
                             "}",
                     latitude, longitude, date, constellationId
             );
-
-            // Print the API URL and the request body for debugging
-            System.out.println("API URL: " + apiUrl);
-            System.out.println("Request Body: " + requestBody);
 
             // Open the connection
             URL url = new URL(apiUrl);
@@ -269,7 +239,6 @@
                 }
                 in.close();
 
-                // Parse the JSON response and extract the imageUrl
                 return parseStarChartResponse(response.toString());
             } else {
                 String errorMessage = String.format("Failed to generate star chart: HTTP response code %d", responseCode);
@@ -282,9 +251,70 @@
 
         // Parsing function to extract the imageUrl from the response
         private static String parseStarChartResponse(String jsonResponse) {
-            // Use Gson to parse the JSON response
             JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
             return jsonObject.getAsJsonObject("data").get("imageUrl").getAsString();
+        }
+
+        public static String generateAreaStarChart(double latitude, double longitude, String date, double rightAscension, double declination, Integer zoom) throws Exception {
+            String auth = APPLICATIONID + ":" + APPLICATIONSECRET;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+
+            String apiUrl = "https://api.astronomyapi.com/api/v2/studio/star-chart";
+
+            String requestBody = String.format(Locale.US,
+                    "{ " +
+                            "\"observer\": { " +
+                            "\"latitude\": %.6f, " +
+                            "\"longitude\": %.6f, " +
+                            "\"date\": \"%s\" " +
+                            "}, " +
+                            "\"view\": { " +
+                            "\"type\": \"area\", " +
+                            "\"parameters\": { " +
+                            "\"position\": { " +
+                            "\"equatorial\": { " +
+                            "\"rightAscension\": %.2f, " +
+                            "\"declination\": %.2f " +
+                            "} " +
+                            "}, " +
+                            "\"zoom\": %s " +
+                            "} " +
+                            "} " +
+                            "}",
+                    latitude, longitude, date, rightAscension, declination, zoom
+            );
+
+            // Set up the connection
+            HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Authorization", "Basic " + encodedAuth);
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            // Send the request
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = requestBody.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            // Get the response code
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) { // success
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String inputLine;
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                return parseStarChartResponse(response.toString());
+            } else {
+                String errorMessage = String.format("Failed to generate star chart: HTTP response code %d", responseCode);
+                System.err.println(errorMessage);
+                throw new Exception(errorMessage);
+            }
         }
 
     }
