@@ -1,6 +1,6 @@
 package ryhma5.model;
 
-public class ISSInfo {
+public class ISSResponse {
     private String name;
     private int id;
     private double latitude;

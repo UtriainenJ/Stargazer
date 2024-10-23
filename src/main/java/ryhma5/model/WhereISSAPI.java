@@ -12,7 +12,7 @@ public class WhereISSAPI{
 
     // id for the ISS - the only id the API supports
     private static final String id = Integer.toString(25544);
-    public static ISSInfo fetchISS(String units, Long timestamp) throws Exception {
+    public static ISSResponse fetchISS(String units, Long timestamp) throws Exception {
         // Construct the API URL
         StringBuilder apiUrl = new StringBuilder("https://api.wheretheiss.at/v1/satellites/" + id);
 
@@ -54,9 +54,9 @@ public class WhereISSAPI{
             throw new Exception(errorMessage);
         }
     }
-    private static ISSInfo parseISS(String jsonResponse) {
+    private static ISSResponse parseISS(String jsonResponse) {
         // Use Gson to parse the JSON response
         Gson gson = new Gson();
-        return gson.fromJson(jsonResponse, ISSInfo.class);
+        return gson.fromJson(jsonResponse, ISSResponse.class);
     }
 }

@@ -1,10 +1,10 @@
 package ryhma5.viewmodel;
 
-import ryhma5.model.ISSInfo;
+import ryhma5.model.ISSResponse;
 import ryhma5.model.WhereISSAPI;
 
 public class WhereISSViewModel {
-    public ISSInfo getISS(String units, Long timestamp) {
+    public ISSResponse getISS(String units, Long timestamp) {
         try {
             return WhereISSAPI.fetchISS(units, timestamp);
         } catch (Exception e) {
