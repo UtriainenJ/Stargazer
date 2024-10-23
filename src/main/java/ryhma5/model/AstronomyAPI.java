@@ -2,10 +2,12 @@
 
     import java.io.BufferedReader;
     import java.io.InputStreamReader;
+    import java.io.OutputStream;
     import java.net.HttpURLConnection;
     import java.net.URL;
     import java.net.URLEncoder;
     import java.util.Base64;
+    import java.util.Locale;
 
     import com.google.gson.*;
 
@@ -212,5 +214,77 @@
 
         }
 
+        public static String generateConstellationStarChart(double latitude, double longitude, String date, String constellationId) throws Exception {
+            String auth = APPLICATIONID + ":" + APPLICATIONSECRET;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+
+            // Construct the API URL for generating the star chart
+            String apiUrl = "https://api.astronomyapi.com/api/v2/studio/star-chart";
+
+            // Create the request body as a JSON string for constellation view
+            String requestBody = String.format(Locale.US,
+                    "{ \"style\": \"default\", " +
+                            "\"observer\": { " +
+                            "\"latitude\": %.6f, " +  // Correct formatting with decimal
+                            "\"longitude\": %.6f, " + // Correct formatting with decimal
+                            "\"date\": \"%s\" " +
+                            "}, " +
+                            "\"view\": { " +
+                            "\"type\": \"constellation\", " +
+                            "\"parameters\": { " +
+                            "\"constellation\": \"%s\" " +
+                            "} " +
+                            "} " +
+                            "}",
+                    latitude, longitude, date, constellationId
+            );
+
+            // Print the API URL and the request body for debugging
+            System.out.println("API URL: " + apiUrl);
+            System.out.println("Request Body: " + requestBody);
+
+            // Open the connection
+            URL url = new URL(apiUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Authorization", "Basic " + encodedAuth);
+            connection.setRequestProperty("Content-Type", "application/json; utf-8");
+            connection.setDoOutput(true);
+
+            // Write the request body
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = requestBody.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            // Get the response code
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) { // Success
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                // Parse the JSON response and extract the imageUrl
+                return parseStarChartResponse(response.toString());
+            } else {
+                String errorMessage = String.format("Failed to generate star chart: HTTP response code %d", responseCode);
+                System.err.println(errorMessage);
+                throw new Exception(errorMessage);
+            }
+        }
+
+
+
+        // Parsing function to extract the imageUrl from the response
+        private static String parseStarChartResponse(String jsonResponse) {
+            // Use Gson to parse the JSON response
+            JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+            return jsonObject.getAsJsonObject("data").get("imageUrl").getAsString();
+        }
 
     }

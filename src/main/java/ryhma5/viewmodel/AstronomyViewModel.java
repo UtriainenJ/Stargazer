@@ -2,12 +2,7 @@ package ryhma5.viewmodel;
 
 import ryhma5.model.*;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 public class AstronomyViewModel {
@@ -136,7 +131,16 @@ public class AstronomyViewModel {
             return newBody;
         } catch (Exception e) {
             e.printStackTrace();
-            return null; // Handle API or parsing errors
+            return null;
+        }
+    }
+
+    public String getStarChart(double latitude, double longitude, String date, String constellationId) {
+        try {
+            return AstronomyAPI.generateConstellationStarChart(latitude, longitude, date, constellationId);
+        } catch (Exception e) {
+            System.err.println("Error generating star chart: " + e.getMessage());
+            return null;
         }
     }
 
