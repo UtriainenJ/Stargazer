@@ -11,12 +11,11 @@ public enum Projections {
 
     private final String mapFilePath;
 
-    // Constructor to initialize the map file path
+    // Constructor to initialize the map file path. some java boilerplate idk
     Projections(String mapFilePath) {
         this.mapFilePath = mapFilePath;
     }
 
-    // Method to get the file path for the projection
     public String getMapFilePath() {
         return mapFilePath;
     }

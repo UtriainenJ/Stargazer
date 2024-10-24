@@ -15,9 +15,9 @@ public class Marker {
 
     private static final String ICON_PATH = "/icons/mariostar_stillnoeyes.gif";
     private static final String SELECTED_ICON_PATH = "/icons/slowerstar.gif";
-    private static Image iconImage = null; // Static field to hold the icon image
+    private static Image iconImage = null;
     private static Image selectedIconImage = null;
-    private static boolean iconLoadAttempted = false; // Track if the load was attempted
+    private static boolean iconLoadAttempted = false;
 
     static {
         // Try to load the icon once
@@ -46,16 +46,15 @@ public class Marker {
 
 
     public Marker(double relativeX, double relativeY, double radius) {
-        this.circle = createStyledCircle(radius);
+        this.circle = createStyledMarkerCircle(radius);
         this.relativeX = relativeX;
         this.relativeY = relativeY;
     }
 
-    private Circle createStyledCircle(double radius) {
+    private Circle createStyledMarkerCircle(double radius) {
 
-        Circle circle = new Circle(radius); // Set the initial radius
+        Circle circle = new Circle(radius);
 
-        // Use the loaded icon if available, otherwise use red as fallback
         if (iconImage != null) {
             circle.setFill(new ImagePattern(iconImage));
         } else {

@@ -86,6 +86,11 @@ public class SVGMap {
     }
 
 
+    /**
+     * Selects a marker and deselects any other selected markers. if the marker is already selected, it will be destroyed
+     * @param marker The marker to select
+     * @param mapPane The Pane containing the map
+     */
     public void selectMarker(Marker marker, Pane mapPane) {
         if (selectedMarker != null && selectedMarker != marker) {
             selectedMarker.deSelectMarker();
