@@ -91,6 +91,12 @@ public class SVGMap {
             selectedMarker.deSelectMarker();
         }
 
+        if (selectedMarker == marker) {
+            destroyMarker(marker, mapPane);
+            selectedMarker = null;
+            return;
+        }
+
         marker.selectMarker();
         selectedMarker = marker;
     }
