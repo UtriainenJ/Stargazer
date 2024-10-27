@@ -4,10 +4,10 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import ryhma5.controller.AstronomyController;
+import ryhma5.controller.WhereISSController;
 import ryhma5.model.*;
-import ryhma5.viewmodel.AstronomyViewModel;
 import ryhma5.viewmodel.SVGMap;
-import ryhma5.viewmodel.WhereISSViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,9 +65,11 @@ public class MapController {
         System.out.println("Latitude: " + latLong[0] + ", Longitude: " + latLong[1]);
 
 
-        /*
+
         System.out.println("---------------------------- API TEST ------------------------------------");
-        AstronomyViewModel avm = new AstronomyViewModel();
+        System.out.println("wwwwwwwwwwwwwwwwwwwwwwwwwww    EVENTS    wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
+
+        AstronomyController avm = new AstronomyController();
         AstronomyEvent testEvent = avm.getAstronomyEvent(
                 "sun", Double.toString(latLong[0]), Double.toString(latLong[1]), "10",
                 "2024-10-07","2024-10-08", "12:00:00");
@@ -91,20 +93,18 @@ public class MapController {
         System.out.println("Body (" + bodyIndexToTestFor + ") from getAllBodies: "
                 + testBody2.getData().getRows().get(bodyIndexToTestFor).getBody().getName());
 
-        //String constellationChartURL = avm.getConstellationStarChart(latLong[0], latLong[1],
-        //        "2024-10-07", "ori");
-        String areaChartURL = avm.getAreaStarChart(latLong[0], latLong[1], "2024-10-07",
-                14.83, -15.23, 3);
+        //String constellationChartURL = avm.getConstellationStarChart(latLong[0], latLong[1],"2024-10-07", "ori");
         //System.out.println(constellationChartURL);
+        String areaChartURL = avm.getAreaStarChart(latLong[0], latLong[1], "2024-10-07", 14.83, -15.23, 9);
         System.out.println(areaChartURL);
 
 
-        System.out.println("ooooooooooooooooooooooooooooooo  ISS oooooooooooooooooooooooooooooooooooooo");
+        System.out.println("ooooooooooooooooooooooooooo     ISS    ooooooooooooooooooooooooooooooooooo");
 
-        WhereISSViewModel issVM = new WhereISSViewModel();
+        WhereISSController issVM = new WhereISSController();
 
-        ISSResponse issTest = issVM.getISS("kilometers", 1364069476L);
-        System.out.println("ISS velocity at timestamp 1713240000: " + issTest.getVelocity());
+        ISSResponse issTest = issVM.getISS("kilometers", WhereISSAPI.dateToTimestamp("2024-10-07"));
+        System.out.println("ISS velocity at 2024-10-7: " + issTest.getVelocity());
 
         ArrayList<Long> issTestDates = new ArrayList<>();
         issTestDates.add(WhereISSAPI.dateToTimestamp("2024-10-07"));
@@ -113,7 +113,7 @@ public class MapController {
         System.out.println("ISS altitude from get positions list: " + issTestsList.get(1).getAltitude());
         System.out.println("---------------------------------------------------------------------------");
         
-         */
+
         
 
     }
