@@ -6,6 +6,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import ryhma5.model.Projections;
 import ryhma5.model.SVGMap;
+import ryhma5.controller.AstronomyController;
+import ryhma5.controller.WhereISSController;
+import ryhma5.model.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapController {
 
@@ -58,6 +64,59 @@ public class MapController {
 
         // Print the real-world coordinates
         System.out.println("Latitude: " + latLong[0] + ", Longitude: " + latLong[1]);
+
+
+
+        System.out.println("---------------------------- API TEST ------------------------------------");
+        System.out.println("wwwwwwwwwwwwwwwwwwwwwwwwwww    EVENTS    wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
+
+        AstronomyController avm = new AstronomyController();
+        AstronomyEvent testEvent = avm.getAstronomyEvent(
+                "sun", Double.toString(latLong[0]), Double.toString(latLong[1]), "10",
+                "2024-10-07","2024-10-08", "12:00:00");
+
+        System.out.println("Obsever lon: " + testEvent.getData().getObserver().getLocation().getLatitude());
+        System.out.println("Observer lat: " + testEvent.getData().getObserver().getLocation().getLongitude());
+        System.out.println("Test event type: " + testEvent.getData().getTable().getRows().get(0).getCells()[0].getType());
+
+        System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx       BODIES       xxxxxxxxxxxxxxxxxxxxxxxxxx");
+        String bodyIdToTestFor = "saturn";
+        AstronomyBody testBody = avm.getAstronomyBody(
+                bodyIdToTestFor, Double.toString(latLong[0]), Double.toString(latLong[1]), "10",
+                "2024-10-07","2024-10-08", "12:00:00");
+        System.out.println("Testing getAstronomyBody - Distance from Earth to " + bodyIdToTestFor + ":"
+                + testBody.getData().getRows().get(0).getPositions().get(0).getDistance().getFromEarth().getKm());
+
+        AstronomyBody testBody2 = avm.getAllAstronomyBodies(Double.toString(latLong[0]), Double.toString(latLong[1]),
+                "10", "2024-10-07","2024-10-08", "12:00:00");
+
+        int bodyIndexToTestFor = 4;
+        System.out.println("Body (" + bodyIndexToTestFor + ") from getAllBodies: "
+                + testBody2.getData().getRows().get(bodyIndexToTestFor).getBody().getName());
+
+        //String constellationChartURL = avm.getConstellationStarChart(latLong[0], latLong[1],"2024-10-07", "ori");
+        //System.out.println(constellationChartURL);
+        String areaChartURL = avm.getAreaStarChart(latLong[0], latLong[1], "2024-10-07", 14.83, -15.23, 9);
+        System.out.println(areaChartURL);
+
+
+        System.out.println("ooooooooooooooooooooooooooo     ISS    ooooooooooooooooooooooooooooooooooo");
+
+        WhereISSController issVM = new WhereISSController();
+
+        ISSResponse issTest = issVM.getISS("kilometers", WhereISSAPI.dateToTimestamp("2024-10-07"));
+        System.out.println("ISS velocity at 2024-10-7: " + issTest.getVelocity());
+
+        ArrayList<Long> issTestDates = new ArrayList<>();
+        issTestDates.add(WhereISSAPI.dateToTimestamp("2024-10-07"));
+        issTestDates.add(WhereISSAPI.dateToTimestamp("2024-10-08"));
+        List<ISSResponse> issTestsList = issVM.getISSPositions(issTestDates, "kilometers");
+        System.out.println("ISS altitude from get positions list: " + issTestsList.get(1).getAltitude());
+        System.out.println("---------------------------------------------------------------------------");
+        
+
+        
+
     }
 
 
