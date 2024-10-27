@@ -115,6 +115,26 @@ public class AstronomyViewModel {
                                                      String toDate,
                                                      String time) {
 
+        for (AstronomyBody cachedBody : bodies) {
+            AstronomyBody.Data data = cachedBody.getData();
+
+            if (data != null &&
+                    Double.compare(data.getObserver().getLocation().getLatitude(), Double.parseDouble(latitude)) == 0 &&
+                    Double.compare(data.getObserver().getLocation().getLongitude(), Double.parseDouble(longitude)) == 0 &&
+                    data.getObserver().getLocation().getElevation() == Integer.parseInt(elevation) &&
+                    data.getDates().getFrom().startsWith(fromDate) &&
+                    data.getDates().getTo().startsWith(toDate) &&
+                    !data.getRows().isEmpty()  &&
+                    data.getRows().size() == 11) // 11 bodies = all bodies
+            {
+
+
+                // Matching body information found, return it
+                return cachedBody;
+            }
+        }
+
+
 
         // Fetch new body information if not cached
         try {
