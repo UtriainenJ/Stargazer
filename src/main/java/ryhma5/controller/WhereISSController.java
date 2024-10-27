@@ -1,11 +1,11 @@
-package ryhma5.viewmodel;
+package ryhma5.controller;
 
 import ryhma5.model.ISSResponse;
 import ryhma5.model.WhereISSAPI;
 
 import java.util.List;
 
-public class WhereISSViewModel {
+public class WhereISSController {
     public ISSResponse getISS(String units, Long timestamp) {
         try {
             return WhereISSAPI.fetchISS(units, timestamp);

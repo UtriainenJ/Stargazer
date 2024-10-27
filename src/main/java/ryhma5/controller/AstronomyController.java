@@ -1,16 +1,16 @@
-package ryhma5.viewmodel;
+package ryhma5.controller;
 
 import ryhma5.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AstronomyViewModel {
+public class AstronomyController {
 
     private List<AstronomyEvent> events;
     private List<AstronomyBody> bodies;
 
-    public AstronomyViewModel(){
+    public AstronomyController(){
         events = new ArrayList<>();
         bodies = new ArrayList<>();
     }
