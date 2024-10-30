@@ -3,16 +3,18 @@ package ryhma5.model;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.GsonBuilder;
-import java.io.FileWriter;
-import java.io.FileReader;
-import java.io.IOException;
+
+import java.io.*;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DataManager{
 
-    private String directoryPath = "src/main/resources/savedUserPreferencesData/";
+    private String directoryPath = "src/main/resources/json/";
 
     public void saveData(Map<String, Object> data, String fileName){
         String filePath = directoryPath + fileName +".json";
@@ -26,6 +28,11 @@ public class DataManager{
         }
     }
 
+    /***
+     * TODO: rename this? it doesnt work for all types of data
+     * @param fileName
+     * @return
+     */
     public Map<String, Object> loadData(String fileName){
         String filePath = directoryPath + fileName +".json";
         Map<String, Object> data = new HashMap<>();
@@ -39,5 +46,20 @@ public class DataManager{
         }
 
         return data;
+    }
+
+    public List<City> loadCityList(String fileName) {
+        String filePath = directoryPath + fileName + ".json";
+        List<City> cityList = new ArrayList<>();
+        Gson gson = new Gson();
+
+        try (InputStreamReader reader = new InputStreamReader(new FileInputStream(filePath), StandardCharsets.UTF_8)) {            Type listType = new TypeToken<List<City>>() {}.getType();
+            cityList = gson.fromJson(reader, listType);
+            System.out.println("Cities loaded from " + filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return cityList;
     }
 }

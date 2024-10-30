@@ -38,6 +38,13 @@ public class SVGMap {
         return mapImageView;
     }
 
+    public void addMarkerByCoordinates(double latitude, double longitude, ImageView mapImageView, Pane mapPane) {
+        double imageWidth = mapImageView.getBoundsInParent().getWidth();
+        double imageHeight = mapImageView.getBoundsInParent().getHeight();
+
+        double[] xy = projector.latLongToXY(latitude, longitude, imageWidth, imageHeight);
+        addMarker(xy[0], xy[1], mapImageView, mapPane);
+    }
 
     public void addMarker(double x, double y, ImageView mapImageView, Pane mapPane) {
         Platform.runLater(() -> {

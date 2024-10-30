@@ -1,9 +1,10 @@
 module ryhma5 {
 
+    requires javafx.controls;
+    requires javafx.fxml;
     requires org.controlsfx.controls;
     requires com.google.gson;
     opens ryhma5.model to com.google.gson;
-    requires javafx.fxml;
     requires batik.all;
     requires proj4j;
     requires javafx.swing;
