@@ -6,7 +6,7 @@ package ryhma5.model;
  * projection to convert between geographic coordinates and pixel coordinates.
  * Equirectunglar projection: simple 2:1 map with no stretching or distortion.
  */
-public class EquirectangularProjector implements Projector {
+public class EquirectangularProjector implements IProjector {
 
     private static final double MAX_LONGITUDE = 180.0;
     private static final double MAX_LATITUDE = 90.0;

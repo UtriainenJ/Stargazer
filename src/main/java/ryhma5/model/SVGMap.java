@@ -15,7 +15,7 @@ import java.util.List;
 public class SVGMap {
 
     private final SVGLoader svgLoader;
-    private Projector projector;
+    private IProjector projector;
     private final List<Marker> markers = new ArrayList<>();
     private Marker selectedMarker = null;
 
