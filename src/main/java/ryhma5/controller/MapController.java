@@ -1,5 +1,6 @@
 package ryhma5.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
 import javafx.scene.image.ImageView;
@@ -12,6 +13,7 @@ import ryhma5.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class MapController {
 
@@ -44,36 +46,35 @@ public class MapController {
         mapPane.heightProperty().addListener((obs, oldVal, newVal) -> svgMap.updateMarkers(mapImageView));
     }
 
-    // Handle click events to place markers
     private void handleMapClick(MouseEvent event) {
         double x = event.getX();
         double y = event.getY();
 
-        // Print the clicked pixel coordinates
         System.out.println("Clicked X: " + x + ", Y: " + y);
 
-        // Delegate marker creation to SVGMap
         svgMap.addMarker(x, y, mapImageView, mapPane);
 
-        // Get the dimensions of the image
         double imageWidth = mapImageView.getBoundsInParent().getWidth();
         double imageHeight = mapImageView.getBoundsInParent().getHeight();
 
-        // Convert pixel coordinates to latitude/longitude using the projector
         double[] latLong = svgMap.getLatLongFromXY(x, y, imageWidth, imageHeight);
 
-        // Print the real-world coordinates
         System.out.println("Latitude: " + latLong[0] + ", Longitude: " + latLong[1]);
 
+        // Call sendAPIRequests asynchronously, little like promise await in javascript.
+        CompletableFuture.runAsync(() -> sendAPIRequests(latLong[0], latLong[1]));
 
+    }
+
+    private void sendAPIRequests(double x, double y) {
 
         System.out.println("---------------------------- API TEST ------------------------------------");
         System.out.println("wwwwwwwwwwwwwwwwwwwwwwwwwww    EVENTS    wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
 
         AstronomyController avm = new AstronomyController();
         AstronomyEvent testEvent = avm.getAstronomyEvent(
-                "sun", Double.toString(latLong[0]), Double.toString(latLong[1]), "10",
-                "2024-10-07","2024-10-08", "12:00:00");
+                "sun", Double.toString(x), Double.toString(y), "10",
+                "2024-10-07", "2024-10-08", "12:00:00");
 
         System.out.println("Obsever lon: " + testEvent.getData().getObserver().getLocation().getLatitude());
         System.out.println("Observer lat: " + testEvent.getData().getObserver().getLocation().getLongitude());
@@ -82,13 +83,13 @@ public class MapController {
         System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx       BODIES       xxxxxxxxxxxxxxxxxxxxxxxxxx");
         String bodyIdToTestFor = "saturn";
         AstronomyBody testBody = avm.getAstronomyBody(
-                bodyIdToTestFor, Double.toString(latLong[0]), Double.toString(latLong[1]), "10",
-                "2024-10-07","2024-10-08", "12:00:00");
+                bodyIdToTestFor, Double.toString(x), Double.toString(y), "10",
+                "2024-10-07", "2024-10-08", "12:00:00");
         System.out.println("Testing getAstronomyBody - Distance from Earth to " + bodyIdToTestFor + ":"
                 + testBody.getData().getRows().get(0).getPositions().get(0).getDistance().getFromEarth().getKm());
 
-        AstronomyBody testBody2 = avm.getAllAstronomyBodies(Double.toString(latLong[0]), Double.toString(latLong[1]),
-                "10", "2024-10-07","2024-10-08", "12:00:00");
+        AstronomyBody testBody2 = avm.getAllAstronomyBodies(Double.toString(x), Double.toString(y),
+                "10", "2024-10-07", "2024-10-08", "12:00:00");
 
         int bodyIndexToTestFor = 4;
         System.out.println("Body (" + bodyIndexToTestFor + ") from getAllBodies: "
@@ -96,7 +97,7 @@ public class MapController {
 
         //String constellationChartURL = avm.getConstellationStarChart(latLong[0], latLong[1],"2024-10-07", "ori");
         //System.out.println(constellationChartURL);
-        String areaChartURL = avm.getAreaStarChart(latLong[0], latLong[1], "2024-10-07", 14.83, -15.23, 9);
+        String areaChartURL = avm.getAreaStarChart(x, y, "2024-10-07", 14.83, -15.23, 9);
         System.out.println(areaChartURL);
 
 
@@ -113,11 +114,6 @@ public class MapController {
         List<ISSResponse> issTestsList = issVM.getISSPositions(issTestDates, "kilometers");
         System.out.println("ISS altitude from get positions list: " + issTestsList.get(1).getAltitude());
         System.out.println("---------------------------------------------------------------------------");
-        
-
-        
-
     }
-
 
 }
