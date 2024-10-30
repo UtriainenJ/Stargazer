@@ -23,6 +23,8 @@ Open IntelliJ IDEA and click on the main menu in the top left corner.
 Hover over "File," then select "Open" from the dropdown menu (second option).
 In the "Open File or Project" window, select the cloned project and click "OK."
 
+3. The dependencies of of this project are managed with Maven. In IntelliJ GUI they can be installed by right clicking pom.xml and selecting "Add as Maven Project" or "reload project" if the project is already open.
+
 3. Run Stargazer:
 Navigate the project folder structure in IntelliJ IDEA and open Start.java.
 You can find this file by going to ryhma-5 -> src -> main -> java -> ryhma5.
