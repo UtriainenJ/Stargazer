@@ -21,25 +21,11 @@ public class SVGMap {
 
     private double markerRelativeSize = 0.03;
 
-    public SVGMap(String svgFilePath, Projections projection) {
+    protected SVGMap(String svgFilePath, IProjector projection) {
         this.svgLoader = new SVGLoader(svgFilePath);
-        setProjection(projection);  // Set the initial projection
+        this.projector = projection;
     }
 
-    // Set the projection type
-    public void setProjection(Projections projection) {
-        switch (projection) {
-            case ROBINSON:
-                projector = new RobinsonProjector();  // Use Robinson projection
-                break;
-            // Future case for Mercator (when it's implemented)
-            case EQUIRECTANGULAR:
-                projector = new EquirectangularProjector();
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported projection type");
-        }
-    }
 
     // Load the map image and bind its size to the Pane
     public ImageView loadMap(Pane mapPane) {
@@ -60,6 +46,12 @@ public class SVGMap {
 
             double markerRadius = markerRelativeSize * Math.min(imageWidth, imageHeight);
             if (imageWidth > 0 && imageHeight > 0) {
+                // delete oldest marker if more than 3 exist (number subject to change)
+                if (markers.size() >= 3) {
+                    Marker oldestMarker = markers.remove(0);
+                    destroyMarker(oldestMarker, mapPane);
+                }
+
                 // Calculate the relative position of the marker and set size immediately
                 Marker marker = new Marker(x / imageWidth, y / imageHeight, markerRadius);
                 markers.add(marker);

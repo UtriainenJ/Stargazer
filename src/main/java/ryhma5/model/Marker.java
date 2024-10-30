@@ -5,45 +5,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 
-import java.io.InputStream;
-
 public class Marker {
     private final Circle circle;
     private final double relativeX;
     private final double relativeY;
     private boolean isSelected = false;
-
-    private static final String ICON_PATH = "/icons/mariostar_stillnoeyes.gif";
-    private static final String SELECTED_ICON_PATH = "/icons/slowerstar.gif";
-    private static Image iconImage = null;
-    private static Image selectedIconImage = null;
-    private static boolean iconLoadAttempted = false;
-
-    static {
-        // Try to load the icon once
-        tryLoadIcons();
-    }
-
-    private static void tryLoadIcons() {
-        if (!iconLoadAttempted) {
-            InputStream iconStream = Marker.class.getResourceAsStream(ICON_PATH);
-            InputStream selectedIconStream = Marker.class.getResourceAsStream(SELECTED_ICON_PATH);
-
-            if (iconStream != null) {
-                iconImage = new Image(iconStream);
-            }
-            if (selectedIconStream != null) {
-                selectedIconImage = new Image(selectedIconStream);
-            }
-
-            if (iconImage == null || selectedIconImage == null) {
-                System.err.println("Failed to load one or more marker icons");
-            }
-
-            iconLoadAttempted = true;
-        }
-    }
-
 
     public Marker(double relativeX, double relativeY, double radius) {
         this.circle = createStyledMarkerCircle(radius);
@@ -52,8 +18,8 @@ public class Marker {
     }
 
     private Circle createStyledMarkerCircle(double radius) {
-
         Circle circle = new Circle(radius);
+        Image iconImage = MarkerIconFactory.getIconImage();
 
         if (iconImage != null) {
             circle.setFill(new ImagePattern(iconImage));
@@ -66,6 +32,7 @@ public class Marker {
 
     public void selectMarker() {
         if (!isSelected) {
+            Image selectedIconImage = MarkerIconFactory.getSelectedIconImage();
             if (selectedIconImage != null) {
                 circle.setFill(new ImagePattern(selectedIconImage));
             } else {
@@ -77,6 +44,7 @@ public class Marker {
 
     public void deSelectMarker() {
         if (isSelected) {
+            Image iconImage = MarkerIconFactory.getIconImage();
             if (iconImage != null) {
                 circle.setFill(new ImagePattern(iconImage));
             } else {
@@ -85,7 +53,6 @@ public class Marker {
             isSelected = false;
         }
     }
-
 
     public Circle getCircle() {
         return circle;
