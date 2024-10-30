@@ -4,7 +4,7 @@ import javafx.scene.image.Image;
 
 import java.io.InputStream;
 
-public class MarkerIconFactory {
+public class MarkerIconManager {
     private static final String ICON_PATH = "/icons/mariostar_stillnoeyes.gif";
     private static final String SELECTED_ICON_PATH = "/icons/slowerstar.gif";
     private static Image iconImage = null;
@@ -17,8 +17,8 @@ public class MarkerIconFactory {
 
     private static void tryLoadIcons() {
         if (!iconLoadAttempted) {
-            InputStream iconStream = MarkerIconFactory.class.getResourceAsStream(ICON_PATH);
-            InputStream selectedIconStream = MarkerIconFactory.class.getResourceAsStream(SELECTED_ICON_PATH);
+            InputStream iconStream = MarkerIconManager.class.getResourceAsStream(ICON_PATH);
+            InputStream selectedIconStream = MarkerIconManager.class.getResourceAsStream(SELECTED_ICON_PATH);
 
             if (iconStream != null) {
                 iconImage = new Image(iconStream);
