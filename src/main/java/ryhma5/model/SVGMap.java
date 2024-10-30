@@ -42,6 +42,17 @@ public class SVGMap {
         double imageWidth = mapImageView.getBoundsInParent().getWidth();
         double imageHeight = mapImageView.getBoundsInParent().getHeight();
 
+        // check if there exists a marker at the same location, if so select that instead. accurate to some decimals to account for error in conversion
+        for (Marker marker : markers) {
+            double[] latLong = projector.xyToLatLong(marker.getRelativeX(), marker.getRelativeY());
+            if (Math.abs(latLong[0] - latitude) < 0.00001 && Math.abs(latLong[1] - longitude) < 0.00001) {
+                System.out.println("Marker already exists at this location");
+                selectedMarker.deSelectMarker();
+                marker.selectMarker();
+                return;
+            }
+        }
+
         double[] xy = projector.latLongToXY(latitude, longitude, imageWidth, imageHeight);
         addMarker(xy[0], xy[1], mapImageView, mapPane);
     }
@@ -150,9 +161,8 @@ public class SVGMap {
     }
 
     public double[] getLatLongFromXY(double x, double y, double imageWidth, double imageHeight) {
-        // Delegate to the projector (use pixel coordinates and map dimensions to get lat/long)
-        return projector.xyToLatLong(x, y, imageWidth, imageHeight);
+        double relativeX = x / imageWidth;
+        double relativeY = y / imageHeight;
+        return projector.xyToLatLong(relativeX, relativeY);
     }
-
-
 }

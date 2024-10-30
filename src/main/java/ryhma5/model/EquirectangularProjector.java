@@ -19,9 +19,9 @@ public class EquirectangularProjector implements IProjector {
     }
 
     @Override
-    public double[] xyToLatLong(double x, double y, double imageWidth, double imageHeight) {
-        double longitude = (x / imageWidth) * (2 * MAX_LONGITUDE) - MAX_LONGITUDE;
-        double latitude = MAX_LATITUDE - (y / imageHeight) * (2 * MAX_LATITUDE);
+    public double[] xyToLatLong(double x, double y) {
+        double longitude = x * (2 * MAX_LONGITUDE) - MAX_LONGITUDE;
+        double latitude = MAX_LATITUDE - y * (2 * MAX_LATITUDE);
         return new double[]{latitude, longitude};
     }
 }

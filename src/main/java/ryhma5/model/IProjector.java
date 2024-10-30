@@ -20,9 +20,7 @@ public interface IProjector {
      * Converts XY -pixel coordinates to lat-long coordinates.
      * @param x x-coordinate. 0 is the left edge of the image.
      * @param y y-coordinate. 0 is the top edge of the image.
-     * @param imageWidth max x-coordinate of the image
-     * @param imageHeight max y-coordinate of the image
      * @return
      */
-    double[] xyToLatLong(double x, double y, double imageWidth, double imageHeight);
+    double[] xyToLatLong(double x, double y);
 }

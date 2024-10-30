@@ -29,8 +29,6 @@ public final class SVGMapFactory {
         switch (projection) {
             case EQUIRECTANGULAR:
                 return new EquirectangularProjector();
-            case ROBINSON:
-                return new RobinsonProjector();
             default:
                 throw new IllegalArgumentException("Unknown projection type: " + projection);
         }
