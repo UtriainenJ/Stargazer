@@ -124,7 +124,6 @@ public class AstronomyController {
                     data.getObserver().getLocation().getElevation() == Integer.parseInt(elevation) &&
                     data.getDates().getFrom().startsWith(fromDate) &&
                     data.getDates().getTo().startsWith(toDate) &&
-                    !data.getRows().isEmpty()  &&
                     data.getRows().size() == 11) // 11 bodies = all bodies
             {
 
