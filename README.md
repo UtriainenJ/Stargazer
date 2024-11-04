@@ -13,6 +13,13 @@ Stargazer is an app that helps you discover and track celestial events in your a
 
 The project has currently been developed and tested using JetBrains' IntelliJ IDEA development environment. Therefore, the installation and usage instructions are provided with the assumption that IntelliJ IDEA is being used. Installation and usage instructions will be updated as the project progresses. For installation instructions for IntelliJ IDEA, visit the following link: https://www.jetbrains.com/help/idea/installation-guide.html .
 
+The project uses Java 17, JavaFX 23 and Maven 3.9.9. Instructions for installing Java can be found at the following link:https://docs.oracle.com/en/java/javase/17/install/installation-jdk-microsoft-windows-platforms.html. 
+If you cannot install Java 17, Java 22 will also work.
+
+You can find instructions for installing JavaFX at the following link: https://openjfx.io/openjfx-docs//#introduction. If you know what you are doing, you can download JavaFX 23 directly from here: https://gluonhq.com/products/javafx/.
+
+IntelliJ IDEA includes a built-in Maven 3 version, which should be sufficient for most cases. However, if for some reason the built-in Maven is not enough, you can find instructions for installing Maven separately here:https://maven.apache.org/install.html.
+
 1. Clone the repository:
 Select or create folder to clone project with following command.
 
