@@ -21,7 +21,7 @@ nothing uses this file. TODO: delete it if that remains the case
 //    }
 //
 //    public Map<String, Object> loadData(String fileName){
-//        Map<String, Object> data = dataManager.loadData(fileName);
+//        Map<String, Object> data = dataManager.loadDataAsObject(fileName);
 //        if(data != null && !data.isEmpty()){
 //            System.out.println("Data loaded from " + fileName + " file");
 //            return data;

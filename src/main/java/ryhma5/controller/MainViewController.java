@@ -22,7 +22,9 @@ import ryhma5.model.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -54,6 +56,10 @@ public class MainViewController {
 
     private boolean isSidebarVisible = false;
 
+    private  DataManager dataManager;
+
+    private UserPreferences userPreferencesLoadData = null;
+
     // textfield suggestions variables
     private List<City> cityList;
     private ScheduledService<Void> searchService;
@@ -73,7 +79,8 @@ public class MainViewController {
         } else {
             System.out.println("Sidebar is not loaded.");
         }
-
+        dataManager = new DataManager();
+        LoadUserPreferences();
         loadCities();
         intializeContextMenu();
         setDefaultDates();
@@ -192,6 +199,18 @@ public class MainViewController {
             lat = Double.parseDouble(selectedCity.getLat());
             lng = Double.parseDouble(selectedCity.getLng());
             System.out.println("Selected city: " + selectedCity.getName() + " (" + selectedCity.getLat() + ", " + selectedCity.getLng() + ")");
+
+            Map<String, Object> data = new HashMap<>();
+            UserPreferences userPreferences = new UserPreferences(
+                    selectedCity.getName(),
+                    LocalDateConverter.toString(startDate),
+                    LocalDateConverter.toString(endDate),
+                    lat,
+                    lng
+            );
+            data.put("userPreferences", userPreferences);
+            dataManager.saveData(data, "user_preferences");
+
         } else {
             System.out.println("City not found: " + city);
         }
@@ -288,8 +307,7 @@ public class MainViewController {
     // load cities json asynchronously, since it can be large
     private void loadCities() {
         CompletableFuture.supplyAsync(() -> {
-            DataManager dataManager = new DataManager();
-            return dataManager.loadCityList("cities_pruned");
+            return dataManager.loadDataAsList("cities_pruned", City.class);
         }).thenAccept(cityList -> {
             Platform.runLater(() -> {
                 System.out.println("Cities loaded: " + cityList.size());
@@ -339,5 +357,21 @@ public class MainViewController {
         } else {
             System.out.println("handleDatePickEnd: " + endDate);
         }
+    }
+
+    private void LoadUserPreferences() {
+        Map<String, Object> data = dataManager.loadDataAsObject("user_preferences");
+        if(data == null) return;
+
+        Map<String, Object> userPreferencesMap = (Map<String, Object>) data.get("userPreferences");
+        if(userPreferencesMap == null) return;
+
+        userPreferencesLoadData = new UserPreferences(
+                (String) userPreferencesMap.get("cityName"),
+                (String) userPreferencesMap.get("dateStart"),
+                (String) userPreferencesMap.get("dateEnd"),
+                ((Number) userPreferencesMap.get("latitude")).doubleValue(),
+                ((Number) userPreferencesMap.get("longitude")).doubleValue()
+        );
     }
 }
