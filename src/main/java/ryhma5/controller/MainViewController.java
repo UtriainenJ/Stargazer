@@ -135,7 +135,7 @@ public class MainViewController {
         AstronomyBody testBody = avm.getAstronomyBody(
                 bodyIdToTestFor, Double.toString(x), Double.toString(y), "10",
                 "2024-10-07", "2024-10-08", "12:00:00");
-        System.out.println("Testing getAstronomyBody - Distance from Earth to " + bodyIdToTestFor + ":"
+        System.out.println("Testing getAstronomyBody - Distance from Earth to " + bodyIdToTestFor + ": "
                 + testBody.getData().getRows().get(0).getPositions().get(0).getDistance().getFromEarth().getKm());
 
         AstronomyBody testBody2 = avm.getAllAstronomyBodies(Double.toString(x), Double.toString(y),
@@ -150,6 +150,8 @@ public class MainViewController {
         String areaChartURL = avm.getAreaStarChart(x, y, "2024-10-07", 14.83, -15.23, 9);
         System.out.println(areaChartURL);
 
+        String moonPictureURL = avm.getMoonPhaseImage(x,y,"2024-10-07","png");
+        System.out.println(moonPictureURL);
 
         System.out.println("ooooooooooooooooooooooooooo     ISS    ooooooooooooooooooooooooooooooooooo");
 

@@ -172,5 +172,15 @@ public class AstronomyController {
         }
     }
 
+    public String getMoonPhaseImage(double latitude, double longitude, String date, String format) {
+        try {
+            return AstronomyAPI.generateMoonPhaseImage(latitude, longitude, date, format);
+        } catch (Exception e) {
+            System.err.println("Error generating moon phase image: " + e.getMessage());
+            return null;
+        }
+    }
+
+
 
 }

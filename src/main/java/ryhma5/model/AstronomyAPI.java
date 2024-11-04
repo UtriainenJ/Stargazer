@@ -317,4 +317,72 @@
             }
         }
 
+        private static String parseMoonPhaseResponse(String jsonResponse) {
+            JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+            return jsonObject.getAsJsonObject("data").get("imageUrl").getAsString();
+        }
+
+        public static String generateMoonPhaseImage(double latitude, double longitude, String date, String format) throws Exception {
+            String auth = APPLICATIONID + ":" + APPLICATIONSECRET;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+
+            String apiUrl = "https://api.astronomyapi.com/api/v2/studio/moon-phase";
+
+            // Building the request body
+            String requestBody = String.format(Locale.US,
+                    "{ " +
+                            "\"format\": \"%s\", " +
+                            "\"style\": { " +
+                            "\"moonStyle\": \"default\", " +
+                            "\"backgroundStyle\": \"stars\", " +
+                            "\"backgroundColor\": \"black\", " +
+                            "\"headingColor\": \"white\", " +
+                            "\"textColor\": \"white\" " +
+                            "}, " +
+                            "\"observer\": { " +
+                            "\"latitude\": %.6f, " +
+                            "\"longitude\": %.6f, " +
+                            "\"date\": \"%s\" " +
+                            "}, " +
+                            "\"view\": { " +
+                            "\"type\": \"landscape-simple\", " +
+                            "\"orientation\": \"north-up\" " +
+                            "} " +
+                            "}",
+                    format, latitude, longitude, date
+            );
+
+            // Set up the connection
+            HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Authorization", "Basic " + encodedAuth);
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            // Send the request
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = requestBody.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            // Get the response code
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) { // success
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String inputLine;
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                return parseMoonPhaseResponse(response.toString());
+            } else {
+                String errorMessage = String.format("Failed to generate moon phase image: HTTP response code %d", responseCode);
+                System.err.println(errorMessage);
+                throw new Exception(errorMessage);
+            }
+        }
+
     }
