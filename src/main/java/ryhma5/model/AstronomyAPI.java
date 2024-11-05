@@ -293,7 +293,7 @@
                 }
                 in.close();
 
-                System.out.println(response.toString());
+                // System.out.println(response.toString());
 
                 // Parse the response and create an ArrayList of AstronomyResponse objects
                 return parseAstronomyBody(response.toString());
