@@ -7,13 +7,10 @@ import java.util.List;
 
 public class AstronomyController {
 
-    private List<AstronomyEvent> events;
-    private List<AstronomyBody> bodies;
     private List<AstronomyResponse> responses;
 
     public AstronomyController(){
-        events = new ArrayList<>();
-        bodies = new ArrayList<>();
+        responses = new ArrayList<>();
     }
 
     public ArrayList<AstronomyResponse> getAstronomyEvent(String body,
