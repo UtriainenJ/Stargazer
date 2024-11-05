@@ -373,5 +373,11 @@ public class MainViewController {
                 ((Number) userPreferencesMap.get("latitude")).doubleValue(),
                 ((Number) userPreferencesMap.get("longitude")).doubleValue()
         );
+
+        searchField.setText(userPreferencesLoadData.getCityName());
+        datePickerStart.setValue(LocalDateConverter.fromString(userPreferencesLoadData.getDateStart()));
+        datePickerEnd.setValue(LocalDateConverter.fromString(userPreferencesLoadData.getDateEnd()));
+
+        //svgMap.addMarkerByCoordinates(userPreferencesLoadData.getLatitude(), userPreferencesLoadData.getLongitude(), mapImageView, mapPane);
     }
 }
