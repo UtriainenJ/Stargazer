@@ -14,25 +14,27 @@ public class AstronomyController {
     }
 
     public ArrayList<AstronomyResponse> getAstronomyEvent(String body,
-                                            String latitude,
-                                            String longitude,
-                                            String elevation,
-                                            String fromDate,
-                                            String toDate,
-                                            String time) {
+                                                        String latitude,
+                                                        String longitude,
+                                                        String elevation,
+                                                        String fromDate,
+                                                        String toDate,
+                                                        String time) {
         ArrayList<AstronomyResponse> events = new ArrayList<>();
 
         try {
-            ArrayList<AstronomyResponse> newEvent = AstronomyAPI.fetchAstronomyEvent(body,
-                                                                        latitude,
-                                                                        longitude,
-                                                                        elevation,
-                                                                        fromDate,
-                                                                        toDate,
-                                                                        time);
+            ArrayList<AstronomyResponse> newEvents = AstronomyAPI.fetchAstronomyEvent(body,
+                                                                                    latitude,
+                                                                                    longitude,
+                                                                                    elevation,
+                                                                                    fromDate,
+                                                                                    toDate,
+                                                                                    time);
 
 
-            events.addAll(newEvent);
+
+            events.addAll(newEvents);
+            responses.addAll(newEvents);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -41,29 +43,28 @@ public class AstronomyController {
     }
 
     public ArrayList<AstronomyResponse> getAstronomyBody(String body,
-                                   String latitude,
-                                   String longitude,
-                                   String elevation,
-                                   String fromDate,
-                                   String toDate,
-                                   String time) {
+                                                       String latitude,
+                                                       String longitude,
+                                                       String elevation,
+                                                       String fromDate,
+                                                       String toDate,
+                                                       String time) {
         ArrayList<AstronomyResponse> bodies = new ArrayList<>();
 
 
 
         // Fetch new body information if not cached
         try {
-            ArrayList<AstronomyResponse> newBody = AstronomyAPI.fetchAstronomyBody(body,
-                                                                    latitude,
-                                                                    longitude,
-                                                                    elevation,
-                                                                    fromDate,
-                                                                    toDate,
-                                                                    time);
+            ArrayList<AstronomyResponse> newBodies = AstronomyAPI.fetchAstronomyBody(body,
+                                                                                latitude,
+                                                                                longitude,
+                                                                                elevation,
+                                                                                fromDate,
+                                                                                toDate,
+                                                                                time);
 
-            if (newBody != null) {
-                bodies.addAll(newBody);
-            }
+                bodies.addAll(newBodies);
+                responses.addAll(newBodies);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,16 +86,15 @@ public class AstronomyController {
 
         // Fetch new body information if not cached
         try {
-            ArrayList<AstronomyResponse> newBody = AstronomyAPI.fetchAllBodies(latitude,
+            ArrayList<AstronomyResponse> newBodies = AstronomyAPI.fetchAllBodies(latitude,
                                                                                 longitude,
                                                                                 elevation,
                                                                                 fromDate,
                                                                                 toDate,
                                                                                 time);
 
-            if (newBody != null) {
-                bodies.addAll(newBody);
-            }
+                bodies.addAll(newBodies);
+                responses.addAll(newBodies);
 
         } catch (Exception e) {
             e.printStackTrace();
