@@ -122,34 +122,38 @@ public class MainViewController {
         System.out.println("wwwwwwwwwwwwwwwwwwwwwwwwwww    EVENTS    wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
 
         AstronomyController avm = new AstronomyController();
-        AstronomyEvent testEvent = avm.getAstronomyEvent(
-                "sun", Double.toString(x), Double.toString(y), "10",
-                "2024-10-07", "2024-10-08", "12:00:00");
 
-        System.out.println("Obsever lon: " + testEvent.getData().getObserver().getLocation().getLatitude());
-        System.out.println("Observer lat: " + testEvent.getData().getObserver().getLocation().getLongitude());
-        System.out.println("Test event type: " + testEvent.getData().getTable().getRows().get(0).getCells()[0].getType());
+        ArrayList<AstronomyResponse> testEventList = avm.getAstronomyEvent(
+                "moon", Double.toString(x), Double.toString(y), "10",
+                "2023-11-07", "2024-10-08", "12:00:00");
+        for (AstronomyResponse evt : testEventList) {
+            System.out.println(evt.toString());
+        }
+
+        System.out.println("SIZE: " + testEventList.size());
 
         System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx       BODIES       xxxxxxxxxxxxxxxxxxxxxxxxxx");
-        String bodyIdToTestFor = "saturn";
-        AstronomyBody testBody = avm.getAstronomyBody(
+        String bodyIdToTestFor = "moon";
+        ArrayList<AstronomyResponse> testBodyList = avm.getAstronomyBody(
                 bodyIdToTestFor, Double.toString(x), Double.toString(y), "10",
-                "2024-10-07", "2024-10-08", "12:00:00");
-        System.out.println("Testing getAstronomyBody - Distance from Earth to " + bodyIdToTestFor + ":"
-                + testBody.getData().getRows().get(0).getPositions().get(0).getDistance().getFromEarth().getKm());
+                "2024-09-25", "2024-09-28", "01:00:00");
+        for (AstronomyResponse body : testBodyList) {
+            System.out.println(body.toString());
+        }
 
-        AstronomyBody testBody2 = avm.getAllAstronomyBodies(Double.toString(x), Double.toString(y),
+        ArrayList<AstronomyResponse> testBodyList2 = avm.getAllAstronomyBodies(Double.toString(x), Double.toString(y),
                 "10", "2024-10-07", "2024-10-08", "12:00:00");
-
-        int bodyIndexToTestFor = 4;
-        System.out.println("Body (" + bodyIndexToTestFor + ") from getAllBodies: "
-                + testBody2.getData().getRows().get(bodyIndexToTestFor).getBody().getName());
+        for (AstronomyResponse body : testBodyList2) {
+            System.out.println(body.toString());
+        }
 
         //String constellationChartURL = avm.getConstellationStarChart(latLong[0], latLong[1],"2024-10-07", "ori");
         //System.out.println(constellationChartURL);
         String areaChartURL = avm.getAreaStarChart(x, y, "2024-10-07", 14.83, -15.23, 9);
         System.out.println(areaChartURL);
 
+        String moonPictureURL = avm.getMoonPhaseImage(x,y,"2024-10-07","png");
+        System.out.println(moonPictureURL);
 
         System.out.println("ooooooooooooooooooooooooooo     ISS    ooooooooooooooooooooooooooooooooooo");
 
