@@ -2,8 +2,13 @@ package ryhma5.controller;
 
 import ryhma5.model.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class AstronomyController {
 
@@ -21,6 +26,14 @@ public class AstronomyController {
                                                         String toDate,
                                                         String time) {
         ArrayList<AstronomyResponse> events = new ArrayList<>();
+
+        ArrayList<AstronomyResponse> cachedResponses = getCachedResponses("event", body,
+                Double.parseDouble(latitude), Double.parseDouble(longitude),
+                fromDate, toDate, time);
+
+        if (cachedResponses != null) {
+            return cachedResponses; // Return cached responses if available
+        }
 
         try {
             ArrayList<AstronomyResponse> newEvents = AstronomyAPI.fetchAstronomyEvent(body,
@@ -51,7 +64,13 @@ public class AstronomyController {
                                                        String time) {
         ArrayList<AstronomyResponse> bodies = new ArrayList<>();
 
+        ArrayList<AstronomyResponse> cachedResponses = getCachedResponses("body", body,
+                Double.parseDouble(latitude), Double.parseDouble(longitude),
+                fromDate, toDate, time);
 
+        if (cachedResponses != null) {
+            return cachedResponses; // Return cached responses if available
+        }
 
         // Fetch new body information if not cached
         try {
@@ -82,7 +101,28 @@ public class AstronomyController {
 
         ArrayList<AstronomyResponse> bodies = new ArrayList<>();
 
+        List<String> allPossibleBodies = Arrays.asList(
+                "sun", "moon", "mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune", "pluto");
 
+        ArrayList<AstronomyResponse> allCachedBodies = new ArrayList<>();
+        boolean allFound = true;
+        for (String body : allPossibleBodies) {
+            ArrayList<AstronomyResponse> cachedResponses = getCachedResponses("body", body,
+                    Double.parseDouble(latitude), Double.parseDouble(longitude),
+                    fromDate, toDate, time);
+
+            if (cachedResponses == null){
+                allFound = false;
+                break;
+            }
+            else {
+                allCachedBodies.addAll(cachedResponses);
+            }
+        }
+
+        if (allFound) {
+            return allCachedBodies; // Return cached responses if available
+        }
 
         // Fetch new body information if not cached
         try {
@@ -132,6 +172,61 @@ public class AstronomyController {
         }
     }
 
+
+    private ArrayList<AstronomyResponse> getCachedResponses(String type, String body, Double lat, Double lon, String fromDate, String toDate, String time) {
+        LocalDate from = LocalDate.parse(fromDate);
+        LocalDate to = LocalDate.parse(toDate);
+
+        if (!allDatesCovered(responses, from, to)) {
+            return null;
+        }
+
+        ArrayList<AstronomyResponse> cachedEvents = new ArrayList<>();
+            for (AstronomyResponse response : responses) {
+                LocalDate responseDate = response.getDateTime().toLocalDate();
+
+
+                LocalTime responseTime = response.getDateTime().toLocalTime();
+                LocalTime userTime = LocalTime.parse(time);
+
+                if (response.getBodyName().equals(body) &&
+                        (responseDate.isEqual(from) || responseDate.isAfter(from)) &&
+                        (responseDate.isEqual(to) || responseDate.isBefore(to)) &&
+                        responseTime.equals(userTime) &&
+                        response.getObserverLatitude() == lat &&
+                        response.getObserverLongitude() == lon) {
+                    if (type.equals("event") && response.getEventType() != null) {
+                        cachedEvents.add(response);
+                    }
+                    else if (type.equals("body") && response.getEventType() == null) {
+                        cachedEvents.add(response);
+                    }
+                }
+            }
+        return cachedEvents.isEmpty() ? null : cachedEvents;
+    }
+
+    private boolean allDatesCovered(List<AstronomyResponse> cachedResponses, LocalDate fromDate, LocalDate toDate) {
+        // Generate a list of all dates between fromDate and toDate (inclusive)
+        List<LocalDate> allDates = Stream.iterate(fromDate, date -> date.plusDays(1))
+                .limit(fromDate.until(toDate).getDays() + 1)
+                .collect(Collectors.toList());
+
+        // Extract all unique LocalDate values from the cached responses
+        List<LocalDate> responseDates = cachedResponses.stream()
+                .map(response -> response.getDateTime().toLocalDate())
+                .distinct()
+                .collect(Collectors.toList());
+
+        // Check if all dates from fromDate to toDate are covered in the cached responses
+        for (LocalDate date : allDates) {
+            if (!responseDates.contains(date)) {
+                return false; // Return false if any date is missing
+            }
+        }
+
+        return true; // Return true if all dates are covered
+    }
 
 
 }
