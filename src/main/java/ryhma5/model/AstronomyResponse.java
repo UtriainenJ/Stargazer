@@ -1,9 +1,7 @@
 package ryhma5.model;
 
 public class AstronomyResponse {
-    private double longitude;
-    private double latitude;
-    private double elevation;
+
     private String date;
     private String bodyName;
     private String bodyId;
@@ -27,9 +25,6 @@ public class AstronomyResponse {
 
     // Private constructor to enforce the use of the builder
     private AstronomyResponse(Builder builder) {
-        this.longitude = builder.longitude;
-        this.latitude = builder.latitude;
-        this.elevation = builder.elevation;
         this.date = builder.date;
         this.bodyName = builder.bodyName;
         this.bodyId = builder.bodyId;
@@ -229,15 +224,7 @@ public class AstronomyResponse {
     public double getMoonPhaseFraction() {
         return moonPhaseFraction;
     }
-    public double getLongitude() {
-        return longitude;
-    }
-    public double getLatitude() {
-        return latitude;
-    }
-    public double getElevation() {
-        return elevation;
-    }
+
     public String getEventType() {
         return eventType;
     }
@@ -265,5 +252,32 @@ public class AstronomyResponse {
     public String getEventTotalEnd() {
         return eventTotalEnd;
     }
+
+    @Override
+    public String toString() {
+        return "AstronomyResponse{" +
+                "date='" + date + '\'' +
+                ", bodyName='" + bodyName + '\'' +
+                ", bodyId='" + bodyId + '\'' +
+                ", distanceFromEarth='" + distanceFromEarth + '\'' +
+                ", constellation='" + constellation + '\'' +
+                ", altitude='" + altitude + '\'' +
+                ", azimuth='" + azimuth + '\'' +
+                ", elongation=" + elongation +
+                ", magnitude=" + magnitude +
+                ", moonPhaseString='" + moonPhaseString + '\'' +
+                ", moonPhaseFraction=" + moonPhaseFraction +
+                ", eventType='" + eventType + '\'' +
+                ", eventObscuration=" + eventObscuration +
+                ", eventBodyRise='" + eventBodyRise + '\'' +
+                ", eventBodySet='" + eventBodySet + '\'' +
+                ", eventPeak='" + eventPeak + '\'' +
+                ", eventPartialStart='" + eventPartialStart + '\'' +
+                ", eventPartialEnd='" + eventPartialEnd + '\'' +
+                ", eventTotalStart='" + eventTotalStart + '\'' +
+                ", eventTotalEnd='" + eventTotalEnd + '\'' +
+                '}';
+    }
+
 
 }
