@@ -1,10 +1,12 @@
 package ryhma5.model;
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 public class AstronomyResponse {
 
-    private String date;
+    // date and time for events is at the events peak
+    private OffsetDateTime dateTime;
     private String bodyName;
     private String bodyId;
     private String distanceFromEarth;
@@ -19,15 +21,16 @@ public class AstronomyResponse {
     private double eventObscuration;
     private String eventBodyRise;
     private String eventBodySet;
-    private String eventPeak;
     private String eventPartialStart;
     private String eventPartialEnd;
     private String eventTotalStart;
     private String eventTotalEnd;
+    private double observerLongitude;
+    private double observerLatitude;
 
     // Private constructor to enforce the use of the builder
     private AstronomyResponse(Builder builder) {
-        this.date = builder.date;
+        this.dateTime = builder.dateTime;
         this.bodyName = builder.bodyName;
         this.bodyId = builder.bodyId;
         this.distanceFromEarth = builder.distanceFromEarth;
@@ -42,18 +45,16 @@ public class AstronomyResponse {
         this.eventObscuration = builder.eventObscuration;
         this.eventBodyRise = builder.eventBodyRise;
         this.eventBodySet = builder.eventBodySet;
-        this.eventPeak = builder.eventPeak;
         this.eventPartialStart = builder.eventPartialStart;
         this.eventPartialEnd = builder.eventPartialEnd;
         this.eventTotalStart = builder.eventTotalStart;
         this.eventTotalEnd = builder.eventTotalEnd;
+        this.observerLongitude = builder.longitude;
+        this.observerLatitude = builder.latitude;
     }
 
     public static class Builder {
-        private double longitude;
-        private double latitude;
-        private double elevation;
-        private String date;
+        private OffsetDateTime dateTime;
         private String bodyName;
         private String bodyId;
         private String distanceFromEarth;
@@ -68,11 +69,12 @@ public class AstronomyResponse {
         private double eventObscuration;
         private String eventBodyRise;
         private String eventBodySet;
-        private String eventPeak;
         private String eventPartialStart;
         private String eventPartialEnd;
         private String eventTotalStart;
         private String eventTotalEnd;
+        private double longitude;
+        private double latitude;
 
         public Builder setLongitude(double longitude) {
             this.longitude = longitude;
@@ -84,13 +86,8 @@ public class AstronomyResponse {
             return this;
         }
 
-        public Builder setElevation(double elevation) {
-            this.elevation = elevation;
-            return this;
-        }
-
-        public Builder setDate(String date) {
-            this.date = date;
+        public Builder setDateTime(OffsetDateTime dateTime) {
+            this.dateTime = dateTime;
             return this;
         }
 
@@ -164,11 +161,6 @@ public class AstronomyResponse {
             return this;
         }
 
-        public Builder setEventPeak(String eventPeak) {
-            this.eventPeak = eventPeak;
-            return this;
-        }
-
         public Builder setEventPartialStart(String eventPartialStart) {
             this.eventPartialStart = eventPartialStart;
             return this;
@@ -189,19 +181,30 @@ public class AstronomyResponse {
             return this;
         }
 
+        public Builder setObserverLongitude(double longitude) {
+            this.longitude = longitude;
+            return this;
+        }
+        public Builder setObserverLatitude(double latitude) {
+            this.latitude = latitude;
+            return this;
+        }
+
         public AstronomyResponse build() {
             return new AstronomyResponse(this);
         }
 
     }
 
-    public String getDate() {
-        return date;
+    public OffsetDateTime getDateTime() {
+        return dateTime;
     }
     public String getBodyName() {
         return bodyName;
     }
-    public String getBodyId() { return bodyId; }
+    public String getBodyId() {
+        return bodyId;
+    }
     public String getDistanceFromEarth() {
         return distanceFromEarth;
     }
@@ -239,9 +242,6 @@ public class AstronomyResponse {
     public String getEventBodySet() {
         return eventBodySet;
     }
-    public String getEventPeak() {
-        return eventPeak;
-    }
     public String getEventPartialStart() {
         return eventPartialStart;
     }
@@ -254,11 +254,17 @@ public class AstronomyResponse {
     public String getEventTotalEnd() {
         return eventTotalEnd;
     }
+    public double getObserverLongitude() {
+        return observerLongitude;
+    }
+    public double getObserverLatitude() {
+        return observerLatitude;
+    }
 
     @Override
     public String toString() {
         return "AstronomyResponse{" +
-                "date='" + date + '\'' +
+                "dateTime='" + dateTime + '\'' +
                 ", bodyName='" + bodyName + '\'' +
                 ", bodyId='" + bodyId + '\'' +
                 ", distanceFromEarth='" + distanceFromEarth + '\'' +
@@ -273,13 +279,15 @@ public class AstronomyResponse {
                 ", eventObscuration=" + eventObscuration +
                 ", eventBodyRise='" + eventBodyRise + '\'' +
                 ", eventBodySet='" + eventBodySet + '\'' +
-                ", eventPeak='" + eventPeak + '\'' +
                 ", eventPartialStart='" + eventPartialStart + '\'' +
                 ", eventPartialEnd='" + eventPartialEnd + '\'' +
                 ", eventTotalStart='" + eventTotalStart + '\'' +
                 ", eventTotalEnd='" + eventTotalEnd + '\'' +
+                ", observerLongitude=" + observerLongitude +
+                ", observerLatitude=" + observerLatitude +
                 '}';
     }
+
 
     @Override
     public boolean equals(Object obj) {
@@ -293,7 +301,7 @@ public class AstronomyResponse {
         AstronomyResponse other = (AstronomyResponse) obj;
 
         // Compare each field for equality
-        return Objects.equals(date, other.date) &&
+        return Objects.equals(dateTime, other.dateTime) &&
                 Objects.equals(bodyName, other.bodyName) &&
                 Objects.equals(bodyId, other.bodyId) &&
                 Objects.equals(distanceFromEarth, other.distanceFromEarth) &&
@@ -308,19 +316,23 @@ public class AstronomyResponse {
                 Double.compare(eventObscuration, other.eventObscuration) == 0 &&
                 Objects.equals(eventBodyRise, other.eventBodyRise) &&
                 Objects.equals(eventBodySet, other.eventBodySet) &&
-                Objects.equals(eventPeak, other.eventPeak) &&
                 Objects.equals(eventPartialStart, other.eventPartialStart) &&
                 Objects.equals(eventPartialEnd, other.eventPartialEnd) &&
                 Objects.equals(eventTotalStart, other.eventTotalStart) &&
-                Objects.equals(eventTotalEnd, other.eventTotalEnd);
+                Objects.equals(eventTotalEnd, other.eventTotalEnd) &&
+                Double.compare(observerLongitude, other.observerLongitude) == 0 &&
+                Double.compare(observerLatitude, other.observerLatitude) == 0;
     }
+
     @Override
     public int hashCode() {
-        return Objects.hash(date, bodyName, bodyId, distanceFromEarth, constellation, altitude, azimuth,
+        return Objects.hash(dateTime, bodyName, bodyId, distanceFromEarth, constellation, altitude, azimuth,
                 elongation, magnitude, moonPhaseString, moonPhaseFraction, eventType,
-                eventObscuration, eventBodyRise, eventBodySet, eventPeak,
-                eventPartialStart, eventPartialEnd, eventTotalStart, eventTotalEnd);
+                eventObscuration, eventBodyRise, eventBodySet,
+                eventPartialStart, eventPartialEnd, eventTotalStart, eventTotalEnd,
+                observerLongitude, observerLatitude);
     }
+
 
 
 

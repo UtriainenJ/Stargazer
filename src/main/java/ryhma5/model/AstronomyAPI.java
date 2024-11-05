@@ -6,6 +6,7 @@
     import java.net.HttpURLConnection;
     import java.net.URL;
     import java.net.URLEncoder;
+    import java.time.OffsetDateTime;
     import java.util.ArrayList;
     import java.util.Base64;
     import java.util.Locale;
@@ -59,6 +60,7 @@
                 }
                 in.close();
 
+                //System.out.println(response.toString());
 
                 return parseAstronomyEvent(response.toString());
             } else {
@@ -74,7 +76,10 @@
 
             // Extract data
             JsonObject data = jsonObject.getAsJsonObject("data");
-            JsonObject dates = data.getAsJsonObject("dates");
+            JsonObject observer = data.getAsJsonObject("observer");
+
+            double observerLongitude = observer.getAsJsonObject("location").get("longitude").getAsDouble();
+            double observerLatitude = observer.getAsJsonObject("location").get("latitude").getAsDouble();
 
             // Extract rows
             JsonArray rows = data.getAsJsonArray("rows");
@@ -94,7 +99,9 @@
                     JsonObject eventHighlights = event.getAsJsonObject("eventHighlights");
                     String partialStart = eventHighlights.getAsJsonObject("partialStart").get("date").getAsString();
                     String partialEnd = eventHighlights.getAsJsonObject("partialEnd").get("date").getAsString();
-                    String peak = eventHighlights.getAsJsonObject("peak").get("date").getAsString();
+                    OffsetDateTime dateAndTime = OffsetDateTime.parse(
+                            eventHighlights.getAsJsonObject("peak").get("date").getAsString());
+
                     String rise = event.get("rise").getAsString();
                     String set = event.get("set").getAsString();
 
@@ -115,6 +122,7 @@
                     AstronomyResponse aResponse = new AstronomyResponse.Builder()
                             .setBodyName(bodyName)
                             .setBodyId(bodyId)
+                            .setDateTime(dateAndTime)
                             .setEventType(eventType)
                             .setEventBodyRise(rise)
                             .setEventBodySet(set)
@@ -122,8 +130,9 @@
                             .setEventPartialEnd(partialEnd)
                             .setEventTotalStart(totalStart)
                             .setEventTotalEnd(totalEnd)
-                            .setEventPeak(peak)
                             .setEventObscuration(obscuration)
+                            .setObserverLongitude(observerLongitude)
+                            .setObserverLatitude(observerLatitude)
                             .build();
 
                     events.add(aResponse);
@@ -192,6 +201,11 @@
             JsonObject data = jsonObject.getAsJsonObject("data");
             JsonArray rows = data.getAsJsonArray("rows");
 
+            JsonObject observer = data.getAsJsonObject("observer");
+
+            double observerLongitude = observer.getAsJsonObject("location").get("longitude").getAsDouble();
+            double observerLatitude = observer.getAsJsonObject("location").get("latitude").getAsDouble();
+
             for (int i = 0; i < rows.size(); i++) {
                 JsonObject row = rows.get(i).getAsJsonObject();
 
@@ -201,7 +215,9 @@
                 // Extract position information
                 for (JsonElement posEntry : row.getAsJsonArray("positions")) {
                     JsonObject position = posEntry.getAsJsonObject();
-                    String date = position.get("date").getAsString();
+
+                    OffsetDateTime dateAndTime = OffsetDateTime.parse(position.get("date").getAsString());
+
                     String distanceFromEarth = position.getAsJsonObject("distance")
                             .getAsJsonObject("fromEarth").get("km").getAsString();
 
@@ -235,7 +251,7 @@
                     AstronomyResponse aResponse = new AstronomyResponse.Builder()
                             .setBodyId(bodyId)
                             .setBodyName(bodyName)
-                            .setDate(date)
+                            .setDateTime(dateAndTime)
                             .setDistanceFromEarth(distanceFromEarth)
                             .setConstellation(constellation)
                             .setAzimuth(azimuth)
@@ -244,6 +260,8 @@
                             .setMagnitude(magnitude)
                             .setMoonPhaseString(moonPhaseString)
                             .setMoonPhaseFraction(moonPhaseFraction)
+                            .setObserverLongitude(observerLongitude)
+                            .setObserverLatitude(observerLatitude)
                             .build();
 
                     responses.add(aResponse);
