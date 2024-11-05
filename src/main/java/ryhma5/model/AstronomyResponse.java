@@ -1,5 +1,7 @@
 package ryhma5.model;
 
+import java.util.Objects;
+
 public class AstronomyResponse {
 
     private String date;
@@ -278,6 +280,48 @@ public class AstronomyResponse {
                 ", eventTotalEnd='" + eventTotalEnd + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        // Check if the object is the same instance
+        if (this == obj) return true;
+
+        // Check if the object is an instance of AstronomyResponse
+        if (!(obj instanceof AstronomyResponse)) return false;
+
+        // Cast the object to AstronomyResponse
+        AstronomyResponse other = (AstronomyResponse) obj;
+
+        // Compare each field for equality
+        return Objects.equals(date, other.date) &&
+                Objects.equals(bodyName, other.bodyName) &&
+                Objects.equals(bodyId, other.bodyId) &&
+                Objects.equals(distanceFromEarth, other.distanceFromEarth) &&
+                Objects.equals(constellation, other.constellation) &&
+                Objects.equals(altitude, other.altitude) &&
+                Objects.equals(azimuth, other.azimuth) &&
+                Double.compare(elongation, other.elongation) == 0 &&
+                Double.compare(magnitude, other.magnitude) == 0 &&
+                Objects.equals(moonPhaseString, other.moonPhaseString) &&
+                Double.compare(moonPhaseFraction, other.moonPhaseFraction) == 0 &&
+                Objects.equals(eventType, other.eventType) &&
+                Double.compare(eventObscuration, other.eventObscuration) == 0 &&
+                Objects.equals(eventBodyRise, other.eventBodyRise) &&
+                Objects.equals(eventBodySet, other.eventBodySet) &&
+                Objects.equals(eventPeak, other.eventPeak) &&
+                Objects.equals(eventPartialStart, other.eventPartialStart) &&
+                Objects.equals(eventPartialEnd, other.eventPartialEnd) &&
+                Objects.equals(eventTotalStart, other.eventTotalStart) &&
+                Objects.equals(eventTotalEnd, other.eventTotalEnd);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(date, bodyName, bodyId, distanceFromEarth, constellation, altitude, azimuth,
+                elongation, magnitude, moonPhaseString, moonPhaseFraction, eventType,
+                eventObscuration, eventBodyRise, eventBodySet, eventPeak,
+                eventPartialStart, eventPartialEnd, eventTotalStart, eventTotalEnd);
+    }
+
 
 
 }
