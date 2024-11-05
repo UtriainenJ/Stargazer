@@ -6,6 +6,7 @@
     import java.net.HttpURLConnection;
     import java.net.URL;
     import java.net.URLEncoder;
+    import java.util.ArrayList;
     import java.util.Base64;
     import java.util.Locale;
 
@@ -19,7 +20,7 @@
                                                         +"3587e960e3f7aa6c4870662f4a600cc28abbe0026813a4dd170c84a7820a"
                                                         +"eb543b7f5477641fd74436302c01dd72628c0089cc";
 
-        public static AstronomyEvent fetchAstronomyEvent(String body,
+        public static ArrayList<AstronomyResponse> fetchAstronomyEvent(String body,
                                                          String latitude,
                                                          String longitude,
                                                          String elevation,
@@ -34,13 +35,14 @@
 
             // Set up the connection
             URL url = new URL(apiUrl + String.format(
-                    "?latitude=%s&longitude=%s&elevation=%s&from_date=%s&to_date=%s&time=%s",
+                    "?latitude=%s&longitude=%s&elevation=%s&from_date=%s&to_date=%s&time=%s&output=%s",
                     URLEncoder.encode(latitude, "UTF-8"),
                     URLEncoder.encode(longitude, "UTF-8"),
                     URLEncoder.encode(elevation, "UTF-8"),
                     URLEncoder.encode(fromDate, "UTF-8"),
                     URLEncoder.encode(toDate, "UTF-8"),
-                    URLEncoder.encode(time, "UTF-8")));
+                    URLEncoder.encode(time, "UTF-8"),
+                    URLEncoder.encode("rows", "UTF-8")));
 
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -66,24 +68,79 @@
             }
         }
 
-        private static AstronomyEvent parseAstronomyEvent(String jsonResponse) {
-            Gson gson = new Gson();
-            AstronomyEvent response = gson.fromJson(jsonResponse, AstronomyEvent.class);
+        private static ArrayList<AstronomyResponse> parseAstronomyEvent(String jsonResponse) {
+            ArrayList<AstronomyResponse> events = new ArrayList<>();
+            JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
 
-            if (response != null && response.getData() != null) {
-                return response;
+            // Extract data
+            JsonObject data = jsonObject.getAsJsonObject("data");
+            JsonObject dates = data.getAsJsonObject("dates");
+
+            // Extract rows
+            JsonArray rows = data.getAsJsonArray("rows");
+            for (int i = 0; i < rows.size(); i++) {
+                JsonObject row = rows.get(i).getAsJsonObject();
+                JsonObject body = row.getAsJsonObject("body");
+                String bodyName = body.get("name").getAsString();
+                String bodyId = body.get("id").getAsString();
+
+                // Extract events
+                JsonArray eventsArray = row.getAsJsonArray("events");
+                for (int j = 0; j < eventsArray.size(); j++) {
+                    JsonObject event = eventsArray.get(j).getAsJsonObject();
+                    String eventType = event.get("type").getAsString();
+
+                    // Extract event highlights
+                    JsonObject eventHighlights = event.getAsJsonObject("eventHighlights");
+                    String partialStart = eventHighlights.getAsJsonObject("partialStart").get("date").getAsString();
+                    String partialEnd = eventHighlights.getAsJsonObject("partialEnd").get("date").getAsString();
+                    String peak = eventHighlights.getAsJsonObject("peak").get("date").getAsString();
+                    String rise = event.get("rise").getAsString();
+                    String set = event.get("set").getAsString();
+
+                    String totalStart = null;
+                    String totalEnd = null;
+                    if (bodyId.equals("sun")){
+                        totalStart = eventHighlights.getAsJsonObject("totalStart").get("date").getAsString();
+                        totalEnd = eventHighlights.getAsJsonObject("totalEnd").get("date").getAsString();
+                    } else if (bodyId.equals("moon")){
+                        totalStart = eventHighlights.getAsJsonObject("fullStart").get("date").getAsString();
+                        totalEnd = eventHighlights.getAsJsonObject("fullEnd").get("date").getAsString();
+                    }
+
+                    double obscuration = event.getAsJsonObject("extraInfo").get("obscuration").getAsDouble();
+
+
+                    // Building the AstronomyResponse object using the Builder
+                    AstronomyResponse aResponse = new AstronomyResponse.Builder()
+                            .setBodyName(bodyName)
+                            .setBodyId(bodyId)
+                            .setEventType(eventType)
+                            .setEventBodyRise(rise)
+                            .setEventBodySet(set)
+                            .setEventPartialStart(partialStart)
+                            .setEventPartialEnd(partialEnd)
+                            .setEventTotalStart(totalStart)
+                            .setEventTotalEnd(totalEnd)
+                            .setEventPeak(peak)
+                            .setEventObscuration(obscuration)
+                            .build();
+
+                    events.add(aResponse);
+                }
             }
-            return null;
+
+            return events;
         }
 
 
-        public static AstronomyBody fetchAstronomyBody(String body,
-                                                       String latitude,
-                                                       String longitude,
-                                                       String elevation,
-                                                       String fromDate,
-                                                       String toDate,
-                                                       String time) throws Exception {
+        public static ArrayList<AstronomyResponse> fetchAstronomyBody(String body,
+                                                                      String latitude,
+                                                                      String longitude,
+                                                                      String elevation,
+                                                                      String fromDate,
+                                                                      String toDate,
+                                                                      String time) throws Exception {
 
             String auth = APPLICATIONID + ":" + APPLICATIONSECRET;
             String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
@@ -117,6 +174,8 @@
                 }
                 in.close();
 
+                //System.out.println(response.toString());
+
                 return parseAstronomyBody(response.toString());
             } else {
                 String errorMessage = String.format("Failed to retrieve data: HTTP response code %d", responseCode);
@@ -125,27 +184,82 @@
             }
         }
 
-        // Parsing function for the singular body position
-        private static AstronomyBody parseAstronomyBody(String jsonResponse) {
-            Gson gson = new Gson();
+        private static ArrayList<AstronomyResponse> parseAstronomyBody(String jsonResponse) {
+            ArrayList<AstronomyResponse> responses = new ArrayList<>();
+            JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
 
-            AstronomyBody response = gson.fromJson(jsonResponse, AstronomyBody.class);
+            // Extract data
+            JsonObject data = jsonObject.getAsJsonObject("data");
+            JsonArray rows = data.getAsJsonArray("rows");
 
-            if (response != null && response.getData() != null) {
-                return response;
+            for (int i = 0; i < rows.size(); i++) {
+                JsonObject row = rows.get(i).getAsJsonObject();
+
+                String bodyId = row.getAsJsonObject("body").get("id").getAsString();
+                String bodyName = row.getAsJsonObject("body").get("name").getAsString();
+
+                // Extract position information
+                for (JsonElement posEntry : row.getAsJsonArray("positions")) {
+                    JsonObject position = posEntry.getAsJsonObject();
+                    String date = position.get("date").getAsString();
+                    String distanceFromEarth = position.getAsJsonObject("distance")
+                            .getAsJsonObject("fromEarth").get("km").getAsString();
+
+                    String constellation = position.getAsJsonObject("position")
+                            .getAsJsonObject("constellation").get("name").getAsString();
+
+                    JsonObject positionHorizontal = position.getAsJsonObject("position").getAsJsonObject("horizontal");
+                    String azimuth = positionHorizontal.getAsJsonObject("azimuth").get("string").getAsString();
+                    String altitude = positionHorizontal.getAsJsonObject("altitude").get("string").getAsString();
+
+                    JsonObject extraInfo = position.getAsJsonObject("extraInfo");
+
+                    // elongation and magnitude are not available for earth
+                    double elongation = 0.0;
+                    double magnitude = 0.0;
+                    if (!bodyId.equals("earth")){
+                        elongation = extraInfo.get("elongation").getAsDouble();
+                        magnitude = extraInfo.get("magnitude").getAsDouble();
+                    }
+
+                    // moon phase only for moon
+                    String moonPhaseString = null;
+                    double moonPhaseFraction = 0.0;
+                    if (extraInfo.has("phase")) {
+                        JsonObject moonPhase = extraInfo.getAsJsonObject("phase");
+                        moonPhaseString = moonPhase.get("string").getAsString();
+                        moonPhaseFraction = moonPhase.get("fraction").getAsDouble();
+                    }
+
+                    // Create AstronomyResponse for this position
+                    AstronomyResponse aResponse = new AstronomyResponse.Builder()
+                            .setBodyId(bodyId)
+                            .setBodyName(bodyName)
+                            .setDate(date)
+                            .setDistanceFromEarth(distanceFromEarth)
+                            .setConstellation(constellation)
+                            .setAzimuth(azimuth)
+                            .setAltitude(altitude)
+                            .setElongation(elongation)
+                            .setMagnitude(magnitude)
+                            .setMoonPhaseString(moonPhaseString)
+                            .setMoonPhaseFraction(moonPhaseFraction)
+                            .build();
+
+                    responses.add(aResponse);
+                }
             }
 
-            return null;
+            return responses; // Return the list of responses
         }
 
-        public static AstronomyBody fetchAllBodies(String latitude,
-                                                         String longitude,
-                                                         String elevation,
-                                                         String fromDate,
-                                                         String toDate,
-                                                         String time) throws Exception {
 
-
+        public static ArrayList<AstronomyResponse> fetchAllBodies(String latitude,
+                                                                  String longitude,
+                                                                  String elevation,
+                                                                  String fromDate,
+                                                                  String toDate,
+                                                                  String time) throws Exception {
 
             String auth = APPLICATIONID + ":" + APPLICATIONSECRET;
             String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
@@ -160,7 +274,7 @@
                     URLEncoder.encode(fromDate, "UTF-8"),
                     URLEncoder.encode(toDate, "UTF-8"),
                     URLEncoder.encode(time, "UTF-8"),
-                    URLEncoder.encode("rows", "UTF-8")  // Using "rows" as the output format
+                    URLEncoder.encode("rows", "UTF-8")
             ));
 
             // Open the connection
@@ -169,8 +283,7 @@
             connection.setRequestProperty("Authorization", "Basic " + encodedAuth);
 
             int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) { // Success
-                // Read the response from the input stream
+            if (responseCode == HttpURLConnection.HTTP_OK) { // success
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 String inputLine;
                 StringBuilder response = new StringBuilder();
@@ -180,15 +293,17 @@
                 }
                 in.close();
 
-                return parseAstronomyBody(response.toString());
+                System.out.println(response.toString());
 
+                // Parse the response and create an ArrayList of AstronomyResponse objects
+                return parseAstronomyBody(response.toString());
             } else {
                 String errorMessage = String.format("Failed to retrieve data: HTTP response code %d", responseCode);
                 System.err.println(errorMessage);
                 throw new Exception(errorMessage);
             }
-
         }
+
 
         public static String generateConstellationStarChart(double latitude, double longitude, String date, String constellationId) throws Exception {
             String auth = APPLICATIONID + ":" + APPLICATIONSECRET;
@@ -246,8 +361,6 @@
                 throw new Exception(errorMessage);
             }
         }
-
-
 
         // Parsing function to extract the imageUrl from the response
         private static String parseStarChartResponse(String jsonResponse) {
