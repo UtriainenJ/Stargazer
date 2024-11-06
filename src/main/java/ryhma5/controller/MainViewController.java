@@ -25,7 +25,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.geometry.Insets;
 import javafx.util.Duration;
@@ -38,6 +37,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -93,7 +93,6 @@ public class MainViewController {
         }
 
         loadCities();
-        intializeContextMenu();
         setDefaultDates();
         initializeMap();
     }
@@ -201,20 +200,21 @@ public class MainViewController {
         // pick dates and city from the fields
         LocalDate startDate = datePickerStart.getValue();
         LocalDate endDate = datePickerEnd.getValue();
-        String city = searchField.getText();
-        double lat = 60.454510; // default to turku
-        double lng = 22.264824;
+        String city = searchField.getText().trim().toLowerCase();
+        double lat = 0.0;
+        double lng = 0.0;
 
-        City selectedCity = cityList.stream()
-                .filter(c -> c.getName().equals(city))
-                .findFirst()
-                .orElse(null);
-        if (selectedCity != null) {
-            lat = Double.parseDouble(selectedCity.getLat());
-            lng = Double.parseDouble(selectedCity.getLng());
-            System.out.println("Selected city: " + selectedCity.getName() + " (" + selectedCity.getLat() + ", " + selectedCity.getLng() + ")");
+        Optional<City> selectedCity = cityList.stream()
+                .filter(c -> c.getCityName().equalsIgnoreCase(city))
+                .findFirst();
+
+        if (selectedCity.isPresent()) {
+            lat = Double.parseDouble(selectedCity.get().getLat());
+            lng = Double.parseDouble(selectedCity.get().getLng());
+            System.out.println("Selected city: " + selectedCity.get().getCityName() + " (" + selectedCity.get().getLat() + ", " + selectedCity.get().getLng() + ")");
         } else {
             System.out.println("City not found: " + city);
+            return;
         }
 
         svgMap.addMarkerByCoordinates(lat, lng, mapImageView, mapPane);
@@ -228,36 +228,13 @@ public class MainViewController {
                 OffsetDateTime.of(2025, 1, 4, 22, 0, 0, 0, ZoneOffset.ofHours(3)));
     }
 
-    private void intializeContextMenu() {
-        searchService = new ScheduledService<>() {
-            @Override
-            protected Task<Void> createTask() {
-                return new Task<>() {
-                    @Override
-                    protected Void call() {
-                        Platform.runLater(MainViewController.this::updateSearchSuggestions);
-                        return null;
-                    }
-                };
-            }
-        };
-        searchService.setDelay(Duration.millis(300)); // Adjust debounce delay as needed
-        searchService.setPeriod(Duration.INDEFINITE); // Run only once after each key event
-
-        // Initialize the debouncing PauseTransition
-        pause = new PauseTransition(Duration.millis(300));
-        pause.setOnFinished(event -> updateSearchSuggestions());
-    }
-
     @FXML
     public void handleSearchFieldKeyPress(KeyEvent event) {
         if (event.getCode().toString().equals("ENTER")) {
             handleEventSearch();
             return;
         }
-
-        // Reset the PauseTransition to delay the updateSuggestions call
-        pause.playFromStart();
+        updateSearchSuggestions();
     }
 
     private void updateSearchSuggestions() {
@@ -268,15 +245,15 @@ public class MainViewController {
         }
 
         List<City> filteredCities = cityList.parallelStream()
-                .filter(city -> city.getName().toLowerCase().startsWith(query))
+                .filter(city -> city.getCityName().toLowerCase().startsWith(query))
                 .limit(20)
                 .collect(Collectors.toList());
 
         suggestionsMenu.getItems().clear();
         filteredCities.forEach(city -> {
-            MenuItem item = new MenuItem(city.getName());
+            MenuItem item = new MenuItem(city.getCityName());
             item.setOnAction(e -> {
-                searchField.setText(city.getName());
+                searchField.setText(city.getCityName());
                 searchField.positionCaret(searchField.getText().length());
                 suggestionsMenu.hide();
             });

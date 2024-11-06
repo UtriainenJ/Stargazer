@@ -39,19 +39,20 @@ public class SVGMap {
     }
 
     public void addMarkerByCoordinates(double latitude, double longitude, ImageView mapImageView, Pane mapPane) {
-        double imageWidth = mapImageView.getBoundsInParent().getWidth();
-        double imageHeight = mapImageView.getBoundsInParent().getHeight();
+
 
         // check if there exists a marker at the same location, if so select that instead. accurate to some decimals to account for error in conversion
         for (Marker marker : markers) {
             double[] latLong = projector.xyToLatLong(marker.getRelativeX(), marker.getRelativeY());
-            if (Math.abs(latLong[0] - latitude) < 0.00001 && Math.abs(latLong[1] - longitude) < 0.00001) {
+            if (Math.abs(latLong[0] - latitude) < 0.01 && Math.abs(latLong[1] - longitude) < 0.01) {
                 System.out.println("Marker already exists at this location");
-                selectedMarker.deSelectMarker();
-                marker.selectMarker();
+                selectMarker(marker, mapPane);
                 return;
             }
         }
+
+        double imageWidth = mapImageView.getBoundsInParent().getWidth();
+        double imageHeight = mapImageView.getBoundsInParent().getHeight();
 
         double[] xy = projector.latLongToXY(latitude, longitude, imageWidth, imageHeight);
         addMarker(xy[0], xy[1], mapImageView, mapPane);
@@ -98,23 +99,23 @@ public class SVGMap {
 
     /**
      * Selects a marker and deselects any other selected markers. if the marker is already selected, it will be destroyed
-     * @param marker The marker to select
+     *
+     * @param marker  The marker to select
      * @param mapPane The Pane containing the map
      */
     public void selectMarker(Marker marker, Pane mapPane) {
-        if (selectedMarker != null && selectedMarker != marker) {
+        if (selectedMarker != null) {
             selectedMarker.deSelectMarker();
+            if (selectedMarker == marker) { // If re-selecting the same marker, destroy it
+                destroyMarker(marker, mapPane);
+                selectedMarker = null;
+                return;
+            }
         }
-
-        if (selectedMarker == marker) {
-            destroyMarker(marker, mapPane);
-            selectedMarker = null;
-            return;
-        }
-
         marker.selectMarker();
         selectedMarker = marker;
     }
+
     /**
      * Plays a short animation to shrink the marker and then remove it
      *
