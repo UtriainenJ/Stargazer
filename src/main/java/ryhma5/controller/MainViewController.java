@@ -13,18 +13,33 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Button;
+import javafx.scene.paint.Color;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
+import javafx.geometry.Insets;
 import javafx.util.Duration;
 import ryhma5.model.*;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -53,6 +68,9 @@ public class MainViewController {
 
     @FXML
     private Pane mapPane;
+
+    @FXML
+    private VBox eventContainer;
 
     private boolean isSidebarVisible = false;
 
@@ -85,7 +103,6 @@ public class MainViewController {
         intializeContextMenu();
         setDefaultDates();
         initializeMap();
-
     }
 
     private void initializeMap() {
@@ -129,34 +146,38 @@ public class MainViewController {
         System.out.println("wwwwwwwwwwwwwwwwwwwwwwwwwww    EVENTS    wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
 
         AstronomyController avm = new AstronomyController();
-        AstronomyEvent testEvent = avm.getAstronomyEvent(
-                "sun", Double.toString(x), Double.toString(y), "10",
-                "2024-10-07", "2024-10-08", "12:00:00");
 
-        System.out.println("Obsever lon: " + testEvent.getData().getObserver().getLocation().getLatitude());
-        System.out.println("Observer lat: " + testEvent.getData().getObserver().getLocation().getLongitude());
-        System.out.println("Test event type: " + testEvent.getData().getTable().getRows().get(0).getCells()[0].getType());
+        ArrayList<AstronomyResponse> testEventList = avm.getAstronomyEvent(
+                "moon", Double.toString(x), Double.toString(y), "10",
+                "2023-11-07", "2024-10-08", "12:00:00");
+        for (AstronomyResponse evt : testEventList) {
+            System.out.println(evt.toString());
+        }
+
+        System.out.println("SIZE: " + testEventList.size());
 
         System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx       BODIES       xxxxxxxxxxxxxxxxxxxxxxxxxx");
-        String bodyIdToTestFor = "saturn";
-        AstronomyBody testBody = avm.getAstronomyBody(
+        String bodyIdToTestFor = "moon";
+        ArrayList<AstronomyResponse> testBodyList = avm.getAstronomyBody(
                 bodyIdToTestFor, Double.toString(x), Double.toString(y), "10",
-                "2024-10-07", "2024-10-08", "12:00:00");
-        System.out.println("Testing getAstronomyBody - Distance from Earth to " + bodyIdToTestFor + ":"
-                + testBody.getData().getRows().get(0).getPositions().get(0).getDistance().getFromEarth().getKm());
+                "2024-09-25", "2024-09-28", "01:00:00");
+        for (AstronomyResponse body : testBodyList) {
+            System.out.println(body.toString());
+        }
 
-        AstronomyBody testBody2 = avm.getAllAstronomyBodies(Double.toString(x), Double.toString(y),
+        ArrayList<AstronomyResponse> testBodyList2 = avm.getAllAstronomyBodies(Double.toString(x), Double.toString(y),
                 "10", "2024-10-07", "2024-10-08", "12:00:00");
-
-        int bodyIndexToTestFor = 4;
-        System.out.println("Body (" + bodyIndexToTestFor + ") from getAllBodies: "
-                + testBody2.getData().getRows().get(bodyIndexToTestFor).getBody().getName());
+        for (AstronomyResponse body : testBodyList2) {
+            System.out.println(body.toString());
+        }
 
         //String constellationChartURL = avm.getConstellationStarChart(latLong[0], latLong[1],"2024-10-07", "ori");
         //System.out.println(constellationChartURL);
         String areaChartURL = avm.getAreaStarChart(x, y, "2024-10-07", 14.83, -15.23, 9);
         System.out.println(areaChartURL);
 
+        String moonPictureURL = avm.getMoonPhaseImage(x,y,"2024-10-07","png");
+        System.out.println(moonPictureURL);
 
         System.out.println("ooooooooooooooooooooooooooo     ISS    ooooooooooooooooooooooooooooooooooo");
 
@@ -217,6 +238,13 @@ public class MainViewController {
 
         svgMap.addMarkerByCoordinates(lat, lng, mapImageView, mapPane);
 
+        // PLACEHOLDER FOR ADDING EVENTS TO LIST
+        addEventCard("/icons/meteor.png", "METEORS",
+                OffsetDateTime.of(2024, 11, 6, 14, 0, 0, 0, ZoneOffset.ofHours(3)));
+        addEventCard("/icons/stars.png", "METEORS",
+                OffsetDateTime.of(2024, 11, 26, 17, 30, 0, 0, ZoneOffset.ofHours(3)));
+        addEventCard("/icons/darkstar.png", "METEORS",
+                OffsetDateTime.of(2025, 1, 4, 22, 0, 0, 0, ZoneOffset.ofHours(3)));
     }
 
     private void intializeContextMenu() {
@@ -379,5 +407,77 @@ public class MainViewController {
         datePickerEnd.setValue(LocalDateConverter.fromString(userPreferencesLoadData.getDateEnd()));
 
         //svgMap.addMarkerByCoordinates(userPreferencesLoadData.getLatitude(), userPreferencesLoadData.getLongitude(), mapImageView, mapPane);
+    }
+
+    @FXML
+    public void addEventCard(String mainImagePath, String titleText, OffsetDateTime eventDateTime) {
+        String buttonImagePath = "/icons/stars.png";
+
+        // Format the OffsetDateTime to display date and time separately
+        String formattedDate = eventDateTime.toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        String formattedTime = eventDateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
+
+
+        // Create the AnchorPane container
+        AnchorPane anchorPane = new AnchorPane();
+        anchorPane.setPrefSize(500, 300);
+        anchorPane.setMinHeight(300);
+
+        // Alternating background colors
+        int index = eventContainer.getChildren().size();
+        Color bgColor = (index % 2 == 0) ? Color.web("#9168c7") : Color.web("#9c78d2");
+        anchorPane.setBackground(new Background(new BackgroundFill(bgColor, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        // Main ImageView
+        ImageView mainImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(mainImagePath))));
+        mainImageView.setFitWidth(120);
+        mainImageView.setFitHeight(129);
+        AnchorPane.setLeftAnchor(mainImageView, 40.0);
+        AnchorPane.setTopAnchor(mainImageView, 40.0);
+
+        // Title Text
+        Text title = new Text(titleText);
+        title.setFont(Font.font("Unispace-Bold", 36));
+        title.setFill(Color.WHITE);
+        AnchorPane.setLeftAnchor(title, 40.0);
+        AnchorPane.setBottomAnchor(title, 40.0);
+
+        // Date Text
+        Text date = new Text(formattedDate);  // Use the formatted date part
+        date.setFont(Font.font("Unispace-Bold", 40));
+        date.setFill(Color.WHITE);
+        AnchorPane.setTopAnchor(date, 20.0);
+        AnchorPane.setRightAnchor(date, 45.0);
+
+        // Time Text
+        Text time = new Text(formattedTime);  // Use the formatted time part
+        time.setFont(Font.font("Unispace-Bold", 40));
+        time.setFill(Color.WHITE);
+        AnchorPane.setTopAnchor(time, 78.0);
+        AnchorPane.setRightAnchor(time, 45.0);
+
+        // Button with ImageView inside
+        Button iconButton = new Button();
+        iconButton.setPrefSize(120, 120);
+        iconButton.setStyle(
+                "-fx-background-color: #f2edf8; " +
+                "-fx-background-radius: 100; " +
+                "-fx-border-color: #34125f; " +
+                "-fx-border-radius: 100; " +
+                "-fx-border-width: 5; " +
+                "-fx-cursor: hand;");
+        AnchorPane.setBottomAnchor(iconButton, 30.0);
+        AnchorPane.setRightAnchor(iconButton, 50.0);
+
+        ImageView buttonImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(buttonImagePath))));
+        buttonImageView.setFitWidth(91);
+        buttonImageView.setFitHeight(87);
+        iconButton.setGraphic(buttonImageView);
+
+        // Add all components to the AnchorPane
+        anchorPane.getChildren().addAll(mainImageView, title, date, time, iconButton);
+
+        // Add the AnchorPane to the VBox container
+        eventContainer.getChildren().add(anchorPane);
     }
 }
