@@ -119,6 +119,9 @@ public class MainViewController {
         // Reposition markers when the window is resized
         mapPane.widthProperty().addListener((obs, oldVal, newVal) -> svgMap.updateMarkers(mapImageView));
         mapPane.heightProperty().addListener((obs, oldVal, newVal) -> svgMap.updateMarkers(mapImageView));
+
+        //svgMap.addMarker(userPreferencesLoadData.getLatitude(), userPreferencesLoadData.getLongitude(), mapImageView, mapPane);
+        //svgMap.addMarkerByCoordinates(userPreferencesLoadData.getLatitude(), userPreferencesLoadData.getLongitude(), mapImageView, mapPane);
     }
 
     private void handleMapClick(MouseEvent event) {
@@ -221,6 +224,7 @@ public class MainViewController {
             lng = Double.parseDouble(selectedCity.getLng());
             System.out.println("Selected city: " + selectedCity.getName() + " (" + selectedCity.getLat() + ", " + selectedCity.getLng() + ")");
 
+            // save the city as user preference
             Map<String, Object> data = new HashMap<>();
             UserPreferences userPreferences = new UserPreferences(
                     selectedCity.getName(),
@@ -387,6 +391,7 @@ public class MainViewController {
         }
     }
 
+    // load user preferences from json
     private void LoadUserPreferences() {
         Map<String, Object> data = dataManager.loadDataAsObject("user_preferences");
         if(data == null) return;
