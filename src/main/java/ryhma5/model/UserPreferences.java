@@ -2,12 +2,14 @@ package ryhma5.model;
 
 public class UserPreferences {
 
+    private String cityName;
     private String dateStart;
     private String dateEnd;
     private double latitude;
     private double longitude;
 
-    public UserPreferences(String dateStart, String dateEnd, double latitude, double longitude){
+    public UserPreferences(String cityName, String dateStart, String dateEnd, double latitude, double longitude){
+        this.cityName = cityName;
         this.dateStart = dateStart;
         this.dateEnd = dateEnd;
         this.latitude = latitude;
@@ -15,36 +17,24 @@ public class UserPreferences {
     }
 
     // getters
-    public String getDateStart(){
-        return dateStart;
-    }
+    public String getCityName() { return cityName; }
 
-    public String getDateEnd(){
-        return dateEnd;
-    }
+    public String getDateStart(){ return dateStart; }
 
-    public double getLatitude(){
-        return latitude;
-    }
+    public String getDateEnd(){ return dateEnd; }
 
-    public double getLongitude(){
-        return longitude;
-    }
+    public double getLatitude(){ return latitude; }
+
+    public double getLongitude(){ return longitude; }
 
     // setters
-    public void setDateStart (String dateStart){
-        this.dateStart = dateStart;
-    }
+    public void  setCityName (String cityName){ this.cityName = cityName; }
 
-    public void setDateEnd (String dateEnd){
-        this.dateEnd = dateEnd;
-    }
+    public void setDateStart (String dateStart){ this.dateStart = dateStart; }
 
-    public void setLatitude(double latitude){
-        this.latitude = latitude;
-    }
+    public void setDateEnd (String dateEnd){ this.dateEnd = dateEnd; }
 
-    public void setLongitude(double longitude){
-        this.longitude = longitude;
-    }
+    public void setLatitude(double latitude){ this.latitude = latitude; }
+
+    public void setLongitude(double longitude){ this.longitude = longitude; }
 }

@@ -29,11 +29,11 @@ public class DataManager{
     }
 
     /***
-     * TODO: rename this? it doesnt work for all types of data
+     * TODO: rename this? it doesn't work for all types of data
      * @param fileName
      * @return
      */
-    public Map<String, Object> loadData(String fileName){
+    public Map<String, Object> loadDataAsObject(String fileName){
         String filePath = directoryPath + fileName +".json";
         Map<String, Object> data = new HashMap<>();
         Gson gson = new Gson();
@@ -41,6 +41,9 @@ public class DataManager{
         try (FileReader reader = new FileReader(filePath)) {
             Type mapType = new TypeToken<Map<String, Object>>() {}.getType(); // Define the type
             data = gson.fromJson(reader, mapType);
+        } catch (FileNotFoundException e) {
+            System.err.println("Warning: File not found - " + filePath);
+            return data;
         } catch (IOException e){
             e.printStackTrace();
         }
@@ -48,18 +51,18 @@ public class DataManager{
         return data;
     }
 
-    public List<City> loadCityList(String fileName) {
+    public <T> List<T> loadDataAsList(String fileName, Class<T> type) {
         String filePath = directoryPath + fileName + ".json";
-        List<City> cityList = new ArrayList<>();
+        List<T> list = new ArrayList<>();
         Gson gson = new Gson();
 
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream(filePath), StandardCharsets.UTF_8)) {            Type listType = new TypeToken<List<City>>() {}.getType();
-            cityList = gson.fromJson(reader, listType);
-            System.out.println("Cities loaded from " + filePath);
+            list = gson.fromJson(reader, listType);
+            System.out.println("Data loaded as list from " + filePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return cityList;
+        return list;
     }
 }
