@@ -1,6 +1,7 @@
 package ryhma5;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -12,9 +13,7 @@ import ryhma5.controller.MainViewController;
 
 public class Start extends Application {
 
-    // boolean to prevent both width and height listeners from running at the same time.
-    // still causes some flickering :/
-    private boolean adjusting = false;
+    boolean resizing = false;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -37,10 +36,45 @@ public class Start extends Application {
         stage.setScene(scene);
         stage.show();
 
+        maintainAspectRatio(stage, scene);
     }
+
+    private void maintainAspectRatio(Stage stage, Scene scene) {
+        // decoration: title bar, window border, etc.
+        double decorationWidth = stage.getWidth() - scene.getWidth();
+        double decorationHeight = stage.getHeight() - scene.getHeight();
+
+        double contentWidth = scene.getWidth();
+        double contentHeight = contentWidth / 2;
+        stage.setHeight(contentHeight + decorationHeight);
+
+
+        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
+            if (!resizing) {
+                resizing = true;
+                double newWidth = newVal.doubleValue();
+                double contentWidth1 = newWidth - decorationWidth;
+                double contentHeight1 = contentWidth1 / 2;
+                stage.setHeight(contentHeight1 + decorationHeight);
+                resizing = false;
+            }
+        });
+
+        stage.heightProperty().addListener((obs, oldVal, newVal) -> {
+            if (!resizing) {
+                resizing = true;
+                double newHeight = newVal.doubleValue();
+                double contentHeight1 = newHeight - decorationHeight;
+                double contentWidth1 = contentHeight1 * 2;
+                stage.setWidth(contentWidth1 + decorationWidth);
+                resizing = false;
+            }
+        });
+    }
+
+
 
     public static void main(String[] args) {
         launch();
     }
 }
- 
