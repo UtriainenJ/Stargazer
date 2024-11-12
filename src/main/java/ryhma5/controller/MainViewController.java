@@ -25,11 +25,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.geometry.Insets;
 import javafx.util.Duration;
 import ryhma5.model.*;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -75,7 +76,7 @@ public class MainViewController {
     private boolean isSidebarVisible = false;
 
     // json data variables
-    private  DataManager dataManager;
+    private DataManager dataManager;
     private UserPreferences userPreferencesLoadData = null;
     private List<Marker> markers = null;
 
@@ -100,7 +101,6 @@ public class MainViewController {
         dataManager = new DataManager();
         loadUserPreferences();
         loadCities();
-        intializeContextMenu();
         setDefaultDates();
         initializeMap();
     }
@@ -188,7 +188,7 @@ public class MainViewController {
         String areaChartURL = avm.getAreaStarChart(x, y, "2024-10-07", 14.83, -15.23, 9);
         System.out.println(areaChartURL);
 
-        String moonPictureURL = avm.getMoonPhaseImage(x,y,"2024-10-07","png");
+        String moonPictureURL = avm.getMoonPhaseImage(x, y, "2024-10-07", "png");
         System.out.println(moonPictureURL);
 
         System.out.println("ooooooooooooooooooooooooooo     ISS    ooooooooooooooooooooooooooooooooooo");
@@ -220,22 +220,20 @@ public class MainViewController {
         // pick dates and city from the fields
         LocalDate startDate = datePickerStart.getValue();
         LocalDate endDate = datePickerEnd.getValue();
-        String city = searchField.getText();
-        double lat = 60.454510; // default to turku
-        double lng = 22.264824;
+        String city = searchField.getText().trim();
 
-        City selectedCity = cityList.stream()
-                .filter(c -> c.getName().equals(city))
-                .findFirst()
-                .orElse(null);
-        if (selectedCity != null) {
-            lat = Double.parseDouble(selectedCity.getLat());
-            lng = Double.parseDouble(selectedCity.getLng());
-            System.out.println("Selected city: " + selectedCity.getName() + " (" + selectedCity.getLat() + ", " + selectedCity.getLng() + ")");
+        Optional<City> selectedCity = cityList.stream()
+                .filter(c -> c.getName().equalsIgnoreCase(city))
+                .findFirst();
+
+        if (selectedCity.isPresent()) {
+            double lat = Double.parseDouble(selectedCity.get().getLat());
+            double lng = Double.parseDouble(selectedCity.get().getLng());
+            System.out.println("Selected city: " + selectedCity.get().getName() + " (" + selectedCity.get().getLat() + ", " + selectedCity.get().getLng() + ")");
 
             // save the city as user preference
             UserPreferences userPreferences = new UserPreferences(
-                    selectedCity.getName(),
+                    selectedCity.get().getName(),
                     LocalDateConverter.toString(startDate),
                     LocalDateConverter.toString(endDate),
                     lat,
@@ -245,6 +243,7 @@ public class MainViewController {
 
         } else {
             System.out.println("City not found: " + city);
+            return;
         }
 
         svgMap.addMarkerByCoordinates(lat, lng, mapImageView, mapPane);
@@ -258,36 +257,13 @@ public class MainViewController {
                 OffsetDateTime.of(2025, 1, 4, 22, 0, 0, 0, ZoneOffset.ofHours(3)));
     }
 
-    private void intializeContextMenu() {
-        searchService = new ScheduledService<>() {
-            @Override
-            protected Task<Void> createTask() {
-                return new Task<>() {
-                    @Override
-                    protected Void call() {
-                        Platform.runLater(MainViewController.this::updateSearchSuggestions);
-                        return null;
-                    }
-                };
-            }
-        };
-        searchService.setDelay(Duration.millis(300)); // Adjust debounce delay as needed
-        searchService.setPeriod(Duration.INDEFINITE); // Run only once after each key event
-
-        // Initialize the debouncing PauseTransition
-        pause = new PauseTransition(Duration.millis(300));
-        pause.setOnFinished(event -> updateSearchSuggestions());
-    }
-
     @FXML
     public void handleSearchFieldKeyPress(KeyEvent event) {
         if (event.getCode().toString().equals("ENTER")) {
             handleEventSearch();
             return;
         }
-
-        // Reset the PauseTransition to delay the updateSuggestions call
-        pause.playFromStart();
+        updateSearchSuggestions();
     }
 
     private void updateSearchSuggestions() {
@@ -469,11 +445,11 @@ public class MainViewController {
         iconButton.setPrefSize(120, 120);
         iconButton.setStyle(
                 "-fx-background-color: #f2edf8; " +
-                "-fx-background-radius: 100; " +
-                "-fx-border-color: #34125f; " +
-                "-fx-border-radius: 100; " +
-                "-fx-border-width: 5; " +
-                "-fx-cursor: hand;");
+                        "-fx-background-radius: 100; " +
+                        "-fx-border-color: #34125f; " +
+                        "-fx-border-radius: 100; " +
+                        "-fx-border-width: 5; " +
+                        "-fx-cursor: hand;");
         AnchorPane.setBottomAnchor(iconButton, 30.0);
         AnchorPane.setRightAnchor(iconButton, 50.0);
 
