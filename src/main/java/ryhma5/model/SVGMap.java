@@ -160,6 +160,16 @@ public class SVGMap {
         }
     }
 
+    public void saveMarkersAsJson(){
+        DataManager dataManager = new DataManager();
+
+        List<double[]> markersXY = new ArrayList<>();
+        for (Marker marker : markers){
+            markersXY.add(new double[]{marker.getRelativeX(), marker.getRelativeY()});
+        }
+        dataManager.saveData(markersXY, "map_markers");
+    }
+
     public double[] getLatLongFromXY(double x, double y, double imageWidth, double imageHeight) {
         double relativeX = x / imageWidth;
         double relativeY = y / imageHeight;
