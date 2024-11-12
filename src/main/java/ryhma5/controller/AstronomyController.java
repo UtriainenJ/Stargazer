@@ -12,10 +12,15 @@ import java.util.stream.Stream;
 
 public class AstronomyController {
 
+    private DataManager dataManager;
+
     private List<AstronomyResponse> responses;
 
     public AstronomyController(){
         responses = new ArrayList<>();
+        dataManager = new DataManager();
+        responses = dataManager.loadDataAsList("astronomy_responses", AstronomyResponse.class);
+        AstronomyAPI.loadAPICredentials();
     }
 
     public ArrayList<AstronomyResponse> getAstronomyEvent(String body,
@@ -204,6 +209,10 @@ public class AstronomyController {
                 }
             }
         return cachedEvents.isEmpty() ? null : cachedEvents;
+    }
+
+    public void saveAstronomyResponses(){
+        dataManager.saveData(responses, "astronomy_responses");
     }
 
     private boolean allDatesCovered(List<AstronomyResponse> cachedResponses, LocalDate fromDate, LocalDate toDate) {

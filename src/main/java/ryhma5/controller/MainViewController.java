@@ -74,9 +74,10 @@ public class MainViewController {
 
     private boolean isSidebarVisible = false;
 
+    // json data variables
     private  DataManager dataManager;
-
     private UserPreferences userPreferencesLoadData = null;
+    private List<Marker> markers = null;
 
     // textfield suggestions variables
     private List<City> cityList;
@@ -89,7 +90,6 @@ public class MainViewController {
     private ImageView mapImageView;
 
 
-
     public void initialize() {
         // Sidebar is moved out of the way at start
         if (sidebar != null) {
@@ -98,7 +98,7 @@ public class MainViewController {
             System.out.println("Sidebar is not loaded.");
         }
         dataManager = new DataManager();
-        LoadUserPreferences();
+        loadUserPreferences();
         loadCities();
         intializeContextMenu();
         setDefaultDates();
@@ -120,6 +120,15 @@ public class MainViewController {
         mapPane.widthProperty().addListener((obs, oldVal, newVal) -> svgMap.updateMarkers(mapImageView));
         mapPane.heightProperty().addListener((obs, oldVal, newVal) -> svgMap.updateMarkers(mapImageView));
 
+        /*
+        List<double[]> markersXY = dataManager.loadDataAsList("map_markers", double[].class);
+        if(markersXY != null) {
+            for (double[] markerXY : markersXY) {
+                //System.out.println(markerXY[0] + " " + markerXY[1]);
+                //svgMap.addMarker(markerXY[0], markerXY[1], mapImageView, mapPane);
+            }
+        }
+         */
         //svgMap.addMarker(userPreferencesLoadData.getLatitude(), userPreferencesLoadData.getLongitude(), mapImageView, mapPane);
         //svgMap.addMarkerByCoordinates(userPreferencesLoadData.getLatitude(), userPreferencesLoadData.getLongitude(), mapImageView, mapPane);
     }
@@ -225,7 +234,6 @@ public class MainViewController {
             System.out.println("Selected city: " + selectedCity.getName() + " (" + selectedCity.getLat() + ", " + selectedCity.getLng() + ")");
 
             // save the city as user preference
-            Map<String, Object> data = new HashMap<>();
             UserPreferences userPreferences = new UserPreferences(
                     selectedCity.getName(),
                     LocalDateConverter.toString(startDate),
@@ -233,8 +241,7 @@ public class MainViewController {
                     lat,
                     lng
             );
-            data.put("userPreferences", userPreferences);
-            dataManager.saveData(data, "user_preferences");
+            dataManager.saveData(userPreferences, "user_preferences");
 
         } else {
             System.out.println("City not found: " + city);
@@ -392,26 +399,22 @@ public class MainViewController {
     }
 
     // load user preferences from json
-    private void LoadUserPreferences() {
-        Map<String, Object> data = dataManager.loadDataAsObject("user_preferences");
-        if(data == null) return;
+    private void loadUserPreferences() {
+        userPreferencesLoadData = dataManager.loadDataAsObject("user_preferences", UserPreferences.class);
 
-        Map<String, Object> userPreferencesMap = (Map<String, Object>) data.get("userPreferences");
-        if(userPreferencesMap == null) return;
-
-        userPreferencesLoadData = new UserPreferences(
-                (String) userPreferencesMap.get("cityName"),
-                (String) userPreferencesMap.get("dateStart"),
-                (String) userPreferencesMap.get("dateEnd"),
-                ((Number) userPreferencesMap.get("latitude")).doubleValue(),
-                ((Number) userPreferencesMap.get("longitude")).doubleValue()
-        );
-
+        if(userPreferencesLoadData == null) {
+            System.out.println("No user prefrences found");
+            return;
+        }
         searchField.setText(userPreferencesLoadData.getCityName());
         datePickerStart.setValue(LocalDateConverter.fromString(userPreferencesLoadData.getDateStart()));
         datePickerEnd.setValue(LocalDateConverter.fromString(userPreferencesLoadData.getDateEnd()));
 
         //svgMap.addMarkerByCoordinates(userPreferencesLoadData.getLatitude(), userPreferencesLoadData.getLongitude(), mapImageView, mapPane);
+    }
+
+    public  void saveMapMarkers(){
+        svgMap.saveMarkersAsJson();
     }
 
     @FXML
