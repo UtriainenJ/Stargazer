@@ -44,9 +44,9 @@ public class SVGMap {
         // check if there exists a marker at the same location, if so select that instead. accurate to some decimals to account for error in conversion
         for (Marker marker : markers) {
             double[] latLong = projector.xyToLatLong(marker.getRelativeX(), marker.getRelativeY());
-            if (Math.abs(latLong[0] - latitude) < 0.01 && Math.abs(latLong[1] - longitude) < 0.01) {
+            if (Math.abs(latLong[0] - latitude) < 3.0 && Math.abs(latLong[1] - longitude) < 3.0) { // check if the markers would be too close
                 System.out.println("Marker already exists at this location");
-                selectMarker(marker, mapPane);
+                selectMarker(marker, mapPane, false);
                 return;
             }
         }
@@ -82,9 +82,9 @@ public class SVGMap {
                 // Add the marker to the mapPane
                 mapPane.getChildren().add(marker.getCircle());
 
-                selectMarker(marker, mapPane);
+                selectMarker(marker, mapPane, true);
                 marker.getCircle().setOnMouseClicked(event -> {
-                    selectMarker(marker, mapPane);
+                    selectMarker(marker, mapPane, true);
                 });
 
                 Timeline timeline = new Timeline(
@@ -103,10 +103,10 @@ public class SVGMap {
      * @param marker  The marker to select
      * @param mapPane The Pane containing the map
      */
-    public void selectMarker(Marker marker, Pane mapPane) {
+    public void selectMarker(Marker marker, Pane mapPane, boolean deleteIfReselected) {
         if (selectedMarker != null) {
             selectedMarker.deSelectMarker();
-            if (selectedMarker == marker) { // If re-selecting the same marker, destroy it
+            if (selectedMarker == marker && deleteIfReselected == true) { // If re-selecting the same marker, destroy it
                 destroyMarker(marker, mapPane);
                 selectedMarker = null;
                 return;
