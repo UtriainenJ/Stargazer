@@ -22,7 +22,7 @@ public class Start extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainViewController.class.getResource("/view/main-view.fxml"));
+        this.fxmlLoader = new FXMLLoader(MainViewController.class.getResource("/view/main-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 400);
 
         stage.setMinWidth(800);

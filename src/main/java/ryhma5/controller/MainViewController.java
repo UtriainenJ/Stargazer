@@ -223,17 +223,28 @@ public class MainViewController {
         String city = searchField.getText().trim();
 
         Optional<City> selectedCity = cityList.stream()
-                .filter(c -> c.getName().equalsIgnoreCase(city))
+                .filter(c -> c.getCityName().equalsIgnoreCase(city))
                 .findFirst();
 
         if (selectedCity.isPresent()) {
             double lat = Double.parseDouble(selectedCity.get().getLat());
             double lng = Double.parseDouble(selectedCity.get().getLng());
-            System.out.println("Selected city: " + selectedCity.get().getName() + " (" + selectedCity.get().getLat() + ", " + selectedCity.get().getLng() + ")");
+            System.out.println("Selected city: " + selectedCity.get().getCityName() + " (" + selectedCity.get().getLat() + ", " + selectedCity.get().getLng() + ")");
+
+
+            svgMap.addMarkerByCoordinates(lat, lng, mapImageView, mapPane);
+
+            // PLACEHOLDER FOR ADDING EVENTS TO LIST
+            addEventCard("/icons/meteor.png", "METEORS",
+                    OffsetDateTime.of(2024, 11, 6, 14, 0, 0, 0, ZoneOffset.ofHours(3)));
+            addEventCard("/icons/stars.png", "METEORS",
+                    OffsetDateTime.of(2024, 11, 26, 17, 30, 0, 0, ZoneOffset.ofHours(3)));
+            addEventCard("/icons/darkstar.png", "METEORS",
+                    OffsetDateTime.of(2025, 1, 4, 22, 0, 0, 0, ZoneOffset.ofHours(3)));
 
             // save the city as user preference
             UserPreferences userPreferences = new UserPreferences(
-                    selectedCity.get().getName(),
+                    selectedCity.get().getCityName(),
                     LocalDateConverter.toString(startDate),
                     LocalDateConverter.toString(endDate),
                     lat,
@@ -246,15 +257,7 @@ public class MainViewController {
             return;
         }
 
-        svgMap.addMarkerByCoordinates(lat, lng, mapImageView, mapPane);
 
-        // PLACEHOLDER FOR ADDING EVENTS TO LIST
-        addEventCard("/icons/meteor.png", "METEORS",
-                OffsetDateTime.of(2024, 11, 6, 14, 0, 0, 0, ZoneOffset.ofHours(3)));
-        addEventCard("/icons/stars.png", "METEORS",
-                OffsetDateTime.of(2024, 11, 26, 17, 30, 0, 0, ZoneOffset.ofHours(3)));
-        addEventCard("/icons/darkstar.png", "METEORS",
-                OffsetDateTime.of(2025, 1, 4, 22, 0, 0, 0, ZoneOffset.ofHours(3)));
     }
 
     @FXML
@@ -274,15 +277,15 @@ public class MainViewController {
         }
 
         List<City> filteredCities = cityList.parallelStream()
-                .filter(city -> city.getName().toLowerCase().startsWith(query))
+                .filter(city -> city.getCityName().toLowerCase().startsWith(query))
                 .limit(20)
                 .collect(Collectors.toList());
 
         suggestionsMenu.getItems().clear();
         filteredCities.forEach(city -> {
-            MenuItem item = new MenuItem(city.getName());
+            MenuItem item = new MenuItem(city.getCityName());
             item.setOnAction(e -> {
-                searchField.setText(city.getName());
+                searchField.setText(city.getCityName());
                 searchField.positionCaret(searchField.getText().length());
                 suggestionsMenu.hide();
             });
