@@ -137,13 +137,19 @@ public class MainViewController {
 
     public void setISSController(WhereISSController issController) {
         this.issController = issController;
+        issController.setMapImageView(mapImageView);
+
 
         // Add ISS image to mapPane
         ImageView issImageView = issController.getISSImageView();
         if (!mapPane.getChildren().contains(issImageView)) {
             mapPane.getChildren().add(issImageView);
         }
+
+        issController.startPeriodicISSUpdate();
     }
+
+
 
 
     private void handleMapClick(MouseEvent event) {
@@ -178,13 +184,13 @@ public class MainViewController {
             System.out.println(evt.toString());
         }
 
-        System.out.println("SIZE: " + testEventList.size());
+        System.out.println(testEventList.size() + " events found");
 
         System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx       BODIES       xxxxxxxxxxxxxxxxxxxxxxxxxx");
         String bodyIdToTestFor = "moon";
         ArrayList<AstronomyResponse> testBodyList = avm.getAstronomyBody(
                 bodyIdToTestFor, Double.toString(x), Double.toString(y), "10",
-                "2024-09-25", "2024-09-28", "01:00:00");
+                "2024-09-25", "2024-09-25", "01:00:00");
         for (AstronomyResponse body : testBodyList) {
             System.out.println(body.toString());
         }
@@ -195,7 +201,7 @@ public class MainViewController {
             System.out.println(body.toString());
         }
 
-        //String constellationChartURL = avm.getConstellationStarChart(latLong[0], latLong[1],"2024-10-07", "ori");
+        //String constellationChartURL = avm.getConstellationStarChart(x, y,"2024-10-07", "ori");
         //System.out.println(constellationChartURL);
         String areaChartURL = avm.getAreaStarChart(x, y, "2024-10-07", 14.83, -15.23, 9);
         System.out.println(areaChartURL);
@@ -206,6 +212,8 @@ public class MainViewController {
         System.out.println("ooooooooooooooooooooooooooo     ISS    ooooooooooooooooooooooooooooooooooo");
 
         ISSResponse issTest = issController.getISS("kilometers", WhereISSAPI.dateToTimestamp("2024-10-07"));
+        ISSResponse issTest2 = issController.getISS("kilometers", null);
+        System.out.println("ISS altitude at now: " + issTest2.getAltitude());
         System.out.println("ISS velocity at 2024-10-7: " + issTest.getVelocity());
 
         ArrayList<Long> issTestDates = new ArrayList<>();
