@@ -1,9 +1,7 @@
 package ryhma5.controller;
 
-import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
-import javafx.concurrent.ScheduledService;
 import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
@@ -20,7 +18,6 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -28,7 +25,6 @@ import javafx.scene.image.Image;
 import javafx.geometry.Insets;
 import javafx.util.Duration;
 import ryhma5.model.*;
-import ryhma5.model.map.SVGMap;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,7 +32,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 public class MainViewController {
 
@@ -116,10 +111,6 @@ public class MainViewController {
 
     ArrayList<AstronomyResponse> sendAPIRequests(double x, double y, String date) {
 
-        /*
-        System.out.println("---------------------------- API TEST ------------------------------------");
-        System.out.println("wwwwwwwwwwwwwwwwwwwwwwwwwww    EVENTS    wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
-         */
         // Length of the timeframe
         int monthsToShift = 6;
         String toDate = DateShifter.shiftDateByMonths(date, monthsToShift);
@@ -227,10 +218,7 @@ public class MainViewController {
 
         } else {
             System.out.println("City not found: " + city);
-            return;
         }
-
-
     }
 
     @FXML
@@ -252,7 +240,7 @@ public class MainViewController {
         List<City> filteredCities = cityList.parallelStream()
                 .filter(city -> city.getCityName().toLowerCase().startsWith(query))
                 .limit(20)
-                .collect(Collectors.toList());
+                .toList();
 
         suggestionsMenu.getItems().clear();
         filteredCities.forEach(city -> {
@@ -297,9 +285,7 @@ public class MainViewController {
 
     // load cities json asynchronously, since it can be large
     private void loadCities() {
-        CompletableFuture.supplyAsync(() -> {
-            return dataManager.loadDataAsList("cities_pruned", City.class);
-        }).thenAccept(cityList -> {
+        CompletableFuture.supplyAsync(() -> dataManager.loadDataAsList("cities_pruned", City.class)).thenAccept(cityList -> {
             Platform.runLater(() -> {
                 System.out.println("Cities loaded: " + cityList.size());
                 this.cityList = cityList;
@@ -489,18 +475,6 @@ public class MainViewController {
 
         // Add the AnchorPane to the VBox container
         eventContainer.getChildren().add(anchorPane);
-    }
-
-    public Pane getMapPane() {
-        return mapController.mapPane;
-    }
-
-    public SVGMap getSvgMap() {
-        return mapController.svgMap;
-    }
-
-    public ImageView getMapImageView() {
-        return mapController.mapImageView;
     }
 
     public WhereISSController getIssController() {

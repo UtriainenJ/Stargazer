@@ -49,18 +49,6 @@ public class MapController {
         mapPane.heightProperty().addListener((obs, oldVal, newVal) -> svgMap.updateMarkers(mapImageView));
         mapPane.widthProperty().addListener((obs, oldVal, newVal) -> mainViewController.getIssController().adjustToWindowSize());
         mapPane.heightProperty().addListener((obs, oldVal, newVal) -> mainViewController.getIssController().adjustToWindowSize());
-
-        /*
-        List<double[]> markersXY = dataManager.loadDataAsList("map_markers", double[].class);
-        if(markersXY != null) {
-            for (double[] markerXY : markersXY) {
-                //System.out.println(markerXY[0] + " " + markerXY[1]);
-                //svgMap.addMarker(markerXY[0], markerXY[1], mapImageView, mapPane);
-            }
-        }
-         */
-        //svgMap.addMarker(userPreferencesLoadData.getLatitude(), userPreferencesLoadData.getLongitude(), mapImageView, mapPane);
-        //svgMap.addMarkerByCoordinates(userPreferencesLoadData.getLatitude(), userPreferencesLoadData.getLongitude(), mapImageView, mapPane);
     }
 
     void handleMapClick(MouseEvent event) {
