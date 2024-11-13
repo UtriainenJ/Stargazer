@@ -2,7 +2,7 @@ package ryhma5.controller;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import ryhma5.model.EquirectangularProjector;
+import ryhma5.model.map.EquirectangularProjector;
 import ryhma5.model.ISSResponse;
 import ryhma5.model.WhereISSAPI;
 import java.util.List;

@@ -1,20 +1,15 @@
 package ryhma5;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import ryhma5.controller.AstronomyController;
 import ryhma5.controller.MainViewController;
 import ryhma5.controller.WhereISSController;
-import ryhma5.model.AstronomyAPI;
-import ryhma5.model.SVGMap;
 
 public class Start extends Application {
 

@@ -1,4 +1,6 @@
-package ryhma5.model;
+package ryhma5.model.map;
+
+import ryhma5.model.Projections;
 
 public final class SVGMapFactory {
 

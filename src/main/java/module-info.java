@@ -13,4 +13,5 @@ module ryhma5 {
     exports ryhma5.controller;
     exports ryhma5;
     opens ryhma5.controller to javafx.fxml;
+    opens ryhma5.model.map to com.google.gson;
 }

@@ -4,7 +4,6 @@ import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.concurrent.ScheduledService;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
@@ -29,9 +28,9 @@ import javafx.scene.image.Image;
 import javafx.geometry.Insets;
 import javafx.util.Duration;
 import ryhma5.model.*;
+import ryhma5.model.map.SVGMap;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import java.time.LocalDate;
@@ -41,9 +40,7 @@ import java.util.stream.Collectors;
 
 public class MainViewController {
 
-    @FXML
-    private StackPane rootPane;
-
+    private MapController mapController;
     @FXML
     private VBox sidebar;
 
@@ -63,28 +60,21 @@ public class MainViewController {
     private ContextMenu suggestionsMenu;
 
     @FXML
-    private Pane mapPane;
-
-    @FXML
     private VBox eventContainer;
 
     private boolean isSidebarVisible = false;
 
+    @FXML
+    private Pane mapPane;
+    @FXML
+    private ImageView mapImageView;
+
     // json data variables
     private DataManager dataManager;
     private UserPreferences userPreferencesLoadData = null;
-    private List<Marker> markers = null;
 
     // textfield suggestions variables
     private List<City> cityList;
-    private ScheduledService<Void> searchService;
-    private PauseTransition pause;
-
-    // map variables
-    private final Projections PROJECTION = Projections.EQUIRECTANGULAR;
-    private SVGMap svgMap;
-    private ImageView mapImageView;
-
 
     private WhereISSController issController;
 
@@ -99,76 +89,32 @@ public class MainViewController {
         loadUserPreferences();
         loadCities();
         setDefaultDates();
-        initializeMap();
-    }
 
-    private void initializeMap() {
-        svgMap = SVGMapFactory.createMap(PROJECTION);
+        mapController = new MapController(this, mapPane, mapImageView);
 
-        mapImageView = svgMap.loadMap(mapPane);
-        if (mapImageView != null) {
-            mapPane.getChildren().add(mapImageView);
-
-            mapImageView.setPickOnBounds(true);
-            mapImageView.setOnMouseClicked(this::handleMapClick);
-        }
-
-        // Reposition markers when the window is resized
-        mapPane.widthProperty().addListener((obs, oldVal, newVal) -> svgMap.updateMarkers(mapImageView));
-        mapPane.heightProperty().addListener((obs, oldVal, newVal) -> svgMap.updateMarkers(mapImageView));
-        mapPane.widthProperty().addListener((obs, oldVal, newVal) -> issController.adjustToWindowSize());
-        mapPane.heightProperty().addListener((obs, oldVal, newVal) -> issController.adjustToWindowSize());
-
-        /*
-        List<double[]> markersXY = dataManager.loadDataAsList("map_markers", double[].class);
-        if(markersXY != null) {
-            for (double[] markerXY : markersXY) {
-                //System.out.println(markerXY[0] + " " + markerXY[1]);
-                //svgMap.addMarker(markerXY[0], markerXY[1], mapImageView, mapPane);
-            }
-        }
-         */
-        //svgMap.addMarker(userPreferencesLoadData.getLatitude(), userPreferencesLoadData.getLongitude(), mapImageView, mapPane);
-        //svgMap.addMarkerByCoordinates(userPreferencesLoadData.getLatitude(), userPreferencesLoadData.getLongitude(), mapImageView, mapPane);
+        mapController.initializeMap();
     }
 
     public void setISSController(WhereISSController issController) {
         this.issController = issController;
-        issController.setMapImageView(mapImageView);
+        issController.setMapImageView(mapController.mapImageView);
 
 
         // Add ISS image to mapPane
         ImageView issImageView = issController.getISSImageView();
-        if (!mapPane.getChildren().contains(issImageView)) {
-            mapPane.getChildren().add(issImageView);
+        if (!mapController.mapPane.getChildren().contains(issImageView)) {
+            mapController.mapPane.getChildren().add(issImageView);
         }
 
         issController.startPeriodicISSUpdate();
         issController.updateISSPosition();
     }
 
-
-
-
-    private void handleMapClick(MouseEvent event) {
-        double x = event.getX();
-        double y = event.getY();
-
-        System.out.println("Clicked X: " + x + ", Y: " + y);
-
-        svgMap.addMarker(x, y, mapImageView, mapPane);
-
-        double imageWidth = mapImageView.getBoundsInParent().getWidth();
-        double imageHeight = mapImageView.getBoundsInParent().getHeight();
-
-        double[] latLong = svgMap.getLatLongFromXY(x, y, imageWidth, imageHeight);
-
-        System.out.println("Latitude: " + latLong[0] + ", Longitude: " + latLong[1]);
-
-        CompletableFuture.runAsync(() -> sendAPIRequests(latLong[0], latLong[1], "2024-11-13"));
+    void handleMapClick(MouseEvent event) {
+        mapController.handleMapClick(event);
     }
 
-    private ArrayList<AstronomyResponse> sendAPIRequests(double x, double y, String date) {
+    ArrayList<AstronomyResponse> sendAPIRequests(double x, double y, String date) {
 
         /*
         System.out.println("---------------------------- API TEST ------------------------------------");
@@ -185,38 +131,9 @@ public class MainViewController {
                 "moon", Double.toString(x), Double.toString(y), "10",
                 date, toDate, time);
 
-        /*
-        for (AstronomyResponse evt : eventList) {
-            System.out.println(evt.toString());
-        }
-
-<<<<<<< HEAD
-        System.out.println("SIZE: " + eventList.size());
-=======
-        System.out.println(testEventList.size() + " events found");
->>>>>>> jaakkoU
-
-        System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx       BODIES       xxxxxxxxxxxxxxxxxxxxxxxxxx");
-
-        String bodyIdToTestFor = "moon";
-        ArrayList<AstronomyResponse> testBodyList = avm.getAstronomyBody(
-                bodyIdToTestFor, Double.toString(x), Double.toString(y), "10",
-<<<<<<< HEAD
-                date, toDate, time);
-=======
-                "2024-09-25", "2024-09-25", "01:00:00");
->>>>>>> jaakkoU
-        for (AstronomyResponse body : testBodyList) {
-            System.out.println(body.toString());
-        }
-        */
 
         ArrayList<AstronomyResponse> testBodyList = avm.getAllAstronomyBodies(Double.toString(x), Double.toString(y),
                 "10", date, toDate, time);
-
-        //for (AstronomyResponse body : testBodyList) {
-        //    System.out.println(body.toString());
-        //}
 
         // Remove certain bodies
         AstronomySorter.removeBodies(testBodyList,
@@ -267,13 +184,6 @@ public class MainViewController {
         return eventList;
     }
 
-    // These could be modified to make sure the sidebar containers don't block the map from the cursor. Couldn't get it to work simply yet
-
-    //sidebarContainer.setMouseTransparent(true);
-    //    for (Node child : sidebarContainer.getChildrenUnmodifiable()){
-    //       child.setMouseTransparent(false);
-    //}
-
 
     @FXML
     private void handleEventSearch() {
@@ -293,7 +203,7 @@ public class MainViewController {
             System.out.println("Selected city: " + selectedCity.get().getCityName() + " (" + selectedCity.get().getLat() + ", " + selectedCity.get().getLng() + ")");
 
 
-            svgMap.addMarkerByCoordinates(lat, lng, mapImageView, mapPane);
+            mapController.svgMap.addMarkerByCoordinates(lat, lng, mapController.mapImageView, mapController.mapPane);
 
 
             ArrayList<AstronomyResponse> eventList = sendAPIRequests(lat, lng,
@@ -456,7 +366,7 @@ public class MainViewController {
     }
 
     public  void saveMapMarkers(){
-        svgMap.saveMarkersAsJson();
+        mapController.saveMapMarkers();
     }
 
     @FXML
@@ -580,4 +490,21 @@ public class MainViewController {
         // Add the AnchorPane to the VBox container
         eventContainer.getChildren().add(anchorPane);
     }
+
+    public Pane getMapPane() {
+        return mapController.mapPane;
+    }
+
+    public SVGMap getSvgMap() {
+        return mapController.svgMap;
+    }
+
+    public ImageView getMapImageView() {
+        return mapController.mapImageView;
+    }
+
+    public WhereISSController getIssController() {
+        return issController;
+    }
+
 }

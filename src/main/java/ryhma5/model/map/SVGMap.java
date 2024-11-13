@@ -1,14 +1,14 @@
-package ryhma5.model;
+package ryhma5.model.map;
 
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
+import ryhma5.model.DataManager;
 
 import java.util.ArrayList;
 import java.util.List;

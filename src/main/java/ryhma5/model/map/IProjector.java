@@ -1,4 +1,4 @@
-package ryhma5.model;
+package ryhma5.model.map;
 
 /**
  * Projector calculates and converts geographic lat-long to XY-cordinates on the map and vice versa.
