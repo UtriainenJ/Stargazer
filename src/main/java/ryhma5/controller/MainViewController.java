@@ -3,26 +3,20 @@ package ryhma5.controller;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.control.Button;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.image.Image;
 import javafx.geometry.Insets;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import ryhma5.model.*;
 
@@ -36,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
 public class MainViewController {
 
     private MapController mapController;
+    private AstronomyController astronomyController;
     @FXML
     private VBox sidebar;
 
@@ -88,6 +83,8 @@ public class MainViewController {
         mapController = new MapController(this, mapPane, mapImageView);
 
         mapController.initializeMap();
+
+        astronomyController = new AstronomyController();
     }
 
     public void setISSController(WhereISSController issController) {
@@ -116,14 +113,12 @@ public class MainViewController {
         String toDate = DateShifter.shiftDateByMonths(date, monthsToShift);
         String time = "12:00:00";
 
-        AstronomyController avm = new AstronomyController();
-
-        ArrayList<AstronomyResponse> eventList = avm.getAstronomyEvent(
+        ArrayList<AstronomyResponse> eventList = astronomyController.getAstronomyEvent(
                 "moon", Double.toString(x), Double.toString(y), "10",
                 date, toDate, time);
 
 
-        ArrayList<AstronomyResponse> testBodyList = avm.getAllAstronomyBodies(Double.toString(x), Double.toString(y),
+        ArrayList<AstronomyResponse> testBodyList = astronomyController.getAllAstronomyBodies(Double.toString(x), Double.toString(y),
                 "10", date, toDate, time);
 
         // Remove certain bodies
@@ -149,7 +144,7 @@ public class MainViewController {
 
         //String constellationChartURL = avm.getConstellationStarChart(x, y,"2024-10-07", "ori");
         //System.out.println(constellationChartURL);
-        String areaChartURL = avm.getAreaStarChart(x, y, "2024-10-07", 14.83, -15.23, 9);
+        String areaChartURL = astronomyController.getAreaStarChart(x, y, "2024-10-07", 14.83, -15.23, 9);
         System.out.println(areaChartURL);
 
         // String areaChartURL = avm.getAreaStarChart(x, y, fromDate, 14.83, -15.23, 9);
@@ -203,7 +198,7 @@ public class MainViewController {
             // Update the sidebar and add the events
             eventContainer.getChildren().clear();
             for (AstronomyResponse event : eventList) {
-                addEventCard(event);
+                addEventCard(event, lat, lng);
             }
 
             // save the city as user preference
@@ -340,7 +335,7 @@ public class MainViewController {
     private void loadUserPreferences() {
         userPreferencesLoadData = dataManager.loadDataAsObject("user_preferences", UserPreferences.class);
 
-        if(userPreferencesLoadData == null) {
+        if (userPreferencesLoadData == null) {
             System.out.println("No user prefrences found");
             return;
         }
@@ -351,12 +346,16 @@ public class MainViewController {
         //svgMap.addMarkerByCoordinates(userPreferencesLoadData.getLatitude(), userPreferencesLoadData.getLongitude(), mapImageView, mapPane);
     }
 
-    public  void saveMapMarkers(){
+    public void saveMapMarkers() {
         mapController.saveMapMarkers();
     }
 
+    public WhereISSController getIssController() {
+        return issController;
+    }
+
     @FXML
-    public void addEventCard(AstronomyResponse event) {
+    public void addEventCard(AstronomyResponse event, double latitude, double longitude) {
         String eventName = event.getEventType();
         OffsetDateTime eventDateTime = event.getDateTime();
 
@@ -466,6 +465,9 @@ public class MainViewController {
             buttonImageView.setFitHeight(87);
             iconButton.setGraphic(buttonImageView);
 
+            // open star chart on click
+            iconButton.setOnAction(e -> openStarChart(event, latitude, longitude));
+
             // Add the button to the AnchorPane
             anchorPane.getChildren().add(iconButton);
         }
@@ -477,8 +479,28 @@ public class MainViewController {
         eventContainer.getChildren().add(anchorPane);
     }
 
-    public WhereISSController getIssController() {
-        return issController;
+    private void openStarChart(AstronomyResponse event, double latitude, double longitude) {
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL); // Makes the popup modal, blocking other windows
+        popupStage.setTitle("Star Chart");
+
+        // Create an ImageView to display the placeholder and final image
+        ImageView imageView = new ImageView();
+        imageView.setPreserveRatio(false); // Disable aspect ratio preservation to fill the window
+        imageView.fitWidthProperty().bind(popupStage.widthProperty());
+        imageView.fitHeightProperty().bind(popupStage.heightProperty());
+
+        // Create a layout to contain the ImageView
+        StackPane popupContent = new StackPane(imageView);
+
+        // Set the popup content in a scene and display it
+        Scene popupScene = new Scene(popupContent, 600, 600);
+        popupStage.setScene(popupScene);
+        popupStage.show();
+
+        // Initialize StarChartProxy, which will handle loading the image asynchronously
+        new StarChartProxy(imageView, astronomyController, latitude, longitude,
+                event.getDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
 
 }

@@ -19,7 +19,7 @@ public class Start extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         this.fxmlLoader = new FXMLLoader(MainViewController.class.getResource("/view/main-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 800, 400);
+        Scene scene = new Scene(fxmlLoader.load(), 1600, 800);
 
 
         MainViewController mainController = fxmlLoader.getController();
