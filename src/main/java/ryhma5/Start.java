@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import ryhma5.controller.AstronomyController;
 import ryhma5.controller.MainViewController;
+import ryhma5.controller.WhereISSController;
 import ryhma5.model.AstronomyAPI;
 import ryhma5.model.SVGMap;
 
@@ -24,6 +25,14 @@ public class Start extends Application {
     public void start(Stage stage) throws IOException {
         this.fxmlLoader = new FXMLLoader(MainViewController.class.getResource("/view/main-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 400);
+
+
+        MainViewController mainController = fxmlLoader.getController();
+        WhereISSController issController = new WhereISSController();
+        issController.initialize();  // Manually call initialize to set up the ImageView
+
+        // Inject issController into mainController
+        mainController.setISSController(issController);
 
         stage.setMinWidth(800);
         stage.setMinHeight(400);

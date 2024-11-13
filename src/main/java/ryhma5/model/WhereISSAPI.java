@@ -2,8 +2,10 @@ package ryhma5.model;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import javafx.scene.image.Image;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -16,6 +18,15 @@ public class WhereISSAPI{
 
     // id for the ISS - the only id the API supports
     private static final String id = Integer.toString(25544);
+
+    private static final String ICON_PATH = "/icons/ISS.png";
+    private static Image ISSIcon = null;
+
+    private static boolean iconLoadAttempted = false;
+
+    static {
+        tryLoadIcons();
+    }
     public static ISSResponse fetchISS(String units, Long timestamp) throws Exception {
         // Construct the API URL
         StringBuilder apiUrl = new StringBuilder("https://api.wheretheiss.at/v1/satellites/" + id);
@@ -115,6 +126,23 @@ public class WhereISSAPI{
         // Use Gson to parse the JSON response
         Gson gson = new Gson();
         return gson.fromJson(jsonResponse, new TypeToken<List<ISSResponse>>() {}.getType());
+    }
+
+    private static void tryLoadIcons() {
+        if (!iconLoadAttempted) {
+            InputStream iconStream = WhereISSAPI.class.getResourceAsStream(ICON_PATH);
+
+            if (iconStream != null) {
+                ISSIcon = new Image(iconStream);
+            }
+            else{ System.err.println("Failed to load one or more marker icons"); }
+
+            iconLoadAttempted = true;
+        }
+    }
+
+    public static Image getISSIcon() {
+        return ISSIcon;
     }
 
     public static long dateToTimestamp(String dateString) {

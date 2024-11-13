@@ -91,6 +91,8 @@ public class MainViewController {
     private ImageView mapImageView;
 
 
+    private WhereISSController issController;
+
     public void initialize() {
         // Sidebar is moved out of the way at start
         if (sidebar != null) {
@@ -133,6 +135,17 @@ public class MainViewController {
         //svgMap.addMarkerByCoordinates(userPreferencesLoadData.getLatitude(), userPreferencesLoadData.getLongitude(), mapImageView, mapPane);
     }
 
+    public void setISSController(WhereISSController issController) {
+        this.issController = issController;
+
+        // Add ISS image to mapPane
+        ImageView issImageView = issController.getISSImageView();
+        if (!mapPane.getChildren().contains(issImageView)) {
+            mapPane.getChildren().add(issImageView);
+        }
+    }
+
+
     private void handleMapClick(MouseEvent event) {
         double x = event.getX();
         double y = event.getY();
@@ -149,7 +162,6 @@ public class MainViewController {
         System.out.println("Latitude: " + latLong[0] + ", Longitude: " + latLong[1]);
 
         CompletableFuture.runAsync(() -> sendAPIRequests(latLong[0], latLong[1]));
-
     }
 
     private void sendAPIRequests(double x, double y) {
@@ -193,15 +205,13 @@ public class MainViewController {
 
         System.out.println("ooooooooooooooooooooooooooo     ISS    ooooooooooooooooooooooooooooooooooo");
 
-        WhereISSController issVM = new WhereISSController();
-
-        ISSResponse issTest = issVM.getISS("kilometers", WhereISSAPI.dateToTimestamp("2024-10-07"));
+        ISSResponse issTest = issController.getISS("kilometers", WhereISSAPI.dateToTimestamp("2024-10-07"));
         System.out.println("ISS velocity at 2024-10-7: " + issTest.getVelocity());
 
         ArrayList<Long> issTestDates = new ArrayList<>();
         issTestDates.add(WhereISSAPI.dateToTimestamp("2024-10-07"));
         issTestDates.add(WhereISSAPI.dateToTimestamp("2024-10-08"));
-        List<ISSResponse> issTestsList = issVM.getISSPositions(issTestDates, "kilometers");
+        List<ISSResponse> issTestsList = issController.getISSPositions(issTestDates, "kilometers");
         System.out.println("ISS altitude from get positions list: " + issTestsList.get(1).getAltitude());
         System.out.println("---------------------------------------------------------------------------");
     }
