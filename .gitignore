@@ -37,3 +37,9 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+
+## resources/json
+src/main/resources/json/map_markers.json
+src/main/resources/json/user_preferences.json
+src/main/resources/json/astronomy_responses.json
