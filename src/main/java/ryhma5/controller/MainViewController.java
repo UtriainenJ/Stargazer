@@ -35,12 +35,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -148,48 +143,81 @@ public class MainViewController {
 
         System.out.println("Latitude: " + latLong[0] + ", Longitude: " + latLong[1]);
 
-        CompletableFuture.runAsync(() -> sendAPIRequests(latLong[0], latLong[1]));
+        CompletableFuture.runAsync(() -> sendAPIRequests(latLong[0], latLong[1], "2024-11-13"));
 
     }
 
-    private void sendAPIRequests(double x, double y) {
+    private ArrayList<AstronomyResponse> sendAPIRequests(double x, double y, String date) {
 
+        /*
         System.out.println("---------------------------- API TEST ------------------------------------");
         System.out.println("wwwwwwwwwwwwwwwwwwwwwwwwwww    EVENTS    wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
+         */
+        // Length of the timeframe
+        int monthsToShift = 6;
+        String toDate = DateShifter.shiftDateByMonths(date, monthsToShift);
+        String time = "12:00:00";
 
         AstronomyController avm = new AstronomyController();
 
-        ArrayList<AstronomyResponse> testEventList = avm.getAstronomyEvent(
+        ArrayList<AstronomyResponse> eventList = avm.getAstronomyEvent(
                 "moon", Double.toString(x), Double.toString(y), "10",
-                "2023-11-07", "2024-10-08", "12:00:00");
-        for (AstronomyResponse evt : testEventList) {
+                date, toDate, time);
+
+        /*
+        for (AstronomyResponse evt : eventList) {
             System.out.println(evt.toString());
         }
 
-        System.out.println("SIZE: " + testEventList.size());
+        System.out.println("SIZE: " + eventList.size());
 
         System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx       BODIES       xxxxxxxxxxxxxxxxxxxxxxxxxx");
+
         String bodyIdToTestFor = "moon";
         ArrayList<AstronomyResponse> testBodyList = avm.getAstronomyBody(
                 bodyIdToTestFor, Double.toString(x), Double.toString(y), "10",
-                "2024-09-25", "2024-09-28", "01:00:00");
+                date, toDate, time);
         for (AstronomyResponse body : testBodyList) {
             System.out.println(body.toString());
         }
+        */
 
-        ArrayList<AstronomyResponse> testBodyList2 = avm.getAllAstronomyBodies(Double.toString(x), Double.toString(y),
-                "10", "2024-10-07", "2024-10-08", "12:00:00");
-        for (AstronomyResponse body : testBodyList2) {
-            System.out.println(body.toString());
+        ArrayList<AstronomyResponse> testBodyList = avm.getAllAstronomyBodies(Double.toString(x), Double.toString(y),
+                "10", date, toDate, time);
+
+        //for (AstronomyResponse body : testBodyList) {
+        //    System.out.println(body.toString());
+        //}
+
+        // Remove certain bodies
+        AstronomySorter.removeBodies(testBodyList,
+                "earth",
+                "pluto",
+                "neptune",
+                "uranus",
+                "mercury",
+                "sun");
+
+        // Get only the dates where the body has the strongest magnitude
+        ArrayList<AstronomyResponse> brightestBodiesList = AstronomySorter.getBrightestBodies(testBodyList);
+
+        eventList.addAll(brightestBodiesList);
+        // Sort the list by date (using dateTime as the key for sorting)
+        eventList.sort(Comparator.comparing(AstronomyResponse::getDateTime));
+
+        System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx       ALL EVENTS       xxxxxxxxxxxxxxxxxxxxxxxxxx");
+        for (AstronomyResponse event : eventList) {
+            System.out.println(event.toString());
         }
 
-        //String constellationChartURL = avm.getConstellationStarChart(latLong[0], latLong[1],"2024-10-07", "ori");
-        //System.out.println(constellationChartURL);
-        String areaChartURL = avm.getAreaStarChart(x, y, "2024-10-07", 14.83, -15.23, 9);
-        System.out.println(areaChartURL);
+        // String constellationChartURL = avm.getConstellationStarChart(latLong[0], latLong[1],"2024-10-07", "ori");
+        // System.out.println(constellationChartURL);
 
-        String moonPictureURL = avm.getMoonPhaseImage(x, y, "2024-10-07", "png");
-        System.out.println(moonPictureURL);
+        // String areaChartURL = avm.getAreaStarChart(x, y, fromDate, 14.83, -15.23, 9);
+        // System.out.println(areaChartURL);
+
+        // String moonPictureURL = avm.getMoonPhaseImage(x, y, fromDate, "png");
+        // System.out.println(moonPictureURL);
 
         System.out.println("ooooooooooooooooooooooooooo     ISS    ooooooooooooooooooooooooooooooooooo");
 
@@ -204,6 +232,8 @@ public class MainViewController {
         List<ISSResponse> issTestsList = issVM.getISSPositions(issTestDates, "kilometers");
         System.out.println("ISS altitude from get positions list: " + issTestsList.get(1).getAltitude());
         System.out.println("---------------------------------------------------------------------------");
+
+        return eventList;
     }
 
     // These could be modified to make sure the sidebar containers don't block the map from the cursor. Couldn't get it to work simply yet
@@ -234,13 +264,15 @@ public class MainViewController {
 
             svgMap.addMarkerByCoordinates(lat, lng, mapImageView, mapPane);
 
-            // PLACEHOLDER FOR ADDING EVENTS TO LIST
-            addEventCard("/icons/meteor.png", "METEORS",
-                    OffsetDateTime.of(2024, 11, 6, 14, 0, 0, 0, ZoneOffset.ofHours(3)));
-            addEventCard("/icons/stars.png", "METEORS",
-                    OffsetDateTime.of(2024, 11, 26, 17, 30, 0, 0, ZoneOffset.ofHours(3)));
-            addEventCard("/icons/darkstar.png", "METEORS",
-                    OffsetDateTime.of(2025, 1, 4, 22, 0, 0, 0, ZoneOffset.ofHours(3)));
+
+            ArrayList<AstronomyResponse> eventList = sendAPIRequests(lat, lng,
+                    startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
+            // Update the sidebar and add the events
+            eventContainer.getChildren().clear();
+            for (AstronomyResponse event : eventList) {
+                addEventCard(event);
+            }
 
             // save the city as user preference
             UserPreferences userPreferences = new UserPreferences(
@@ -397,8 +429,52 @@ public class MainViewController {
     }
 
     @FXML
-    public void addEventCard(String mainImagePath, String titleText, OffsetDateTime eventDateTime) {
+    public void addEventCard(AstronomyResponse event) {
+        String eventName = event.getEventType();
+        OffsetDateTime eventDateTime = event.getDateTime();
+
+        eventName = (eventName == null) ? event.getBodyName() : switch (eventName) {
+            case "total_lunar_eclipse" -> "Lunar Eclipse";
+            case "total_solar_eclipse" -> "Total Solar Eclipse";
+            case "annular_solar_eclipse" -> "Annular Solar Eclipse";
+            case "partial_solar_eclipse" -> "Partial Solar Eclipse";
+            case "partial_lunar_eclipse" -> "Partial Lunar Eclipse";
+            case "penumbral_lunar_eclipse" -> "Penumbral Lunar Eclipse";
+            default -> event.getBodyName(); // Fallback to bodyName if eventName doesn't match
+        };
+
+        // Image for the starmap button
         String buttonImagePath = "/icons/stars.png";
+        String mainImagePath;
+
+        // Determine the main image path based on the event name using a switch statement
+        switch (eventName.toLowerCase()) {
+            case "moon":
+                mainImagePath = "/icons/meteor.png";
+                break;
+            case "jupiter":
+                mainImagePath = "/icons/saturn.png";
+                break;
+            case "mars":
+                mainImagePath = "/icons/saturn.png";
+                break;
+            case "saturn":
+                mainImagePath = "/icons/saturn.png";
+                break;
+            case "venus":
+                mainImagePath = "/icons/saturn.png";
+                break;
+            case "lunar eclipse":
+                mainImagePath = "/icons/darkstar.png";
+                break;
+            case "total solar eclipse":
+                mainImagePath = "/icons/darkstar.png";
+                break;
+            // Add more cases for other celestial bodies as needed
+            default:
+                mainImagePath = "/icons/stars.png";  // Fallback image in case the body name is not recognized
+                break;
+        }
 
         // Format the OffsetDateTime to display date and time separately
         String formattedDate = eventDateTime.toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
@@ -423,7 +499,7 @@ public class MainViewController {
         AnchorPane.setTopAnchor(mainImageView, 40.0);
 
         // Title Text
-        Text title = new Text(titleText);
+        Text title = new Text(eventName);
         title.setFont(Font.font("Unispace-Bold", 36));
         title.setFill(Color.WHITE);
         AnchorPane.setLeftAnchor(title, 40.0);
@@ -443,26 +519,32 @@ public class MainViewController {
         AnchorPane.setTopAnchor(time, 78.0);
         AnchorPane.setRightAnchor(time, 45.0);
 
-        // Button with ImageView inside
-        Button iconButton = new Button();
-        iconButton.setPrefSize(120, 120);
-        iconButton.setStyle(
-                "-fx-background-color: #f2edf8; " +
-                        "-fx-background-radius: 100; " +
-                        "-fx-border-color: #34125f; " +
-                        "-fx-border-radius: 100; " +
-                        "-fx-border-width: 5; " +
-                        "-fx-cursor: hand;");
-        AnchorPane.setBottomAnchor(iconButton, 30.0);
-        AnchorPane.setRightAnchor(iconButton, 50.0);
+        // Add the button with ImageView only if the event is not a special event type (like an eclipse)
+        if (event.getEventType() == null) {
+            // Button with ImageView inside (for non-event types like celestial bodies)
+            Button iconButton = new Button();
+            iconButton.setPrefSize(120, 120);
+            iconButton.setStyle(
+                    "-fx-background-color: #f2edf8; " +
+                            "-fx-background-radius: 100; " +
+                            "-fx-border-color: #34125f; " +
+                            "-fx-border-radius: 100; " +
+                            "-fx-border-width: 5; " +
+                            "-fx-cursor: hand;");
+            AnchorPane.setBottomAnchor(iconButton, 30.0);
+            AnchorPane.setRightAnchor(iconButton, 50.0);
 
-        ImageView buttonImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(buttonImagePath))));
-        buttonImageView.setFitWidth(91);
-        buttonImageView.setFitHeight(87);
-        iconButton.setGraphic(buttonImageView);
+            ImageView buttonImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(buttonImagePath))));
+            buttonImageView.setFitWidth(91);
+            buttonImageView.setFitHeight(87);
+            iconButton.setGraphic(buttonImageView);
+
+            // Add the button to the AnchorPane
+            anchorPane.getChildren().add(iconButton);
+        }
 
         // Add all components to the AnchorPane
-        anchorPane.getChildren().addAll(mainImageView, title, date, time, iconButton);
+        anchorPane.getChildren().addAll(mainImageView, title, date, time);
 
         // Add the AnchorPane to the VBox container
         eventContainer.getChildren().add(anchorPane);

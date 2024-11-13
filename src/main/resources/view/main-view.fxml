@@ -22,7 +22,7 @@
       <AnchorPane prefHeight="1004.0" prefWidth="1579.0">
          <children>
               <StackPane layoutX="8.0" prefHeight="600.0" prefWidth="1200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                  <Pane fx:id="mapPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" style="-fx-background-color: #2c1c41;">
+                  <Pane fx:id="mapPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" style="-fx-background-color: #2c1c41; -fx-background-image: url('/icons/purple_dark_nebula.jpg'); -fx-background-size: cover;">
                   </Pane>
               </StackPane>
               <!-- Sidebar and button container -->
