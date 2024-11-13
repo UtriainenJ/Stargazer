@@ -121,6 +121,8 @@ public class MainViewController {
         // Reposition markers when the window is resized
         mapPane.widthProperty().addListener((obs, oldVal, newVal) -> svgMap.updateMarkers(mapImageView));
         mapPane.heightProperty().addListener((obs, oldVal, newVal) -> svgMap.updateMarkers(mapImageView));
+        mapPane.widthProperty().addListener((obs, oldVal, newVal) -> issController.adjustToWindowSize());
+        mapPane.heightProperty().addListener((obs, oldVal, newVal) -> issController.adjustToWindowSize());
 
         /*
         List<double[]> markersXY = dataManager.loadDataAsList("map_markers", double[].class);
@@ -147,6 +149,7 @@ public class MainViewController {
         }
 
         issController.startPeriodicISSUpdate();
+        issController.updateISSPosition();
     }
 
 
