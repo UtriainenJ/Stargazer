@@ -2,7 +2,9 @@ package ryhma5.model.api.astronomyAPI;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-
+/**
+ * A class representing the response from the "Astronomy API".
+ */
 public class AstronomyResponse {
 
     // date and time for events is at the events peak
