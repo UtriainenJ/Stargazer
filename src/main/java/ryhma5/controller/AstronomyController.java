@@ -20,7 +20,7 @@ public class AstronomyController {
         responses = new ArrayList<>();
         dataManager = new DataManager();
         responses = dataManager.loadDataAsList("astronomy_responses", AstronomyResponse.class);
-        AstronomyAPI.loadAPICredentials();
+        AstronomyHandler.loadAPICredentials();
     }
 
     public ArrayList<AstronomyResponse> getAstronomyEvent(String body,
@@ -41,7 +41,7 @@ public class AstronomyController {
         }
 
         try {
-            ArrayList<AstronomyResponse> newEvents = AstronomyAPI.fetchAstronomyEvent(body,
+            ArrayList<AstronomyResponse> newEvents = AstronomyHandler.fetchAstronomyEvent(body,
                                                                                     latitude,
                                                                                     longitude,
                                                                                     elevation,
@@ -79,7 +79,7 @@ public class AstronomyController {
 
         // Fetch new body information if not cached
         try {
-            ArrayList<AstronomyResponse> newBodies = AstronomyAPI.fetchAstronomyBody(body,
+            ArrayList<AstronomyResponse> newBodies = AstronomyHandler.fetchAstronomyBody(body,
                                                                                 latitude,
                                                                                 longitude,
                                                                                 elevation,
@@ -131,7 +131,7 @@ public class AstronomyController {
 
         // Fetch new body information if not cached
         try {
-            ArrayList<AstronomyResponse> newBodies = AstronomyAPI.fetchAllBodies(latitude,
+            ArrayList<AstronomyResponse> newBodies = AstronomyHandler.fetchAllBodies(latitude,
                                                                                 longitude,
                                                                                 elevation,
                                                                                 fromDate,
@@ -152,7 +152,7 @@ public class AstronomyController {
 
     public String getConstellationStarChart(double latitude, double longitude, String date, String constellationId) {
         try {
-            return AstronomyAPI.generateConstellationStarChart(latitude, longitude, date, constellationId);
+            return AstronomyHandler.generateConstellationStarChart(latitude, longitude, date, constellationId);
         } catch (Exception e) {
             System.err.println("Error generating star chart: " + e.getMessage());
             return null;
@@ -161,7 +161,7 @@ public class AstronomyController {
 
     public String getAreaStarChart(double latitude, double longitude, String date, Double rightAscension, Double declination, Integer zoom) {
         try {
-            return AstronomyAPI.generateAreaStarChart(latitude, longitude, date, rightAscension, declination, zoom);
+            return AstronomyHandler.generateAreaStarChart(latitude, longitude, date, rightAscension, declination, zoom);
         } catch (Exception e) {
             System.err.println("Error generating area star chart: " + e.getMessage());
             return null;
@@ -170,7 +170,7 @@ public class AstronomyController {
 
     public String getMoonPhaseImage(double latitude, double longitude, String date, String format) {
         try {
-            return AstronomyAPI.generateMoonPhaseImage(latitude, longitude, date, format);
+            return AstronomyHandler.generateMoonPhaseImage(latitude, longitude, date, format);
         } catch (Exception e) {
             System.err.println("Error generating moon phase image: " + e.getMessage());
             return null;
