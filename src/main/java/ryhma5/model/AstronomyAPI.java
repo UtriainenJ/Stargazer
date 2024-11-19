@@ -15,20 +15,19 @@
 
     public class AstronomyAPI {
 
-        /*
+/*
         private static final String APPLICATIONID = "a8b19fa3-5fd9-4285-994f-5704eb84baf5";
         private static final String APPLICATIONSECRET = "593aea4dedd5e83e7f58605ab827e97fb2ddc9325769915eec568a2e31aab"
                                                         +"f39d602bc87216783f49ec5d10f1e2877f9343106d473c661d0e76d75ff67"
                                                         +"3587e960e3f7aa6c4870662f4a600cc28abbe0026813a4dd170c84a7820a"
                                                         +"eb543b7f5477641fd74436302c01dd72628c0089cc";
-        */
+*/
 
         private static String APPLICATIONID;
         private static String APPLICATIONSECRET;
 
         public static void loadAPICredentials(){
-            DataManager dataManager = new DataManager();
-            ApiCredentials credentials = dataManager.loadDataAsObject("api_credentials", ApiCredentials.class);
+            ApiCredentials credentials = DataManager.loadDataAsObject("api_credentials", ApiCredentials.class);
             APPLICATIONID = credentials.getApplicationId();
             APPLICATIONSECRET = credentials.getApplicationSecret();
         }

@@ -71,9 +71,11 @@ public class SVGMap {
                     Marker oldestMarker = markers.remove(0);
                     destroyMarker(oldestMarker, mapPane);
                 }
+                // Calculate the latitude and longitude from x and y and use it in new Marker
+                double[] latLong = getLatLongFromXY(x, y, imageWidth, imageHeight);
 
                 // Calculate the relative position of the marker and set size immediately
-                Marker marker = new Marker(x / imageWidth, y / imageHeight, markerRadius);
+                Marker marker = new Marker(x / imageWidth, y / imageHeight, markerRadius, latLong[0], latLong[1]);
                 markers.add(marker);
 
                 // Set the marker's initial position
@@ -163,13 +165,11 @@ public class SVGMap {
     }
 
     public void saveMarkersAsJson(){
-        DataManager dataManager = new DataManager();
-
-        List<double[]> markersXY = new ArrayList<>();
+        List<double[]> markersLatLong = new ArrayList<>();
         for (Marker marker : markers){
-            markersXY.add(new double[]{marker.getRelativeX(), marker.getRelativeY()});
+            markersLatLong.add(new double[]{marker.getLat(), marker.getLong()});
         }
-        dataManager.saveData(markersXY, "map_markers");
+        DataManager.saveData(markersLatLong, "map_markers");
     }
 
     public double[] getLatLongFromXY(double x, double y, double imageWidth, double imageHeight) {

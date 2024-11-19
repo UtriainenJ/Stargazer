@@ -1,9 +1,11 @@
 package ryhma5.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import ryhma5.model.DataManager;
 import ryhma5.model.Projections;
 import ryhma5.model.map.Marker;
 import ryhma5.model.map.SVGMap;
@@ -17,7 +19,7 @@ public class MapController {
     private final Projections PROJECTION;
     @FXML
     Pane mapPane;
-    private List<Marker> markers = null;
+    //private List<Marker> markers = null;
     // map variables
     SVGMap svgMap;
     ImageView mapImageView;
@@ -49,6 +51,10 @@ public class MapController {
         mapPane.heightProperty().addListener((obs, oldVal, newVal) -> svgMap.updateMarkers(mapImageView));
         mapPane.widthProperty().addListener((obs, oldVal, newVal) -> mainViewController.getIssController().adjustToWindowSize());
         mapPane.heightProperty().addListener((obs, oldVal, newVal) -> mainViewController.getIssController().adjustToWindowSize());
+
+        Platform.runLater(()->{
+            loadMapMarkers();
+        });
     }
 
     void handleMapClick(MouseEvent event) {
@@ -64,9 +70,19 @@ public class MapController {
 
         double[] latLong = svgMap.getLatLongFromXY(x, y, imageWidth, imageHeight);
 
-        System.out.println("Latitude: " + latLong[0] + ", Longitude: " + latLong[1]);
-
         CompletableFuture.runAsync(() -> mainViewController.sendAPIRequests(latLong[0], latLong[1], "2024-11-13"));
+    }
+
+    public  void loadMapMarkers(){
+
+        List<double[]> markersCoord = DataManager.loadDataAsList("map_markers", double[].class);
+
+        if(markersCoord == null){return;}
+
+        for(double[] markerCoord : markersCoord){
+            System.out.println("coord, lat " + markerCoord[0] + ", long " + markerCoord[1] );
+            svgMap.addMarkerByCoordinates(markerCoord[0], markerCoord[1], mapImageView, mapPane);
+        }
     }
 
     public void saveMapMarkers() {
