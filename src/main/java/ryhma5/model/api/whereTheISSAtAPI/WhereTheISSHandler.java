@@ -14,6 +14,9 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
 
+/**
+ * A class for handling requests to the Where the ISS At API.
+ */
 public class WhereTheISSHandler {
 
     // id for the ISS - the only id the API supports
@@ -27,6 +30,14 @@ public class WhereTheISSHandler {
     static {
         tryLoadIcons();
     }
+
+    /**
+     * Fetches the current position of the ISS at the specified timestamp.
+     * @param units The units to use for the response. Can be "kilometers" or "miles".
+     * @param timestamp The Unix timestamp (seconds since the epoch) for which to retrieve the ISS position.
+     * @return An ISSResponse object containing the current position of the ISS.
+     * @throws Exception If the request fails.
+     */
     public static ISSResponse fetchISS(String units, Long timestamp) throws Exception {
         // Construct the API URL
         StringBuilder apiUrl = new StringBuilder("https://api.wheretheiss.at/v1/satellites/" + id);
@@ -70,7 +81,12 @@ public class WhereTheISSHandler {
         }
     }
 
-    // Fetches the current position of the ISS at the current time
+    /**
+     * Fetches the current position of the ISS at the current time.
+     * @param units The units to use for the response. Can be "kilometers" or "miles".
+     * @return An ISSResponse object containing the current position of the ISS.
+     * @throws Exception If the request fails.
+     */
     public static ISSResponse fetchISS(String units) throws Exception {
         // Construct the API URL
         StringBuilder apiUrl = new StringBuilder("https://api.wheretheiss.at/v1/satellites/" + id);
@@ -108,13 +124,19 @@ public class WhereTheISSHandler {
         }
     }
 
-
     private static ISSResponse parseISS(String jsonResponse) {
         // Use Gson to parse the JSON response
         Gson gson = new Gson();
         return gson.fromJson(jsonResponse, ISSResponse.class);
     }
 
+    /**
+     *  Fetches the positions of the ISS at the specified timestamps.
+     *  @param timestamps A list of Unix timestamps (seconds since the epoch) for which to retrieve the ISS positions.
+     *  @param units The units to use for the response. Can be "kilometers" or "miles".
+     *  @return A list of ISSResponse objects containing the ISS positions at the specified timestamps.
+     *  @throws Exception If the request fails.
+     */
     public static List<ISSResponse> fetchISSPositions(List<Long> timestamps, String units) throws Exception {
         // Construct the API URL
         StringBuilder apiUrl = new StringBuilder("https://api.wheretheiss.at/v1/satellites/" + id + "/positions");
@@ -181,6 +203,10 @@ public class WhereTheISSHandler {
         }
     }
 
+    /**
+     * Returns the icon to use for the ISS icon
+     * @return The icon to use for the ISS icon
+     */
     public static Image getISSIcon() {
         return ISSIcon;
     }
