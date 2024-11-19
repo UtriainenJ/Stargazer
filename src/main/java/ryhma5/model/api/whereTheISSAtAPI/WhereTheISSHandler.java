@@ -184,13 +184,4 @@ public class WhereTheISSHandler {
     public static Image getISSIcon() {
         return ISSIcon;
     }
-
-    public static long dateToTimestamp(String dateString) {
-        // Parse the date string into a LocalDate
-        LocalDate date = LocalDate.parse(dateString);
-
-        // Convert LocalDate to timestamp (in seconds)
-        return date.atStartOfDay(ZoneOffset.UTC).toEpochSecond();
-    }
-
 }
