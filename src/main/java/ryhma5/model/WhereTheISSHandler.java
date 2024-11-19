@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
 
-public class WhereISSAPI{
+public class WhereTheISSHandler {
 
     // id for the ISS - the only id the API supports
     private static final String id = Integer.toString(25544);
@@ -170,7 +170,7 @@ public class WhereISSAPI{
 
     private static void tryLoadIcons() {
         if (!iconLoadAttempted) {
-            InputStream iconStream = WhereISSAPI.class.getResourceAsStream(ICON_PATH);
+            InputStream iconStream = WhereTheISSHandler.class.getResourceAsStream(ICON_PATH);
 
             if (iconStream != null) {
                 ISSIcon = new Image(iconStream);

@@ -4,7 +4,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import ryhma5.model.map.EquirectangularProjector;
 import ryhma5.model.ISSResponse;
-import ryhma5.model.WhereISSAPI;
+import ryhma5.model.WhereTheISSHandler;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -20,7 +20,7 @@ public class WhereISSController {
     private ISSResponse currentISS;
     public void initialize() {
         // Create and configure the ISS icon ImageView directly
-        Image issIconImage = WhereISSAPI.getISSIcon();
+        Image issIconImage = WhereTheISSHandler.getISSIcon();
         issImageView = new ImageView(issIconImage);
         issImageView.setScaleX(-1); // Flip the image horizontally
 
@@ -72,7 +72,7 @@ public class WhereISSController {
     }
     public ISSResponse getISS(String units, Long timestamp) {
         try {
-            return WhereISSAPI.fetchISS(units, timestamp);
+            return WhereTheISSHandler.fetchISS(units, timestamp);
         } catch (Exception e) {
             System.err.println("Error fetching ISS information: " + e.getMessage());
             return null;
@@ -80,7 +80,7 @@ public class WhereISSController {
     }
     public ISSResponse getISS(String units) {
         try {
-            return WhereISSAPI.fetchISS(units);
+            return WhereTheISSHandler.fetchISS(units);
         } catch (Exception e) {
             System.err.println("Error fetching ISS information: " + e.getMessage());
             return null;
@@ -90,7 +90,7 @@ public class WhereISSController {
 
     public List<ISSResponse> getISSPositions(List<Long> timestamps, String units) {
         try {
-            return WhereISSAPI.fetchISSPositions(timestamps, units);
+            return WhereTheISSHandler.fetchISSPositions(timestamps, units);
         } catch (Exception e) {
             System.err.println("Error fetching ISS positions: " + e.getMessage());
             return null;
