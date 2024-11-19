@@ -1,4 +1,4 @@
-package ryhma5.model;
+package ryhma5.model.api.whereTheISSAtAPI;
 
 public class ISSResponse {
     private String name;

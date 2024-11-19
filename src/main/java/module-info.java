@@ -15,4 +15,6 @@ module ryhma5 {
     exports ryhma5.model;
     opens ryhma5.controller to javafx.fxml;
     opens ryhma5.model.map to com.google.gson;
+    exports ryhma5.model.api.whereTheISSAtAPI;
+    opens ryhma5.model.api.whereTheISSAtAPI to com.google.gson;
 }

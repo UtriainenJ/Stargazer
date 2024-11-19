@@ -1,4 +1,4 @@
-package ryhma5.model;
+package ryhma5.model.api.whereTheISSAtAPI;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

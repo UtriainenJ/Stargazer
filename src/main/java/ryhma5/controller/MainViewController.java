@@ -18,6 +18,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import ryhma5.model.*;
+import ryhma5.model.api.whereTheISSAtAPI.ISSResponse;
+import ryhma5.model.api.whereTheISSAtAPI.WhereTheISSHandler;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
