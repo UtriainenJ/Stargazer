@@ -13,9 +13,9 @@ import java.util.List;
 
 public class DataManager{
 
-    private final String directoryPath = "src/main/resources/json/";
+    private static final String directoryPath = "src/main/resources/json/";
 
-    public void saveData(Object data, String fileName){
+    public static void saveData(Object data, String fileName){
         String filePath = directoryPath + fileName +".json";
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
@@ -30,7 +30,7 @@ public class DataManager{
         }
     }
 
-    public <T> T loadDataAsObject(String fileName, Class<T> type){
+    public static  <T> T loadDataAsObject(String fileName, Class<T> type){
         String filePath = directoryPath + fileName +".json";
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeAdapter())
@@ -48,7 +48,7 @@ public class DataManager{
         return data;
     }
 
-    public <T> List<T> loadDataAsList(String fileName, Class<T> type) {
+    public static  <T> List<T> loadDataAsList(String fileName, Class<T> type) {
         String filePath = directoryPath + fileName + ".json";
         List<T> list = new ArrayList<>();
         Gson gson = new GsonBuilder()

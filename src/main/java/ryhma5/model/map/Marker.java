@@ -9,12 +9,16 @@ public class Marker {
     private final Circle circle;
     private final double relativeX;
     private final double relativeY;
+    private final double latitude;
+    private final double longitude;
     private boolean isSelected = false;
 
-    public Marker(double relativeX, double relativeY, double radius) {
+    public Marker(double relativeX, double relativeY, double radius, double latitude, double longitude) {
         this.circle = createStyledMarkerCircle(radius);
         this.relativeX = relativeX;
         this.relativeY = relativeY;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     private Circle createStyledMarkerCircle(double radius) {
@@ -64,5 +68,13 @@ public class Marker {
 
     public double getRelativeY() {
         return relativeY;
+    }
+
+    public double getLat() {
+        return latitude;
+    }
+
+    public double getLong() {
+        return longitude;
     }
 }

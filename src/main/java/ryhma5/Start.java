@@ -3,6 +3,7 @@ package ryhma5;
 import java.io.IOException;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -77,10 +78,34 @@ public class Start extends Application {
 
 
     private void onCloseRequest(WindowEvent event) {
-        AstronomyController astronomyController = new AstronomyController();
-        astronomyController.saveAstronomyResponses();
         MainViewController mainViewController = fxmlLoader.getController();
+        mainViewController.saveAstronomyResponses();
         mainViewController.saveMapMarkers();
+        System.out.println("++++++++++++++++++++++++++++++++++++++ onCloseRequest done ++++++++++++++++++++++++++++++++++++++");
+        //Platform.exit();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Shutdown hook triggered.");
+            Thread.getAllStackTraces().keySet().forEach(thread ->
+                    System.out.println("Active thread: " + thread.getName() + " (state: " + thread.getState() + ")")
+            );
+        }));
+        for (Thread thread : Thread.getAllStackTraces().keySet()) {
+            System.out.println("Thread: " + thread.getName());
+            for (StackTraceElement element : thread.getStackTrace()) {
+                System.out.println("\t" + element);
+            }
+        }
+        //Platform.exit();
+        /*
+        try {
+            Thread.sleep(5000);  // Odota 5 sekuntia ennen sulkemista
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();  // Käsittele keskeytys
+        }
+
+        System.exit(0);  // Lopeta ohjelma
+
+         */
     }
 
     public static void main(String[] args) {

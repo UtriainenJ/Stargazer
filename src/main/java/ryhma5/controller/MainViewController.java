@@ -25,7 +25,8 @@ import java.time.format.DateTimeFormatter;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.*;
+
 
 public class MainViewController {
 
@@ -59,9 +60,9 @@ public class MainViewController {
     @FXML
     private ImageView mapImageView;
 
-    // json data variables
-    private DataManager dataManager;
+    // user preferences variables
     private UserPreferences userPreferencesLoadData = null;
+    ExecutorService executor = Executors.newFixedThreadPool(4);
 
     // textfield suggestions variables
     private List<City> cityList;
@@ -75,7 +76,7 @@ public class MainViewController {
         } else {
             System.out.println("Sidebar is not loaded.");
         }
-        dataManager = new DataManager();
+
         loadUserPreferences();
         loadCities();
         setDefaultDates();
@@ -188,7 +189,6 @@ public class MainViewController {
             double lng = Double.parseDouble(selectedCity.get().getLng());
             System.out.println("Selected city: " + selectedCity.get().getCityName() + " (" + selectedCity.get().getLat() + ", " + selectedCity.get().getLng() + ")");
 
-
             mapController.svgMap.addMarkerByCoordinates(lat, lng, mapController.mapImageView, mapController.mapPane);
 
 
@@ -209,7 +209,8 @@ public class MainViewController {
                     lat,
                     lng
             );
-            dataManager.saveData(userPreferences, "user_preferences");
+            DataManager.saveData(userPreferences, "user_preferences");
+
 
         } else {
             System.out.println("City not found: " + city);
@@ -280,7 +281,7 @@ public class MainViewController {
 
     // load cities json asynchronously, since it can be large
     private void loadCities() {
-        CompletableFuture.supplyAsync(() -> dataManager.loadDataAsList("cities_pruned", City.class)).thenAccept(cityList -> {
+        CompletableFuture.supplyAsync(() -> DataManager.loadDataAsList("cities_pruned", City.class)).thenAccept(cityList -> {
             Platform.runLater(() -> {
                 System.out.println("Cities loaded: " + cityList.size());
                 this.cityList = cityList;
@@ -290,7 +291,6 @@ public class MainViewController {
             return null;
         });
     }
-
 
     /**
      * If the date pickers are empty (on init), set them to the current date.
@@ -333,7 +333,7 @@ public class MainViewController {
 
     // load user preferences from json
     private void loadUserPreferences() {
-        userPreferencesLoadData = dataManager.loadDataAsObject("user_preferences", UserPreferences.class);
+        userPreferencesLoadData = DataManager.loadDataAsObject("user_preferences", UserPreferences.class);
 
         if (userPreferencesLoadData == null) {
             System.out.println("No user prefrences found");
@@ -348,6 +348,10 @@ public class MainViewController {
 
     public void saveMapMarkers() {
         mapController.saveMapMarkers();
+    }
+
+    public void saveAstronomyResponses(){
+        astronomyController.saveAstronomyResponses();
     }
 
     public WhereISSController getIssController() {
