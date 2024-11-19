@@ -3,7 +3,6 @@ package ryhma5.controller;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -19,6 +18,14 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import ryhma5.model.*;
+import ryhma5.model.api.astronomyAPI.AstronomyResponse;
+import ryhma5.model.api.astronomyAPI.AstronomySorter;
+import ryhma5.model.api.astronomyAPI.StarChartProxy;
+import ryhma5.model.api.whereTheISSAtAPI.ISSResponse;
+import ryhma5.model.api.whereTheISSAtAPI.WhereTheISSHandler;
+import ryhma5.model.dateTimeUtils.DateShifter;
+import ryhma5.model.dateTimeUtils.LocalDateConverter;
+import ryhma5.model.dateTimeUtils.TimestampConverter;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -156,21 +163,15 @@ public class MainViewController {
 
         System.out.println("ooooooooooooooooooooooooooo     ISS    ooooooooooooooooooooooooooooooooooo");
 
-        ISSResponse issTest = issController.getISS("kilometers", WhereISSAPI.dateToTimestamp("2024-10-07"));
+        ISSResponse issTest = issController.getISS("kilometers",
+                TimestampConverter.toTimestamp("2024-10-07","03:00:00"));
         ISSResponse issTest2 = issController.getISS("kilometers", null);
         System.out.println("ISS altitude at now: " + issTest2.getAltitude());
         System.out.println("ISS velocity at 2024-10-7: " + issTest.getVelocity());
-
-        ArrayList<Long> issTestDates = new ArrayList<>();
-        issTestDates.add(WhereISSAPI.dateToTimestamp("2024-10-07"));
-        issTestDates.add(WhereISSAPI.dateToTimestamp("2024-10-08"));
-        List<ISSResponse> issTestsList = issController.getISSPositions(issTestDates, "kilometers");
-        System.out.println("ISS altitude from get positions list: " + issTestsList.get(1).getAltitude());
         System.out.println("---------------------------------------------------------------------------");
 
         return eventList;
     }
-
 
     @FXML
     private void handleEventSearch() {

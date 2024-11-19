@@ -1,5 +1,8 @@
-package ryhma5.model;
+package ryhma5.model.api.whereTheISSAtAPI;
 
+/**
+ * A class representing the response from the "Where the ISS at?" API.
+ */
 public class ISSResponse {
     private String name;
     private int id;

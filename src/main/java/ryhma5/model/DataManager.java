@@ -3,6 +3,7 @@ package ryhma5.model;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.GsonBuilder;
+import ryhma5.model.dateTimeUtils.OffsetDateTimeAdapter;
 
 import java.io.*;
 import java.lang.reflect.Type;

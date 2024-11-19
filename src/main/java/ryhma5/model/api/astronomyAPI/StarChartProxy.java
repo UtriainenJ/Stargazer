@@ -1,4 +1,4 @@
-package ryhma5.model;
+package ryhma5.model.api.astronomyAPI;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;

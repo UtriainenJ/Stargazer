@@ -1,6 +1,8 @@
 package ryhma5.controller;
 
 import ryhma5.model.*;
+import ryhma5.model.api.astronomyAPI.AstronomyHandler;
+import ryhma5.model.api.astronomyAPI.AstronomyResponse;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,16 +12,34 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * A controller class for the Astronomy API.
+ * Caches responses to avoid unnecessary API calls.
+ */
 public class AstronomyController {
 
     private List<AstronomyResponse> responses;
 
+    /**
+     * Initializes the controller.
+     */
     public AstronomyController(){
         responses = new ArrayList<>();
         responses = DataManager.loadDataAsList("astronomy_responses", AstronomyResponse.class);
-        AstronomyAPI.loadAPICredentials();
+        AstronomyHandler.loadAPICredentials();
     }
 
+    /**
+     * Fetches the astronomy event information for a specific body.
+     * @param body The name of the body to fetch information for.
+     * @param latitude The observer's latitude.
+     * @param longitude The observer's longitude.
+     * @param elevation The observer's elevation.
+     * @param fromDate The start date of the event information.
+     * @param toDate The end date of the event information.
+     * @param time The time of the event information.
+     * @return An ArrayList of AstronomyResponse objects containing the event information.
+     */
     public ArrayList<AstronomyResponse> getAstronomyEvent(String body,
                                                         String latitude,
                                                         String longitude,
@@ -38,7 +58,7 @@ public class AstronomyController {
         }
 
         try {
-            ArrayList<AstronomyResponse> newEvents = AstronomyAPI.fetchAstronomyEvent(body,
+            ArrayList<AstronomyResponse> newEvents = AstronomyHandler.fetchAstronomyEvent(body,
                                                                                     latitude,
                                                                                     longitude,
                                                                                     elevation,
@@ -57,6 +77,17 @@ public class AstronomyController {
         return events;
     }
 
+    /**
+     * Fetches the astronomy information for a specific body.
+     * @param body The name of the body to fetch information for.
+     * @param latitude The observer's latitude.
+     * @param longitude The observer's longitude.
+     * @param elevation The observer's elevation.
+     * @param fromDate The start date of the event information.
+     * @param toDate The end date of the event information.
+     * @param time The time of the event information.
+     * @return An ArrayList of AstronomyResponse objects containing the event information.
+     */
     public ArrayList<AstronomyResponse> getAstronomyBody(String body,
                                                        String latitude,
                                                        String longitude,
@@ -76,7 +107,7 @@ public class AstronomyController {
 
         // Fetch new body information if not cached
         try {
-            ArrayList<AstronomyResponse> newBodies = AstronomyAPI.fetchAstronomyBody(body,
+            ArrayList<AstronomyResponse> newBodies = AstronomyHandler.fetchAstronomyBody(body,
                                                                                 latitude,
                                                                                 longitude,
                                                                                 elevation,
@@ -89,11 +120,22 @@ public class AstronomyController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return null; // Handle API or parsing errors
+            return null;
         }
 
         return bodies;
     }
+
+    /**
+     * Fetches the astronomy information for all bodies.
+     * @param latitude The observer's latitude.
+     * @param longitude The observer's longitude.
+     * @param elevation The observer's elevation.
+     * @param fromDate The start date of the event information.
+     * @param toDate The end date of the event information.
+     * @param time The time of the event information.
+     * @return An ArrayList of AstronomyResponse objects containing the event information.
+     */
     public ArrayList<AstronomyResponse> getAllAstronomyBodies(String latitude,
                                                               String longitude,
                                                               String elevation,
@@ -128,7 +170,7 @@ public class AstronomyController {
 
         // Fetch new body information if not cached
         try {
-            ArrayList<AstronomyResponse> newBodies = AstronomyAPI.fetchAllBodies(latitude,
+            ArrayList<AstronomyResponse> newBodies = AstronomyHandler.fetchAllBodies(latitude,
                                                                                 longitude,
                                                                                 elevation,
                                                                                 fromDate,
@@ -140,41 +182,63 @@ public class AstronomyController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return null; // Handle API or parsing errors
+            return null;
         }
 
         return bodies;
-
     }
 
+    /**
+     * Gets the star chart image for a specific constellation
+     * @param latitude
+     * @param longitude
+     * @param date
+     * @param constellationId
+     * @return url of the star chart image
+     */
     public String getConstellationStarChart(double latitude, double longitude, String date, String constellationId) {
         try {
-            return AstronomyAPI.generateConstellationStarChart(latitude, longitude, date, constellationId);
+            return AstronomyHandler.generateConstellationStarChart(latitude, longitude, date, constellationId);
         } catch (Exception e) {
-            System.err.println("Error generating star chart: " + e.getMessage());
             return null;
         }
     }
 
+    /**
+     * Gets the star chart image for a specific area
+     * @param latitude
+     * @param longitude
+     * @param date
+     * @param rightAscension
+     * @param declination
+     * @param zoom
+     * @return url of the star chart image
+     */
     public String getAreaStarChart(double latitude, double longitude, String date, Double rightAscension, Double declination, Integer zoom) {
         try {
-            return AstronomyAPI.generateAreaStarChart(latitude, longitude, date, rightAscension, declination, zoom);
+            return AstronomyHandler.generateAreaStarChart(latitude, longitude, date, rightAscension, declination, zoom);
         } catch (Exception e) {
-            System.err.println("Error generating area star chart: " + e.getMessage());
             return null;
         }
     }
 
+    /**
+     * Gets the moon phase image for a specific date
+     * @param latitude
+     * @param longitude
+     * @param date
+     * @param format
+     * @return url of the moon phase image
+     */
     public String getMoonPhaseImage(double latitude, double longitude, String date, String format) {
         try {
-            return AstronomyAPI.generateMoonPhaseImage(latitude, longitude, date, format);
+            return AstronomyHandler.generateMoonPhaseImage(latitude, longitude, date, format);
         } catch (Exception e) {
-            System.err.println("Error generating moon phase image: " + e.getMessage());
             return null;
         }
     }
 
-
+    // Get the responses from the cache
     private ArrayList<AstronomyResponse> getCachedResponses(String type, String body, Double lat, Double lon, String fromDate, String toDate, String time) {
         LocalDate from = LocalDate.parse(fromDate);
         LocalDate to = LocalDate.parse(toDate);
@@ -213,27 +277,22 @@ public class AstronomyController {
         DataManager.saveData(responses, "astronomy_responses");
     }
 
+    // Check if all dates between fromDate and toDate are covered in the cached responses
     private boolean allDatesCovered(List<AstronomyResponse> cachedResponses, LocalDate fromDate, LocalDate toDate) {
-        // Generate a list of all dates between fromDate and toDate (inclusive)
         List<LocalDate> allDates = Stream.iterate(fromDate, date -> date.plusDays(1))
                 .limit(fromDate.until(toDate).getDays() + 1)
                 .collect(Collectors.toList());
 
-        // Extract all unique LocalDate values from the cached responses
         List<LocalDate> responseDates = cachedResponses.stream()
                 .map(response -> response.getDateTime().toLocalDate())
                 .distinct()
                 .collect(Collectors.toList());
 
-        // Check if all dates from fromDate to toDate are covered in the cached responses
         for (LocalDate date : allDates) {
             if (!responseDates.contains(date)) {
                 return false; // Return false if any date is missing
             }
         }
-
         return true; // Return true if all dates are covered
     }
-
-
 }

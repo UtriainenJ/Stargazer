@@ -1,4 +1,4 @@
-package ryhma5.model;
+package ryhma5.model.api.whereTheISSAtAPI;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -14,7 +14,10 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
 
-public class WhereISSAPI{
+/**
+ * A class for handling requests to the Where the ISS At API.
+ */
+public class WhereTheISSHandler {
 
     // id for the ISS - the only id the API supports
     private static final String id = Integer.toString(25544);
@@ -27,6 +30,14 @@ public class WhereISSAPI{
     static {
         tryLoadIcons();
     }
+
+    /**
+     * Fetches the current position of the ISS at the specified timestamp.
+     * @param units The units to use for the response. Can be "kilometers" or "miles".
+     * @param timestamp The Unix timestamp (seconds since the epoch) for which to retrieve the ISS position.
+     * @return An ISSResponse object containing the current position of the ISS.
+     * @throws Exception If the request fails.
+     */
     public static ISSResponse fetchISS(String units, Long timestamp) throws Exception {
         // Construct the API URL
         StringBuilder apiUrl = new StringBuilder("https://api.wheretheiss.at/v1/satellites/" + id);
@@ -70,7 +81,12 @@ public class WhereISSAPI{
         }
     }
 
-    // Fetches the current position of the ISS at the current time
+    /**
+     * Fetches the current position of the ISS at the current time.
+     * @param units The units to use for the response. Can be "kilometers" or "miles".
+     * @return An ISSResponse object containing the current position of the ISS.
+     * @throws Exception If the request fails.
+     */
     public static ISSResponse fetchISS(String units) throws Exception {
         // Construct the API URL
         StringBuilder apiUrl = new StringBuilder("https://api.wheretheiss.at/v1/satellites/" + id);
@@ -108,13 +124,19 @@ public class WhereISSAPI{
         }
     }
 
-
     private static ISSResponse parseISS(String jsonResponse) {
         // Use Gson to parse the JSON response
         Gson gson = new Gson();
         return gson.fromJson(jsonResponse, ISSResponse.class);
     }
 
+    /**
+     *  Fetches the positions of the ISS at the specified timestamps.
+     *  @param timestamps A list of Unix timestamps (seconds since the epoch) for which to retrieve the ISS positions.
+     *  @param units The units to use for the response. Can be "kilometers" or "miles".
+     *  @return A list of ISSResponse objects containing the ISS positions at the specified timestamps.
+     *  @throws Exception If the request fails.
+     */
     public static List<ISSResponse> fetchISSPositions(List<Long> timestamps, String units) throws Exception {
         // Construct the API URL
         StringBuilder apiUrl = new StringBuilder("https://api.wheretheiss.at/v1/satellites/" + id + "/positions");
@@ -170,7 +192,7 @@ public class WhereISSAPI{
 
     private static void tryLoadIcons() {
         if (!iconLoadAttempted) {
-            InputStream iconStream = WhereISSAPI.class.getResourceAsStream(ICON_PATH);
+            InputStream iconStream = WhereTheISSHandler.class.getResourceAsStream(ICON_PATH);
 
             if (iconStream != null) {
                 ISSIcon = new Image(iconStream);
@@ -181,16 +203,11 @@ public class WhereISSAPI{
         }
     }
 
+    /**
+     * Returns the icon to use for the ISS icon
+     * @return The icon to use for the ISS icon
+     */
     public static Image getISSIcon() {
         return ISSIcon;
     }
-
-    public static long dateToTimestamp(String dateString) {
-        // Parse the date string into a LocalDate
-        LocalDate date = LocalDate.parse(dateString);
-
-        // Convert LocalDate to timestamp (in seconds)
-        return date.atStartOfDay(ZoneOffset.UTC).toEpochSecond();
-    }
-
 }

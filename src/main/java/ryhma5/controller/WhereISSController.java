@@ -3,13 +3,16 @@ package ryhma5.controller;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import ryhma5.model.map.EquirectangularProjector;
-import ryhma5.model.ISSResponse;
-import ryhma5.model.WhereISSAPI;
+import ryhma5.model.api.whereTheISSAtAPI.ISSResponse;
+import ryhma5.model.api.whereTheISSAtAPI.WhereTheISSHandler;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A controller class for the ISS
+ */
 public class WhereISSController {
 
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -18,9 +21,13 @@ public class WhereISSController {
 
     private double iconScale = 0.15;
     private ISSResponse currentISS;
+
+    /**
+     * Initializes the controller.
+     */
     public void initialize() {
         // Create and configure the ISS icon ImageView directly
-        Image issIconImage = WhereISSAPI.getISSIcon();
+        Image issIconImage = WhereTheISSHandler.getISSIcon();
         issImageView = new ImageView(issIconImage);
         issImageView.setScaleX(-1); // Flip the image horizontally
 
@@ -28,9 +35,17 @@ public class WhereISSController {
         issImageView.setFitHeight(iconScale * 400);
     }
 
+    /**
+     * Sets the map image view.
+     * @param mapImageView The map image view to set.
+     */
     protected void setMapImageView(ImageView mapImageView) {
         this.mapImageView = mapImageView;
     }
+
+    /**
+     * Updates the position of the ISS on the map.
+     */
     public void updateISSPosition() {
         currentISS = getISS("kilometers");
 
@@ -44,6 +59,9 @@ public class WhereISSController {
         issImageView.setLayoutY(xy[1] - issImageView.getFitHeight() / 2);
     }
 
+    /**
+     * Makes sure the ISS icon stays on the right position on the map even when resizing window.
+     */
     public void adjustToWindowSize (){
         double windowWidth = mapImageView.getBoundsInParent().getWidth();
         double windowHeight = mapImageView.getBoundsInParent().getHeight();
@@ -59,28 +77,49 @@ public class WhereISSController {
         issImageView.setFitHeight(newScale);
     }
 
+    /**
+     * Starts the periodic update of the ISS position.
+     */
     public void startPeriodicISSUpdate() {
         // Schedule the task to run  periodically
         scheduler.scheduleAtFixedRate(this::updateISSPosition, 0, 30, TimeUnit.SECONDS);
     }
+
+    /**
+     * Stops the periodic update of the ISS position.
+     */
     public void stopPeriodicISSUpdate() {
         scheduler.shutdown();
     }
 
+    /**
+     * Gets the ISS icon ImageView.
+     * @return The ISS icon ImageView.
+     */
     public ImageView getISSImageView() {
         return issImageView;
     }
+
+    /**
+     * Gets the ISS position at the specified timestamp.
+     * @return The current ISS position.
+     */
     public ISSResponse getISS(String units, Long timestamp) {
         try {
-            return WhereISSAPI.fetchISS(units, timestamp);
+            return WhereTheISSHandler.fetchISS(units, timestamp);
         } catch (Exception e) {
             System.err.println("Error fetching ISS information: " + e.getMessage());
             return null;
         }
     }
+
+    /**
+     * Gets the current ISS position.
+     * @return The current ISS position.
+     */
     public ISSResponse getISS(String units) {
         try {
-            return WhereISSAPI.fetchISS(units);
+            return WhereTheISSHandler.fetchISS(units);
         } catch (Exception e) {
             System.err.println("Error fetching ISS information: " + e.getMessage());
             return null;
@@ -88,9 +127,13 @@ public class WhereISSController {
     }
 
 
+    /**
+     * Gets the ISS positions at the specified timestamps.
+     * @return The ISS positions.
+     */
     public List<ISSResponse> getISSPositions(List<Long> timestamps, String units) {
         try {
-            return WhereISSAPI.fetchISSPositions(timestamps, units);
+            return WhereTheISSHandler.fetchISSPositions(timestamps, units);
         } catch (Exception e) {
             System.err.println("Error fetching ISS positions: " + e.getMessage());
             return null;
