@@ -1,4 +1,4 @@
-    package ryhma5.model;
+    package ryhma5.model.api.astronomyAPI;
 
     import java.io.BufferedReader;
     import java.io.InputStreamReader;
@@ -12,6 +12,8 @@
     import java.util.Locale;
 
     import com.google.gson.*;
+    import ryhma5.model.api.ApiCredentials;
+    import ryhma5.model.DataManager;
 
 
     public class AstronomyHandler {
@@ -27,12 +29,12 @@
         }
 
         public static ArrayList<AstronomyResponse> fetchAstronomyEvent(String body,
-                                                         String latitude,
-                                                         String longitude,
-                                                         String elevation,
-                                                         String fromDate,
-                                                         String toDate,
-                                                         String time) throws Exception {
+                                                                       String latitude,
+                                                                       String longitude,
+                                                                       String elevation,
+                                                                       String fromDate,
+                                                                       String toDate,
+                                                                       String time) throws Exception {
 
             String apiUrl = String.format("https://api.astronomyapi.com/api/v2/bodies/events/%s", body);
 

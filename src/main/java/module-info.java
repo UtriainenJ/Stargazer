@@ -17,4 +17,8 @@ module ryhma5 {
     opens ryhma5.model.map to com.google.gson;
     exports ryhma5.model.api.whereTheISSAtAPI;
     opens ryhma5.model.api.whereTheISSAtAPI to com.google.gson;
+    exports ryhma5.model.api.astronomyAPI;
+    opens ryhma5.model.api.astronomyAPI to com.google.gson;
+    exports ryhma5.model.api;
+    opens ryhma5.model.api to com.google.gson;
 }

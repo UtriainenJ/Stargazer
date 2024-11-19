@@ -18,6 +18,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import ryhma5.model.*;
+import ryhma5.model.api.astronomyAPI.AstronomyResponse;
+import ryhma5.model.api.astronomyAPI.AstronomySorter;
+import ryhma5.model.api.astronomyAPI.StarChartProxy;
 import ryhma5.model.api.whereTheISSAtAPI.ISSResponse;
 import ryhma5.model.api.whereTheISSAtAPI.WhereTheISSHandler;
 

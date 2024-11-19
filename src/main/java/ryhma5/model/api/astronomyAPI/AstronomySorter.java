@@ -1,4 +1,6 @@
-package ryhma5.model;
+package ryhma5.model.api.astronomyAPI;
+
+import ryhma5.model.api.astronomyAPI.AstronomyResponse;
 
 import java.util.ArrayList;
 import java.util.HashMap;

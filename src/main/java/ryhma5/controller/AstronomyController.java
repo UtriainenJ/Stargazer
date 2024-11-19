@@ -1,6 +1,8 @@
 package ryhma5.controller;
 
 import ryhma5.model.*;
+import ryhma5.model.api.astronomyAPI.AstronomyHandler;
+import ryhma5.model.api.astronomyAPI.AstronomyResponse;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
