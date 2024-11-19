@@ -88,7 +88,7 @@ public class AstronomyHandler {
 
             return parseAstronomyEvent(response.toString());
         } else {
-            String errorMessage = String.format("Failed to retrieve data: HTTP response code %d", responseCode);
+            String errorMessage = String.format("Failed to retrieve event data: HTTP response code %d", responseCode);
             System.err.println(errorMessage);
             throw new Exception(errorMessage);
         }
@@ -224,7 +224,7 @@ public class AstronomyHandler {
 
             return parseAstronomyBody(response.toString());
         } else {
-            String errorMessage = String.format("Failed to retrieve data: HTTP response code %d", responseCode);
+            String errorMessage = String.format("Failed to retrieve data for %s: HTTP response code %d", body ,responseCode);
             System.err.println(errorMessage);
             throw new Exception(errorMessage);
         }
@@ -363,7 +363,7 @@ public class AstronomyHandler {
             // Parse the response and create an ArrayList of AstronomyResponse objects
             return parseAstronomyBody(response.toString());
         } else {
-            String errorMessage = String.format("Failed to retrieve data: HTTP response code %d", responseCode);
+            String errorMessage = String.format("Failed to retrieve data for all bodies: HTTP response code %d", responseCode);
             System.err.println(errorMessage);
             throw new Exception(errorMessage);
         }

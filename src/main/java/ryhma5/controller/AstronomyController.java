@@ -203,7 +203,6 @@ public class AstronomyController {
         try {
             return AstronomyHandler.generateConstellationStarChart(latitude, longitude, date, constellationId);
         } catch (Exception e) {
-            System.err.println("Error generating star chart: " + e.getMessage());
             return null;
         }
     }
@@ -222,7 +221,6 @@ public class AstronomyController {
         try {
             return AstronomyHandler.generateAreaStarChart(latitude, longitude, date, rightAscension, declination, zoom);
         } catch (Exception e) {
-            System.err.println("Error generating area star chart: " + e.getMessage());
             return null;
         }
     }
@@ -239,7 +237,6 @@ public class AstronomyController {
         try {
             return AstronomyHandler.generateMoonPhaseImage(latitude, longitude, date, format);
         } catch (Exception e) {
-            System.err.println("Error generating moon phase image: " + e.getMessage());
             return null;
         }
     }
