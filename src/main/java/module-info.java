@@ -21,4 +21,6 @@ module ryhma5 {
     opens ryhma5.model.api.astronomyAPI to com.google.gson;
     exports ryhma5.model.api;
     opens ryhma5.model.api to com.google.gson;
+    exports ryhma5.model.dateTimeUtils;
+    opens ryhma5.model.dateTimeUtils to com.google.gson;
 }
