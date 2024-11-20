@@ -1,7 +1,10 @@
 package ryhma5.controller;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -11,7 +14,10 @@ import ryhma5.model.map.Marker;
 import ryhma5.model.map.SVGMap;
 import ryhma5.model.map.SVGMapFactory;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 public class MapController {
@@ -70,7 +76,13 @@ public class MapController {
 
         double[] latLong = svgMap.getLatLongFromXY(x, y, imageWidth, imageHeight);
 
-        CompletableFuture.runAsync(() -> mainViewController.sendAPIRequests(latLong[0], latLong[1], "2024-11-13"));
+        DecimalFormat df = new DecimalFormat("#.##", DecimalFormatSymbols.getInstance(Locale.US));
+        BigDecimal latitude = BigDecimal.valueOf(latLong[0]).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal longitude = BigDecimal.valueOf(latLong[1]).setScale(2, RoundingMode.HALF_UP);
+
+        String formattedCoordinates = df.format(latitude) + ", " + df.format(longitude);
+
+        mainViewController.setSearchField(formattedCoordinates);
     }
 
     public  void loadMapMarkers(){

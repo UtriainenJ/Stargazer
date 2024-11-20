@@ -9,6 +9,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import ryhma5.model.DataManager;
+import ryhma5.controller.MainViewController;
 
 import java.util.ArrayList;
 import java.util.List;
