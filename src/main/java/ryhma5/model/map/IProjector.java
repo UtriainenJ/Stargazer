@@ -22,5 +22,13 @@ public interface IProjector {
      * @param y y-coordinate. 0 is the top edge of the image.
      * @return
      */
-    double[] xyToLatLong(double x, double y);
+    double[] xyToLatLong(double x, double y, double maxX, double maxY);
+
+    /**
+     * Converts relative XY -pixel coordinates to lat-long coordinates. Expects already normalized xy coordinates
+     * @param relativeX x-coordinate. 0 is the left edge of the image. 1 is the right edge of the image.
+     * @param relativeY y-coordinate. 0 is the top edge of the image. 1 is the bottom edge of the image.
+     * @return
+     */
+    double[] relativeXYToLatLong(double relativeX, double relativeY);
 }

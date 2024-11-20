@@ -45,7 +45,7 @@ public class SVGMap {
 
         // check if there exists a marker at the same location, if so select that instead. accurate to some decimals to account for error in conversion
         for (Marker marker : markers) {
-            double[] latLong = projector.xyToLatLong(marker.getRelativeX(), marker.getRelativeY());
+            double[] latLong = projector.relativeXYToLatLong(marker.getRelativeX(), marker.getRelativeY());
             if (Math.abs(latLong[0] - latitude) < 3.0 && Math.abs(latLong[1] - longitude) < 3.0) { // check if the markers would be too close
                 System.out.println("Marker already exists at this location");
                 selectMarker(marker, mapPane, false);
@@ -174,8 +174,6 @@ public class SVGMap {
     }
 
     public double[] getLatLongFromXY(double x, double y, double imageWidth, double imageHeight) {
-        double relativeX = x / imageWidth;
-        double relativeY = y / imageHeight;
-        return projector.xyToLatLong(relativeX, relativeY);
+        return projector.xyToLatLong(x, y, imageWidth, imageHeight);
     }
 }
