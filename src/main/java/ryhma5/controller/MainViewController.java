@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -17,15 +18,16 @@ import javafx.geometry.Insets;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import ryhma5.model.*;
 import ryhma5.model.api.astronomyAPI.AstronomyResponse;
 import ryhma5.model.api.astronomyAPI.AstronomySorter;
 import ryhma5.model.api.astronomyAPI.StarChartProxy;
 import ryhma5.model.api.whereTheISSAtAPI.ISSResponse;
-import ryhma5.model.api.whereTheISSAtAPI.WhereTheISSHandler;
 import ryhma5.model.dateTimeUtils.DateShifter;
 import ryhma5.model.dateTimeUtils.LocalDateConverter;
 import ryhma5.model.dateTimeUtils.TimestampConverter;
+import ryhma5.model.json.City;
+import ryhma5.model.json.DataManager;
+import ryhma5.model.json.UserPreferences;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -50,9 +52,6 @@ public class MainViewController {
 
     @FXML
     private DatePicker datePickerStart;
-
-    @FXML
-    private DatePicker datePickerEnd;
 
     @FXML
     private ContextMenu suggestionsMenu;
@@ -93,6 +92,10 @@ public class MainViewController {
         mapController.initializeMap();
 
         astronomyController = new AstronomyController();
+    }
+
+    void setSearchField(String data) {
+        searchField.setText(data);
     }
 
     public void setISSController(WhereISSController issController) {
@@ -175,48 +178,162 @@ public class MainViewController {
 
     @FXML
     private void handleEventSearch() {
-
-        // pick dates and city from the fields
+        // Pick dates from the date picker
         LocalDate startDate = datePickerStart.getValue();
-        LocalDate endDate = datePickerEnd.getValue();
-        String city = searchField.getText().trim();
+        LocalDate endDate = startDate.plusMonths(6);
+        String input = searchField.getText().trim();
 
-        Optional<City> selectedCity = cityList.stream()
-                .filter(c -> c.getCityName().equalsIgnoreCase(city))
-                .findFirst();
+        // Check if the input is in coordinate format
+        if (input.contains(",")) {
+            // Try parsing coordinates from the input in the format "x.xx, y.yy"
+            try {
+                String[] coordinates = input.split(",");
+                if (coordinates.length == 2) {
+                    // Parse latitude and longitude from the string
+                    double lat = Double.parseDouble(coordinates[0].trim());
+                    double lng = Double.parseDouble(coordinates[1].trim());
 
-        if (selectedCity.isPresent()) {
-            double lat = Double.parseDouble(selectedCity.get().getLat());
-            double lng = Double.parseDouble(selectedCity.get().getLng());
-            System.out.println("Selected city: " + selectedCity.get().getCityName() + " (" + selectedCity.get().getLat() + ", " + selectedCity.get().getLng() + ")");
+                    // Validate the coordinates
+                    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+                        showErrorMessage("Coordinates are out of bounds");
+                        return; // Stop further processing
+                    }
 
-            mapController.svgMap.addMarkerByCoordinates(lat, lng, mapController.mapImageView, mapController.mapPane);
+                    System.out.println("Coordinates entered: (" + lat + ", " + lng + ")");
 
+                    // Add marker to the map
+                    mapController.svgMap.addMarkerByCoordinates(lat, lng, mapController.mapImageView, mapController.mapPane);
 
-            ArrayList<AstronomyResponse> eventList = sendAPIRequests(lat, lng,
-                    startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                    // Clear the event container while loading
+                    eventContainer.getChildren().clear();
+                    Text loadingText = new Text("Loading events...");
+                    loadingText.setFont(Font.font("Unispace-Bold", 24));
+                    loadingText.setFill(Color.WHITE);
+                    eventContainer.getChildren().add(loadingText);
 
-            // Update the sidebar and add the events
-            eventContainer.getChildren().clear();
-            for (AstronomyResponse event : eventList) {
-                addEventCard(event, lat, lng);
+                    // Run API request in a background thread
+                    CompletableFuture.supplyAsync(() ->
+                            sendAPIRequests(lat, lng, startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                    ).thenAccept(eventList -> {
+                        // Update UI on JavaFX Application Thread
+                        Platform.runLater(() -> {
+                            eventContainer.getChildren().clear(); // Clear the loading message
+                            if (eventList != null && !eventList.isEmpty()) {
+                                for (AstronomyResponse event : eventList) {
+                                    addEventCard(event, lat, lng);
+                                }
+
+                                // Save the city as a user preference
+                                UserPreferences userPreferences = new UserPreferences(
+                                        "Coordinates",
+                                        LocalDateConverter.toString(startDate),
+                                        LocalDateConverter.toString(endDate),
+                                        lat,
+                                        lng
+                                );
+                                DataManager.saveData(userPreferences, "user_preferences");
+                            } else {
+                                showErrorMessage("No events found for these coordinates.");
+                            }
+                        });
+                    }).exceptionally(ex -> {
+                        // Handle exceptions on JavaFX Application Thread
+                        Platform.runLater(() -> {
+                            eventContainer.getChildren().clear();
+                            Text errorText = new Text("Error loading events");
+                            errorText.setFont(Font.font("Unispace-Bold", 20));
+                            errorText.setFill(Color.RED);
+                            eventContainer.getChildren().add(errorText);
+                        });
+                        ex.printStackTrace(); // Safely handle and log the error
+                        return null;
+                    });
+                } else {
+                    // If the coordinates format is incorrect
+                    showErrorMessage("Invalid coordinates format");
+                    return; // Stop further processing
+                }
+            } catch (NumberFormatException e) {
+                // Handle invalid coordinate format
+                showErrorMessage("Invalid coordinates format");
+                return; // Stop further processing
             }
-
-            // save the city as user preference
-            UserPreferences userPreferences = new UserPreferences(
-                    selectedCity.get().getCityName(),
-                    LocalDateConverter.toString(startDate),
-                    LocalDateConverter.toString(endDate),
-                    lat,
-                    lng
-            );
-            DataManager.saveData(userPreferences, "user_preferences");
-
-
         } else {
-            System.out.println("City not found: " + city);
+            // If it's not coordinates, assume it's a city name
+            Optional<City> selectedCity = cityList.stream()
+                    .filter(c -> c.getCityName().equalsIgnoreCase(input))
+                    .findFirst();
+
+            if (selectedCity.isPresent()) {
+                double lat = Double.parseDouble(selectedCity.get().getLat());
+                double lng = Double.parseDouble(selectedCity.get().getLng());
+                System.out.println("Selected city: " + selectedCity.get().getCityName() + " (" + lat + ", " + lng + ")");
+
+                // Add marker to the map
+                mapController.svgMap.addMarkerByCoordinates(lat, lng, mapController.mapImageView, mapController.mapPane);
+
+                // Clear the event container while loading
+                eventContainer.getChildren().clear();
+                Text loadingText = new Text("Loading events...");
+                loadingText.setFont(Font.font("Unispace-Bold", 24));
+                loadingText.setFill(Color.WHITE);
+                eventContainer.getChildren().add(loadingText);
+
+                // Run API request in a background thread
+                CompletableFuture.supplyAsync(() ->
+                        sendAPIRequests(lat, lng, startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                ).thenAccept(eventList -> {
+                    // Update UI on JavaFX Application Thread
+                    Platform.runLater(() -> {
+                        eventContainer.getChildren().clear(); // Clear the loading message
+                        if (eventList != null && !eventList.isEmpty()) {
+                            for (AstronomyResponse event : eventList) {
+                                addEventCard(event, lat, lng);
+                            }
+
+                            // Save the city as a user preference
+                            UserPreferences userPreferences = new UserPreferences(
+                                    selectedCity.get().getCityName(),
+                                    LocalDateConverter.toString(startDate),
+                                    LocalDateConverter.toString(endDate),
+                                    lat,
+                                    lng
+                            );
+                            DataManager.saveData(userPreferences, "user_preferences");
+                        } else {
+                            showErrorMessage("No events found for the selected city.");
+                        }
+                    });
+                }).exceptionally(ex -> {
+                    // Handle exceptions on JavaFX Application Thread
+                    Platform.runLater(() -> {
+                        eventContainer.getChildren().clear();
+                        Text errorText = new Text("Error loading events. Please try again.");
+                        errorText.setFont(Font.font("Unispace-Bold", 20));
+                        errorText.setFill(Color.RED);
+                        eventContainer.getChildren().add(errorText);
+                    });
+                    ex.printStackTrace(); // Safely handle and log the error
+                    return null;
+                });
+            } else {
+                System.out.println("City not found: " + input);
+                showErrorMessage("City not found. Please check your input.");
+            }
         }
     }
+
+    // Helper method to display error messages
+    private void showErrorMessage(String message) {
+        Platform.runLater(() -> {
+            eventContainer.getChildren().clear();
+            Text errorText = new Text(message);
+            errorText.setFont(Font.font("Unispace-Bold", 18));
+            errorText.setFill(Color.RED);
+            eventContainer.getChildren().add(errorText);
+        });
+    }
+
 
     @FXML
     public void handleSearchFieldKeyPress(KeyEvent event) {
@@ -302,34 +419,6 @@ public class MainViewController {
         if (datePickerStart.getValue() == null) {
             datePickerStart.setValue(currentDate);
         }
-
-        if (datePickerEnd.getValue() == null) {
-            datePickerEnd.setValue(currentDate.plusDays(7));
-        }
-    }
-
-    @FXML
-    public void handleDatePickStart() {
-        LocalDate startDate = datePickerStart.getValue();
-        LocalDate endDate = datePickerEnd.getValue();
-
-        if (endDate != null && startDate.isAfter(endDate)) {
-            datePickerStart.setValue(endDate);
-        } else {
-            System.out.println("handleDatePickStart: " + startDate);
-        }
-    }
-
-    @FXML
-    public void handleDatePickEnd() {
-        LocalDate startDate = datePickerStart.getValue();
-        LocalDate endDate = datePickerEnd.getValue();
-
-        if (startDate != null && endDate.isBefore(startDate)) {
-            datePickerEnd.setValue(startDate);
-        } else {
-            System.out.println("handleDatePickEnd: " + endDate);
-        }
     }
 
     // load user preferences from json
@@ -342,7 +431,6 @@ public class MainViewController {
         }
         searchField.setText(userPreferencesLoadData.getCityName());
         datePickerStart.setValue(LocalDateConverter.fromString(userPreferencesLoadData.getDateStart()));
-        datePickerEnd.setValue(LocalDateConverter.fromString(userPreferencesLoadData.getDateEnd()));
 
         //svgMap.addMarkerByCoordinates(userPreferencesLoadData.getLatitude(), userPreferencesLoadData.getLongitude(), mapImageView, mapPane);
     }
@@ -500,6 +588,13 @@ public class MainViewController {
 
         // Set the popup content in a scene and display it
         Scene popupScene = new Scene(popupContent, 600, 600);
+
+        popupScene.setOnKeyPressed(eventKey -> {
+            if (eventKey.getCode() == KeyCode.ESCAPE) {
+                popupStage.close(); // Close the popup when ESC is pressed
+            }
+        });
+
         popupStage.setScene(popupScene);
         popupStage.show();
 

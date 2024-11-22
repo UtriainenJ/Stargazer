@@ -23,8 +23,7 @@ public class Marker {
 
     private Circle createStyledMarkerCircle(double radius) {
         Circle circle = new Circle(radius);
-        Image iconImage = MarkerIconManager.getIconImage();
-
+        Image iconImage = MarkerIconManager.getInstance().getIconImage();
         if (iconImage != null) {
             circle.setFill(new ImagePattern(iconImage));
         } else {
@@ -36,7 +35,7 @@ public class Marker {
 
     public void selectMarker() {
         if (!isSelected) {
-            Image selectedIconImage = MarkerIconManager.getSelectedIconImage();
+            Image selectedIconImage = MarkerIconManager.getInstance().getSelectedIconImage();
             if (selectedIconImage != null) {
                 circle.setFill(new ImagePattern(selectedIconImage));
             } else {
@@ -48,7 +47,7 @@ public class Marker {
 
     public void deSelectMarker() {
         if (isSelected) {
-            Image iconImage = MarkerIconManager.getIconImage();
+            Image iconImage = MarkerIconManager.getInstance().getIconImage();
             if (iconImage != null) {
                 circle.setFill(new ImagePattern(iconImage));
             } else {
@@ -76,5 +75,9 @@ public class Marker {
 
     public double getLong() {
         return longitude;
+    }
+
+    public boolean isMarkerSelected() {
+        return isSelected;
     }
 }

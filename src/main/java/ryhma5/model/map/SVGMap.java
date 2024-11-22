@@ -8,14 +8,14 @@ import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
-import ryhma5.model.DataManager;
+import ryhma5.model.json.DataManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SVGMap {
 
-    private final SVGLoader svgLoader;
+    SVGLoader svgLoader;
     private IProjector projector;
     private final List<Marker> markers = new ArrayList<>();
     private Marker selectedMarker = null;
@@ -44,7 +44,7 @@ public class SVGMap {
 
         // check if there exists a marker at the same location, if so select that instead. accurate to some decimals to account for error in conversion
         for (Marker marker : markers) {
-            double[] latLong = projector.xyToLatLong(marker.getRelativeX(), marker.getRelativeY());
+            double[] latLong = new double[] {marker.getLat(), marker.getLong()};
             if (Math.abs(latLong[0] - latitude) < 3.0 && Math.abs(latLong[1] - longitude) < 3.0) { // check if the markers would be too close
                 System.out.println("Marker already exists at this location");
                 selectMarker(marker, mapPane, false);
@@ -173,8 +173,14 @@ public class SVGMap {
     }
 
     public double[] getLatLongFromXY(double x, double y, double imageWidth, double imageHeight) {
-        double relativeX = x / imageWidth;
-        double relativeY = y / imageHeight;
-        return projector.xyToLatLong(relativeX, relativeY);
+        return projector.xyToLatLong(x, y, imageWidth, imageHeight);
+    }
+
+    /**
+     * methodused for unit testing
+     * @return
+     */
+    List<Marker> getMarkers() {
+        return markers;
     }
 }

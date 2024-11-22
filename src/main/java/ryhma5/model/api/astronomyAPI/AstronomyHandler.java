@@ -13,7 +13,7 @@
 
     import com.google.gson.*;
     import ryhma5.model.api.ApiCredentials;
-    import ryhma5.model.DataManager;
+    import ryhma5.model.json.DataManager;
 
 /**
     * A class for handling requests to the Astronomy API.

@@ -70,15 +70,14 @@
                            </VBox>
                            <VBox alignment="CENTER" layoutX="10.0" layoutY="204.0" prefHeight="98.0" prefWidth="500.0" AnchorPane.bottomAnchor="33.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                               <children>
-                                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Timeslot" textAlignment="CENTER" wrappingWidth="332.0">
+                                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Start date" textAlignment="CENTER" wrappingWidth="332.0">
                                     <font>
                                        <Font name="Unispace-Bold" size="18.0" />
                                     </font>
                                  </Text>
-                                 <HBox alignment="CENTER" onDragDetected="#handleDatePickStart" prefHeight="45.0" prefWidth="397.0" spacing="30.0">
+                                 <HBox alignment="CENTER" prefHeight="45.0" prefWidth="397.0" spacing="30.0">
                                     <children>
-                                       <DatePicker fx:id="datePickerStart" minWidth="0.0" onAction="#handleDatePickStart" prefHeight="26.0" prefWidth="150.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 5;" />
-                                       <DatePicker fx:id="datePickerEnd" minWidth="0.0" onAction="#handleDatePickEnd" prefHeight="26.0" prefWidth="150.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 5;" />
+                                       <DatePicker fx:id="datePickerStart" minWidth="0.0" prefHeight="26.0" prefWidth="150.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 5;" />
                                     </children>
                                  </HBox>
                               </children>
