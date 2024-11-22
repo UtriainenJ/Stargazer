@@ -16,7 +16,7 @@ public class StarChartProxy {
     private final String date;
     private final Image placeholderImage;
     private final Image failedImage;
-    private static final int TIMEOUT_MS = 5000;
+    private static final int TIMEOUT_MS = 20000;
 
     public StarChartProxy(ImageView imageView, AstronomyController astronomyController,
                           double latitude, double longitude, String date) {
@@ -41,6 +41,13 @@ public class StarChartProxy {
         // create new thread to avoid blocking the GUI
         new Thread(() -> {
             String starChartUrl = astronomyController.getAreaStarChart(latitude, longitude, date, 14.83, -15.23, 9);
+            System.out.println("starcharturl " + starChartUrl);
+
+            if (starChartUrl == null) {
+                imageView.setImage(failedImage);
+                return;
+            }
+
             Image actualImage = new Image(starChartUrl, true);
             actualImage.progressProperty().addListener((obs, oldProgress, newProgress) -> {
                 if (newProgress.doubleValue() >= 1.0) {
