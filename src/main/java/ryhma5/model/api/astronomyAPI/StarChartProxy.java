@@ -16,7 +16,7 @@ public class StarChartProxy {
     private final String date;
     private final Image placeholderImage;
     private final Image failedImage;
-    private static final int TIMEOUT_MS = 10000; // 15 seconds
+    private static final int TIMEOUT_MS = 5000;
 
     public StarChartProxy(ImageView imageView, AstronomyController astronomyController,
                           double latitude, double longitude, String date) {
@@ -44,7 +44,7 @@ public class StarChartProxy {
             Image actualImage = new Image(starChartUrl, true);
             actualImage.progressProperty().addListener((obs, oldProgress, newProgress) -> {
                 if (newProgress.doubleValue() >= 1.0) {
-                    timeoutTimer.cancel(); // Cancel the the error timeout
+                    timeoutTimer.cancel();
                     Platform.runLater(() -> imageView.setImage(actualImage));
                 }
             });
