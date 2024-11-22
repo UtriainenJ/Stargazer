@@ -5,6 +5,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import ryhma5.controller.AstronomyController;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class StarChartProxy {
     private final ImageView imageView;
     private final AstronomyController astronomyController;
@@ -12,6 +15,8 @@ public class StarChartProxy {
     private final double longitude;
     private final String date;
     private final Image placeholderImage;
+    private final Image failedImage;
+    private static final int TIMEOUT_MS = 10000; // 15 seconds
 
     public StarChartProxy(ImageView imageView, AstronomyController astronomyController,
                           double latitude, double longitude, String date) {
@@ -21,6 +26,7 @@ public class StarChartProxy {
         this.longitude = longitude;
         this.date = date;
         this.placeholderImage = new Image(getClass().getResourceAsStream("/images/loading.png"));
+        this.failedImage = new Image(getClass().getResourceAsStream("/images/loading_failed.png"));
 
         // Set the placeholder image initially
         this.imageView.setImage(this.placeholderImage);
@@ -30,18 +36,30 @@ public class StarChartProxy {
     }
 
     private void loadStarChartImageAsync() {
-        new Thread(() -> {
-            // Get the URL of the star chart image asynchronously
-            String starChartUrl = astronomyController.getAreaStarChart(latitude, longitude, date, 14.83, -15.23, 9);
+        Timer timeoutTimer = new Timer();
 
-            // Load the image from the URL
-            Image actualImage = new Image(starChartUrl, true); // Asynchronously load the image
+        // create new thread to avoid blocking the GUI
+        new Thread(() -> {
+            String starChartUrl = astronomyController.getAreaStarChart(latitude, longitude, date, 14.83, -15.23, 9);
+            Image actualImage = new Image(starChartUrl, true);
             actualImage.progressProperty().addListener((obs, oldProgress, newProgress) -> {
                 if (newProgress.doubleValue() >= 1.0) {
-                    // Image has fully loaded, update on the JavaFX Application Thread
+                    timeoutTimer.cancel(); // Cancel the the error timeout
                     Platform.runLater(() -> imageView.setImage(actualImage));
                 }
             });
         }).start();
+
+        // Schedule a timeout to set the failed image if loading takes too long
+        timeoutTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    if (imageView.getImage() == placeholderImage) {
+                        imageView.setImage(failedImage);
+                    }
+                });
+            }
+        }, TIMEOUT_MS);
     }
 }

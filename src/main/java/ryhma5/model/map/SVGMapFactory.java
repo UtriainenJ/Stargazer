@@ -1,17 +1,20 @@
 package ryhma5.model.map;
 
-import ryhma5.model.Projections;
-
 public final class SVGMapFactory {
 
-    private SVGMapFactory() {}
+    private SVGMapFactory() {
+    }
 
     public static SVGMap createMap(Projections projectionType) {
+        if (projectionType == null) {
+            throw new IllegalArgumentException("Unknown projection type: null");
+        }
+
         switch (projectionType) {
             case EQUIRECTANGULAR:
                 return createEquirectangularMap();
-            case ROBINSON:
-                return createRobinsonMap();
+//            case ROBINSON: // not implemented
+//                return createRobinsonMap();
             default:
                 throw new IllegalArgumentException("Unknown projection type: " + projectionType);
         }
@@ -23,8 +26,7 @@ public final class SVGMapFactory {
     }
 
     private static SVGMap createRobinsonMap() {
-        IProjector projector = createProjector(Projections.ROBINSON);
-        return new SVGMap("/maps/BlankMap_World_simple_Robinson_projection.svg", projector);
+        throw new UnsupportedOperationException("Robinson projection is not implemented yet");
     }
 
     private static IProjector createProjector(Projections projection) {

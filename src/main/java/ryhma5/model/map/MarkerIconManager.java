@@ -5,17 +5,31 @@ import javafx.scene.image.Image;
 import java.io.InputStream;
 
 public class MarkerIconManager {
+    // in the future, these paths could be loaded from a configuration file
     private static final String ICON_PATH = "/icons/mariostar_stillnoeyes.gif";
     private static final String SELECTED_ICON_PATH = "/icons/slowerstar.gif";
     private static Image iconImage = null;
     private static Image selectedIconImage = null;
     private static boolean iconLoadAttempted = false;
 
-    static {
-        tryLoadIcons();
+    private static volatile MarkerIconManager instance = null;
+
+    private MarkerIconManager() {
+        loadIcons();
     }
 
-    private static void tryLoadIcons() {
+    public static MarkerIconManager getInstance() {
+        if (instance == null) {
+            synchronized (MarkerIconManager.class) {
+                if (instance == null) {
+                    instance = new MarkerIconManager();
+                }
+            }
+        }
+        return instance;
+    }
+
+    private static void loadIcons() {
         if (!iconLoadAttempted) {
             InputStream iconStream = MarkerIconManager.class.getResourceAsStream(ICON_PATH);
             InputStream selectedIconStream = MarkerIconManager.class.getResourceAsStream(SELECTED_ICON_PATH);

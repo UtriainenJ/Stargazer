@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -17,15 +18,16 @@ import javafx.geometry.Insets;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import ryhma5.model.*;
 import ryhma5.model.api.astronomyAPI.AstronomyResponse;
 import ryhma5.model.api.astronomyAPI.AstronomySorter;
 import ryhma5.model.api.astronomyAPI.StarChartProxy;
 import ryhma5.model.api.whereTheISSAtAPI.ISSResponse;
-import ryhma5.model.api.whereTheISSAtAPI.WhereTheISSHandler;
 import ryhma5.model.dateTimeUtils.DateShifter;
 import ryhma5.model.dateTimeUtils.LocalDateConverter;
 import ryhma5.model.dateTimeUtils.TimestampConverter;
+import ryhma5.model.json.City;
+import ryhma5.model.json.DataManager;
+import ryhma5.model.json.UserPreferences;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -586,6 +588,13 @@ public class MainViewController {
 
         // Set the popup content in a scene and display it
         Scene popupScene = new Scene(popupContent, 600, 600);
+
+        popupScene.setOnKeyPressed(eventKey -> {
+            if (eventKey.getCode() == KeyCode.ESCAPE) {
+                popupStage.close(); // Close the popup when ESC is pressed
+            }
+        });
+
         popupStage.setScene(popupScene);
         popupStage.show();
 
