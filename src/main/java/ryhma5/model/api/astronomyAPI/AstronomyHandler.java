@@ -132,11 +132,15 @@ public class AstronomyHandler {
                 String totalStart = null;
                 String totalEnd = null;
                 if (bodyId.equals("sun")){
-                    totalStart = eventHighlights.getAsJsonObject("totalStart").get("date").getAsString();
-                    totalEnd = eventHighlights.getAsJsonObject("totalEnd").get("date").getAsString();
+                    if (!eventHighlights.get("totalStart").isJsonNull()){
+                        totalStart = eventHighlights.getAsJsonObject("totalStart").get("date").getAsString();
+                        totalEnd = eventHighlights.getAsJsonObject("totalEnd").get("date").getAsString();
+                    }
                 } else if (bodyId.equals("moon")){
-                    totalStart = eventHighlights.getAsJsonObject("fullStart").get("date").getAsString();
-                    totalEnd = eventHighlights.getAsJsonObject("fullEnd").get("date").getAsString();
+                    if (!eventHighlights.get("fullStart").isJsonNull()){
+                        totalStart = eventHighlights.getAsJsonObject("fullStart").get("date").getAsString();
+                        totalEnd = eventHighlights.getAsJsonObject("fullEnd").get("date").getAsString();
+                    }
                 }
 
                 double obscuration = event.getAsJsonObject("extraInfo").get("obscuration").getAsDouble();
