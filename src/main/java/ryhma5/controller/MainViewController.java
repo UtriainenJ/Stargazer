@@ -128,16 +128,21 @@ public class MainViewController {
         String toDate = DateShifter.shiftDateByMonths(date, monthsToShift);
         String time = "12:00:00";
 
-        ArrayList<AstronomyResponse> eventList = astronomyController.getAstronomyEvent(
+
+        ArrayList<AstronomyResponse> moonEventList = astronomyController.getAstronomyEvent(
                 "moon", Double.toString(x), Double.toString(y), "10",
+                date, toDate, time);
+        ArrayList<AstronomyResponse> sunEventList = astronomyController.getAstronomyEvent(
+                "sun", Double.toString(x), Double.toString(y), "10",
                 date, toDate, time);
 
 
-        ArrayList<AstronomyResponse> testBodyList = astronomyController.getAllAstronomyBodies(Double.toString(x), Double.toString(y),
+
+        ArrayList<AstronomyResponse> bodyList = astronomyController.getAllAstronomyBodies(Double.toString(x), Double.toString(y),
                 "10", date, toDate, time);
 
         // Remove certain bodies
-        AstronomySorter.removeBodies(testBodyList,
+        AstronomySorter.removeBodies(bodyList,
                 "earth",
                 "pluto",
                 "neptune",
@@ -146,9 +151,20 @@ public class MainViewController {
                 "sun");
 
         // Get only the dates where the body has the strongest magnitude
-        ArrayList<AstronomyResponse> brightestBodiesList = AstronomySorter.getBrightestBodies(testBodyList);
+        ArrayList<AstronomyResponse> brightestBodiesList = AstronomySorter.getBrightestBodies(bodyList);
 
-        eventList.addAll(brightestBodiesList);
+        // Combine all the lists
+        ArrayList<AstronomyResponse> eventList = new ArrayList<>();
+        if (brightestBodiesList != null){
+            eventList.addAll(brightestBodiesList);
+        }
+        if (moonEventList != null){
+            eventList.addAll(moonEventList);
+        }
+        if (sunEventList != null){
+            eventList.addAll(sunEventList);
+        }
+
         // Sort the list by date (using dateTime as the key for sorting)
         eventList.sort(Comparator.comparing(AstronomyResponse::getDateTime));
 
@@ -156,18 +172,6 @@ public class MainViewController {
         for (AstronomyResponse event : eventList) {
             System.out.println(event.toString());
         }
-
-        //String constellationChartURL = avm.getConstellationStarChart(x, y,"2024-10-07", "ori");
-        //System.out.println(constellationChartURL);
-        //String areaChartURL = astronomyController.getAreaStarChart(x, y, "2024-10-07", 14.83, -15.23, 9);
-        //System.out.println(areaChartURL);
-
-        // String areaChartURL = avm.getAreaStarChart(x, y, fromDate, 14.83, -15.23, 9);
-        // System.out.println(areaChartURL);
-
-        // String moonPictureURL = avm.getMoonPhaseImage(x, y, fromDate, "png");
-        // System.out.println(moonPictureURL);
-
         System.out.println("ooooooooooooooooooooooooooo     ISS    ooooooooooooooooooooooooooooooooooo");
 
         ISSResponse issTest = issController.getISS("kilometers",
