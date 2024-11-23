@@ -5,6 +5,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 
+import java.util.function.Consumer;
+
 public class Marker {
     private final Circle circle;
     private final double relativeX;
@@ -12,6 +14,7 @@ public class Marker {
     private final double latitude;
     private final double longitude;
     private boolean isSelected = false;
+
 
     public Marker(double relativeX, double relativeY, double radius, double latitude, double longitude) {
         this.circle = createStyledMarkerCircle(radius);
