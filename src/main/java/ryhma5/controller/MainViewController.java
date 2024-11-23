@@ -155,8 +155,8 @@ public class MainViewController {
 
         //String constellationChartURL = avm.getConstellationStarChart(x, y,"2024-10-07", "ori");
         //System.out.println(constellationChartURL);
-        String areaChartURL = astronomyController.getAreaStarChart(x, y, "2024-10-07", 14.83, -15.23, 9);
-        System.out.println(areaChartURL);
+        //String areaChartURL = astronomyController.getAreaStarChart(x, y, "2024-10-07", 14.83, -15.23, 9);
+        //System.out.println(areaChartURL);
 
         // String areaChartURL = avm.getAreaStarChart(x, y, fromDate, 14.83, -15.23, 9);
         // System.out.println(areaChartURL);
@@ -599,8 +599,7 @@ public class MainViewController {
         popupStage.show();
 
         // Initialize StarChartProxy, which will handle loading the image asynchronously
-        new StarChartProxy(imageView, astronomyController, latitude, longitude,
-                event.getDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        new StarChartProxy(imageView, astronomyController, event);
     }
 
 }

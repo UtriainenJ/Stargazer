@@ -5,26 +5,22 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import ryhma5.controller.AstronomyController;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class StarChartProxy {
     private final ImageView imageView;
     private final AstronomyController astronomyController;
-    private final double latitude;
-    private final double longitude;
-    private final String date;
+    private final AstronomyResponse response;
     private final Image placeholderImage;
     private final Image failedImage;
-    private static final int TIMEOUT_MS = 20000;
+    private static final int TIMEOUT_MS = 30000;
 
-    public StarChartProxy(ImageView imageView, AstronomyController astronomyController,
-                          double latitude, double longitude, String date) {
+    public StarChartProxy(ImageView imageView, AstronomyController astronomyController, AstronomyResponse response) {
         this.imageView = imageView;
         this.astronomyController = astronomyController;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.date = date;
+        this.response = response;
         this.placeholderImage = new Image(getClass().getResourceAsStream("/images/loading.png"));
         this.failedImage = new Image(getClass().getResourceAsStream("/images/loading_failed.png"));
 
@@ -37,10 +33,14 @@ public class StarChartProxy {
 
     private void loadStarChartImageAsync() {
         Timer timeoutTimer = new Timer();
+        double latitude = response.getObserverLatitude();
+        double longitude = response.getObserverLongitude();
+        String date = response.getDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String constellation = ConstellationConverter.getIdFromName(response.getConstellation());
 
         // create new thread to avoid blocking the GUI
         new Thread(() -> {
-            String starChartUrl = astronomyController.getAreaStarChart(latitude, longitude, date, 14.83, -15.23, 9);
+            String starChartUrl = astronomyController.getConstellationStarChart(latitude, longitude, date, constellation);
             System.out.println("starcharturl " + starChartUrl);
 
             if (starChartUrl == null) {
