@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -66,7 +67,7 @@ public class MapController {
 
         System.out.println("Clicked X: " + x + ", Y: " + y);
 
-        svgMap.addMarker(x, y, mapImageView, mapPane);
+        svgMap.addMarker(x, y, mapImageView, mapPane, mainViewController.getSearchField());
 
         double imageWidth = mapImageView.getBoundsInParent().getWidth();
         double imageHeight = mapImageView.getBoundsInParent().getHeight();
@@ -90,7 +91,7 @@ public class MapController {
 
         for(double[] markerCoord : markersCoord){
             System.out.println("coord, lat " + markerCoord[0] + ", long " + markerCoord[1] );
-            svgMap.addMarkerByCoordinates(markerCoord[0], markerCoord[1], mapImageView, mapPane);
+            svgMap.addMarkerByCoordinates(markerCoord[0], markerCoord[1], mapImageView, mapPane, mainViewController.getSearchField());
         }
     }
 

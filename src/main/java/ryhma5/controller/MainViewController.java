@@ -98,6 +98,10 @@ public class MainViewController {
         searchField.setText(data);
     }
 
+    TextField getSearchField() {
+        return searchField;
+    }
+
     public void setISSController(WhereISSController issController) {
         this.issController = issController;
         issController.setMapImageView(mapController.mapImageView);
@@ -202,7 +206,7 @@ public class MainViewController {
                     System.out.println("Coordinates entered: (" + lat + ", " + lng + ")");
 
                     // Add marker to the map
-                    mapController.svgMap.addMarkerByCoordinates(lat, lng, mapController.mapImageView, mapController.mapPane);
+                    mapController.svgMap.addMarkerByCoordinates(lat, lng, mapController.mapImageView, mapController.mapPane, searchField);
 
                     // Clear the event container while loading
                     eventContainer.getChildren().clear();
@@ -270,7 +274,7 @@ public class MainViewController {
                 System.out.println("Selected city: " + selectedCity.get().getCityName() + " (" + lat + ", " + lng + ")");
 
                 // Add marker to the map
-                mapController.svgMap.addMarkerByCoordinates(lat, lng, mapController.mapImageView, mapController.mapPane);
+                mapController.svgMap.addMarkerByCoordinates(lat, lng, mapController.mapImageView, mapController.mapPane, searchField);
 
                 // Clear the event container while loading
                 eventContainer.getChildren().clear();
