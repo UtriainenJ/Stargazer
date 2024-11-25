@@ -77,4 +77,6 @@ public class Marker {
     public double getLong() {
         return longitude;
     }
+
+    public boolean getIsSelected() { return isSelected; }
 }

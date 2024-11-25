@@ -66,7 +66,6 @@ public class MainViewController {
 
     // user preferences variables
     private UserPreferences userPreferencesLoadData = null;
-    ExecutorService executor = Executors.newFixedThreadPool(4);
 
     // textfield suggestions variables
     private List<City> cityList;
@@ -178,7 +177,6 @@ public class MainViewController {
     private void handleEventSearch() {
         // Pick dates from the date picker
         LocalDate startDate = datePickerStart.getValue();
-        LocalDate endDate = startDate.plusMonths(6);
         String input = searchField.getText().trim();
 
         // Check if the input is in coordinate format
@@ -220,16 +218,6 @@ public class MainViewController {
                                 for (AstronomyResponse event : eventList) {
                                     addEventCard(event, lat, lng);
                                 }
-
-                                // Save the city as a user preference
-                                UserPreferences userPreferences = new UserPreferences(
-                                        "Coordinates",
-                                        LocalDateConverter.toString(startDate),
-                                        LocalDateConverter.toString(endDate),
-                                        lat,
-                                        lng
-                                );
-                                DataManager.saveData(userPreferences, "user_preferences");
                             } else {
                                 showErrorMessage("No events found for these coordinates.");
                             }
@@ -288,16 +276,6 @@ public class MainViewController {
                             for (AstronomyResponse event : eventList) {
                                 addEventCard(event, lat, lng);
                             }
-
-                            // Save the city as a user preference
-                            UserPreferences userPreferences = new UserPreferences(
-                                    selectedCity.get().getCityName(),
-                                    LocalDateConverter.toString(startDate),
-                                    LocalDateConverter.toString(endDate),
-                                    lat,
-                                    lng
-                            );
-                            DataManager.saveData(userPreferences, "user_preferences");
                         } else {
                             showErrorMessage("No events found for the selected city.");
                         }
@@ -419,7 +397,9 @@ public class MainViewController {
         }
     }
 
-    // load user preferences from json
+    /**
+     * load user preferences from json and update UI
+     */
     private void loadUserPreferences() {
         userPreferencesLoadData = DataManager.loadDataAsObject("user_preferences", UserPreferences.class);
 
@@ -427,17 +407,28 @@ public class MainViewController {
             System.out.println("No user prefrences found");
             return;
         }
-        searchField.setText(userPreferencesLoadData.getCityName());
+        searchField.setText(userPreferencesLoadData.getTextFieldText());
         datePickerStart.setValue(LocalDateConverter.fromString(userPreferencesLoadData.getDateStart()));
 
-        //svgMap.addMarkerByCoordinates(userPreferencesLoadData.getLatitude(), userPreferencesLoadData.getLongitude(), mapImageView, mapPane);
+        Platform.runLater(()->{
+            handleEventSearch();
+        });
     }
 
-    public void saveMapMarkers() {
+    /**
+     * save user preferences, map markers and astronomy response data as json
+     */
+    public  void saveUserData(){
+        // save user preferences
+        UserPreferences userPreferences = new UserPreferences(
+                searchField.getText(),
+                LocalDateConverter.toString(datePickerStart.getValue())
+        );
+        DataManager.saveData(userPreferences, "user_preferences");
+
+        // call mapController to save map markers
         mapController.saveMapMarkers();
-    }
-
-    public void saveAstronomyResponses(){
+        // call astronomyController to save astronomy response events
         astronomyController.saveAstronomyResponses();
     }
 
