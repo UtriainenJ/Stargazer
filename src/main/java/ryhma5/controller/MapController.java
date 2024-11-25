@@ -83,6 +83,9 @@ public class MapController {
         mainViewController.setSearchField(formattedCoordinates);
     }
 
+    /**
+     * load all map markers from data file
+     */
     public  void loadMapMarkers(){
 
         List<double[]> markersCoord = DataManager.loadDataAsList("map_markers", double[].class);
@@ -95,6 +98,9 @@ public class MapController {
         }
     }
 
+    /**
+     * call svgMap to save map markers
+     */
     public void saveMapMarkers() {
         svgMap.saveMarkersAsJson();
     }

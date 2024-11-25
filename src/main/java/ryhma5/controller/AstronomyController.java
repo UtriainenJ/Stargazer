@@ -272,7 +272,9 @@ public class AstronomyController {
         return cachedEvents.isEmpty() ? null : cachedEvents;
     }
 
-    // save all responses as json
+    /**
+     * save all responses as json
+     */
     public void saveAstronomyResponses(){
         DataManager.saveData(responses, "astronomy_responses");
     }

@@ -2,31 +2,19 @@ package ryhma5.model.json;
 
 public class UserPreferences {
 
-    private String cityName;
-    private String dateStart;
-    private String dateEnd;
-    private double latitude;
-    private double longitude;
+    private String textFieldText;
+    private String date;
 
-    public UserPreferences(String cityName, String dateStart, String dateEnd, double latitude, double longitude){
-        this.cityName = cityName;
-        this.dateStart = dateStart;
-        this.dateEnd = dateEnd;
-        this.latitude = latitude;
-        this.longitude = longitude;
+    public UserPreferences(String textFieldText, String date){
+        this.textFieldText = textFieldText;
+        this.date = date;
     }
 
     // getters
-    public String getCityName() { return cityName; }
-    public String getDateStart(){ return dateStart; }
-    public String getDateEnd(){ return dateEnd; }
-    public double getLatitude(){ return latitude; }
-    public double getLongitude(){ return longitude; }
+    public String getTextFieldText() { return textFieldText; }
+    public String getDateStart(){ return date; }
 
     // setters
-    public void  setCityName (String cityName){ this.cityName = cityName; }
-    public void setDateStart (String dateStart){ this.dateStart = dateStart; }
-    public void setDateEnd (String dateEnd){ this.dateEnd = dateEnd; }
-    public void setLatitude(double latitude){ this.latitude = latitude; }
-    public void setLongitude(double longitude){ this.longitude = longitude; }
+    public void  setTextFieldText (String cityName){ this.textFieldText = cityName; }
+    public void setDateStart (String date){ this.date = date; }
 }

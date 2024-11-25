@@ -177,10 +177,17 @@ public class SVGMap {
         }
     }
 
+    /**
+     * save all map markers coordinates as json, by making active marker last in the ArrayList
+     */
     public void saveMarkersAsJson(){
-        List<double[]> markersLatLong = new ArrayList<>();
+        ArrayList<double[]> markersLatLong = new ArrayList<>();
         for (Marker marker : markers){
-            markersLatLong.add(new double[]{marker.getLat(), marker.getLong()});
+            if(!marker.isMarkerSelected()) {
+                markersLatLong.add(0, new double[]{marker.getLat(), marker.getLong()});
+            } else {
+                markersLatLong.add(new double[]{marker.getLat(), marker.getLong()});
+            }
         }
         DataManager.saveData(markersLatLong, "map_markers");
     }
