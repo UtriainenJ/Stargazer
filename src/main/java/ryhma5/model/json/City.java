@@ -1,4 +1,4 @@
-package ryhma5.model;
+package ryhma5.model.json;
 
 /**
  * object representing a city. cities intended to be loaded from a json file
@@ -7,8 +7,6 @@ public class City {
     private String city;
     private String lat;
     private String lng;
-    private String country;
-    private String country_code;
 
     public String getCityName() { return city; }
     public String getLat() { return lat; }

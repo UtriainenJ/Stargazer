@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -17,15 +18,16 @@ import javafx.geometry.Insets;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import ryhma5.model.*;
 import ryhma5.model.api.astronomyAPI.AstronomyResponse;
 import ryhma5.model.api.astronomyAPI.AstronomySorter;
 import ryhma5.model.api.astronomyAPI.StarChartProxy;
 import ryhma5.model.api.whereTheISSAtAPI.ISSResponse;
-import ryhma5.model.api.whereTheISSAtAPI.WhereTheISSHandler;
 import ryhma5.model.dateTimeUtils.DateShifter;
 import ryhma5.model.dateTimeUtils.LocalDateConverter;
 import ryhma5.model.dateTimeUtils.TimestampConverter;
+import ryhma5.model.json.City;
+import ryhma5.model.json.DataManager;
+import ryhma5.model.json.UserPreferences;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -95,6 +97,10 @@ public class MainViewController {
         searchField.setText(data);
     }
 
+    TextField getSearchField() {
+        return searchField;
+    }
+
     public void setISSController(WhereISSController issController) {
         this.issController = issController;
         issController.setMapImageView(mapController.mapImageView);
@@ -121,16 +127,21 @@ public class MainViewController {
         String toDate = DateShifter.shiftDateByMonths(date, monthsToShift);
         String time = "12:00:00";
 
-        ArrayList<AstronomyResponse> eventList = astronomyController.getAstronomyEvent(
+
+        ArrayList<AstronomyResponse> moonEventList = astronomyController.getAstronomyEvent(
                 "moon", Double.toString(x), Double.toString(y), "10",
+                date, toDate, time);
+        ArrayList<AstronomyResponse> sunEventList = astronomyController.getAstronomyEvent(
+                "sun", Double.toString(x), Double.toString(y), "10",
                 date, toDate, time);
 
 
-        ArrayList<AstronomyResponse> testBodyList = astronomyController.getAllAstronomyBodies(Double.toString(x), Double.toString(y),
+
+        ArrayList<AstronomyResponse> bodyList = astronomyController.getAllAstronomyBodies(Double.toString(x), Double.toString(y),
                 "10", date, toDate, time);
 
         // Remove certain bodies
-        AstronomySorter.removeBodies(testBodyList,
+        AstronomySorter.removeBodies(bodyList,
                 "earth",
                 "pluto",
                 "neptune",
@@ -139,9 +150,20 @@ public class MainViewController {
                 "sun");
 
         // Get only the dates where the body has the strongest magnitude
-        ArrayList<AstronomyResponse> brightestBodiesList = AstronomySorter.getBrightestBodies(testBodyList);
+        ArrayList<AstronomyResponse> brightestBodiesList = AstronomySorter.getBrightestBodies(bodyList);
 
-        eventList.addAll(brightestBodiesList);
+        // Combine all the lists
+        ArrayList<AstronomyResponse> eventList = new ArrayList<>();
+        if (brightestBodiesList != null){
+            eventList.addAll(brightestBodiesList);
+        }
+        if (moonEventList != null){
+            eventList.addAll(moonEventList);
+        }
+        if (sunEventList != null){
+            eventList.addAll(sunEventList);
+        }
+
         // Sort the list by date (using dateTime as the key for sorting)
         eventList.sort(Comparator.comparing(AstronomyResponse::getDateTime));
 
@@ -149,18 +171,6 @@ public class MainViewController {
         for (AstronomyResponse event : eventList) {
             System.out.println(event.toString());
         }
-
-        //String constellationChartURL = avm.getConstellationStarChart(x, y,"2024-10-07", "ori");
-        //System.out.println(constellationChartURL);
-        String areaChartURL = astronomyController.getAreaStarChart(x, y, "2024-10-07", 14.83, -15.23, 9);
-        System.out.println(areaChartURL);
-
-        // String areaChartURL = avm.getAreaStarChart(x, y, fromDate, 14.83, -15.23, 9);
-        // System.out.println(areaChartURL);
-
-        // String moonPictureURL = avm.getMoonPhaseImage(x, y, fromDate, "png");
-        // System.out.println(moonPictureURL);
-
         System.out.println("ooooooooooooooooooooooooooo     ISS    ooooooooooooooooooooooooooooooooooo");
 
         ISSResponse issTest = issController.getISS("kilometers",
@@ -198,7 +208,7 @@ public class MainViewController {
                     System.out.println("Coordinates entered: (" + lat + ", " + lng + ")");
 
                     // Add marker to the map
-                    mapController.svgMap.addMarkerByCoordinates(lat, lng, mapController.mapImageView, mapController.mapPane);
+                    mapController.svgMap.addMarkerByCoordinates(lat, lng, mapController.mapImageView, mapController.mapPane, searchField);
 
                     // Clear the event container while loading
                     eventContainer.getChildren().clear();
@@ -256,7 +266,7 @@ public class MainViewController {
                 System.out.println("Selected city: " + selectedCity.get().getCityName() + " (" + lat + ", " + lng + ")");
 
                 // Add marker to the map
-                mapController.svgMap.addMarkerByCoordinates(lat, lng, mapController.mapImageView, mapController.mapPane);
+                mapController.svgMap.addMarkerByCoordinates(lat, lng, mapController.mapImageView, mapController.mapPane, searchField);
 
                 // Clear the event container while loading
                 eventContainer.getChildren().clear();
@@ -577,12 +587,18 @@ public class MainViewController {
 
         // Set the popup content in a scene and display it
         Scene popupScene = new Scene(popupContent, 600, 600);
+
+        popupScene.setOnKeyPressed(eventKey -> {
+            if (eventKey.getCode() == KeyCode.ESCAPE) {
+                popupStage.close(); // Close the popup when ESC is pressed
+            }
+        });
+
         popupStage.setScene(popupScene);
         popupStage.show();
 
         // Initialize StarChartProxy, which will handle loading the image asynchronously
-        new StarChartProxy(imageView, astronomyController, latitude, longitude,
-                event.getDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        new StarChartProxy(imageView, astronomyController, event);
     }
 
 }

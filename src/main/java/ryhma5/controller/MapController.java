@@ -8,9 +8,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import ryhma5.model.DataManager;
-import ryhma5.model.Projections;
-import ryhma5.model.map.Marker;
+import ryhma5.model.json.DataManager;
+import ryhma5.model.map.Projections;
 import ryhma5.model.map.SVGMap;
 import ryhma5.model.map.SVGMapFactory;
 
@@ -18,7 +17,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.CompletableFuture;
 
 public class MapController {
     private final MainViewController mainViewController;
@@ -69,7 +67,7 @@ public class MapController {
 
         System.out.println("Clicked X: " + x + ", Y: " + y);
 
-        svgMap.addMarker(x, y, mapImageView, mapPane);
+        svgMap.addMarker(x, y, mapImageView, mapPane, mainViewController.getSearchField());
 
         double imageWidth = mapImageView.getBoundsInParent().getWidth();
         double imageHeight = mapImageView.getBoundsInParent().getHeight();
@@ -96,7 +94,7 @@ public class MapController {
 
         for(double[] markerCoord : markersCoord){
             System.out.println("coord, lat " + markerCoord[0] + ", long " + markerCoord[1] );
-            svgMap.addMarkerByCoordinates(markerCoord[0], markerCoord[1], mapImageView, mapPane);
+            svgMap.addMarkerByCoordinates(markerCoord[0], markerCoord[1], mapImageView, mapPane, mainViewController.getSearchField());
         }
     }
 

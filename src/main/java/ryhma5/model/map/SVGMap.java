@@ -5,18 +5,23 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
-import ryhma5.model.DataManager;
-import ryhma5.controller.MainViewController;
+import ryhma5.model.json.DataManager;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class SVGMap {
 
-    private final SVGLoader svgLoader;
+    SVGLoader svgLoader;
     private IProjector projector;
     private final List<Marker> markers = new ArrayList<>();
     private Marker selectedMarker = null;
@@ -40,15 +45,15 @@ public class SVGMap {
         return mapImageView;
     }
 
-    public void addMarkerByCoordinates(double latitude, double longitude, ImageView mapImageView, Pane mapPane) {
+    public void addMarkerByCoordinates(double latitude, double longitude, ImageView mapImageView, Pane mapPane, TextField searchField) {
 
 
         // check if there exists a marker at the same location, if so select that instead. accurate to some decimals to account for error in conversion
         for (Marker marker : markers) {
-            double[] latLong = projector.xyToLatLong(marker.getRelativeX(), marker.getRelativeY());
+            double[] latLong = new double[] {marker.getLat(), marker.getLong()};
             if (Math.abs(latLong[0] - latitude) < 3.0 && Math.abs(latLong[1] - longitude) < 3.0) { // check if the markers would be too close
                 System.out.println("Marker already exists at this location");
-                selectMarker(marker, mapPane, false);
+                selectMarker(marker, mapPane, false, searchField);
                 return;
             }
         }
@@ -57,10 +62,10 @@ public class SVGMap {
         double imageHeight = mapImageView.getBoundsInParent().getHeight();
 
         double[] xy = projector.latLongToXY(latitude, longitude, imageWidth, imageHeight);
-        addMarker(xy[0], xy[1], mapImageView, mapPane);
+        addMarker(xy[0], xy[1], mapImageView, mapPane, searchField);
     }
 
-    public void addMarker(double x, double y, ImageView mapImageView, Pane mapPane) {
+    public void addMarker(double x, double y, ImageView mapImageView, Pane mapPane, TextField searchField) {
         Platform.runLater(() -> {
             double imageWidth = mapImageView.getBoundsInParent().getWidth();
             double imageHeight = mapImageView.getBoundsInParent().getHeight();
@@ -86,9 +91,9 @@ public class SVGMap {
                 // Add the marker to the mapPane
                 mapPane.getChildren().add(marker.getCircle());
 
-                selectMarker(marker, mapPane, true);
+                selectMarker(marker, mapPane, true, searchField);
                 marker.getCircle().setOnMouseClicked(event -> {
-                    selectMarker(marker, mapPane, true);
+                    selectMarker(marker, mapPane, true, searchField);
                 });
 
                 Timeline timeline = new Timeline(
@@ -107,7 +112,7 @@ public class SVGMap {
      * @param marker  The marker to select
      * @param mapPane The Pane containing the map
      */
-    public void selectMarker(Marker marker, Pane mapPane, boolean deleteIfReselected) {
+    public void selectMarker(Marker marker, Pane mapPane, boolean deleteIfReselected, TextField searchField) {
         if (selectedMarker != null) {
             selectedMarker.deSelectMarker();
             if (selectedMarker == marker && deleteIfReselected == true) { // If re-selecting the same marker, destroy it
@@ -117,6 +122,13 @@ public class SVGMap {
             }
         }
         marker.selectMarker();
+
+        DecimalFormat df = new DecimalFormat("#.##", DecimalFormatSymbols.getInstance(Locale.US));
+        BigDecimal latitude = BigDecimal.valueOf(marker.getLat()).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal longitude = BigDecimal.valueOf(marker.getLong()).setScale(2, RoundingMode.HALF_UP);
+        String formattedCoordinates = df.format(latitude) + ", " + df.format(longitude);
+        searchField.setText(formattedCoordinates);
+
         selectedMarker = marker;
     }
 
@@ -171,7 +183,7 @@ public class SVGMap {
     public void saveMarkersAsJson(){
         ArrayList<double[]> markersLatLong = new ArrayList<>();
         for (Marker marker : markers){
-            if(!marker.getIsSelected()) {
+            if(!marker.isMarkerSelected()) {
                 markersLatLong.add(0, new double[]{marker.getLat(), marker.getLong()});
             } else {
                 markersLatLong.add(new double[]{marker.getLat(), marker.getLong()});
@@ -181,8 +193,14 @@ public class SVGMap {
     }
 
     public double[] getLatLongFromXY(double x, double y, double imageWidth, double imageHeight) {
-        double relativeX = x / imageWidth;
-        double relativeY = y / imageHeight;
-        return projector.xyToLatLong(relativeX, relativeY);
+        return projector.xyToLatLong(x, y, imageWidth, imageHeight);
+    }
+
+    /**
+     * methodused for unit testing
+     * @return
+     */
+    List<Marker> getMarkers() {
+        return markers;
     }
 }

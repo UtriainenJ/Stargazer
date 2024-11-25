@@ -1,7 +1,10 @@
 package ryhma5.controller;
 
+import javafx.application.Platform;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.util.Duration;
 import ryhma5.model.map.EquirectangularProjector;
 import ryhma5.model.api.whereTheISSAtAPI.ISSResponse;
 import ryhma5.model.api.whereTheISSAtAPI.WhereTheISSHandler;
@@ -21,6 +24,7 @@ public class WhereISSController {
 
     private double iconScale = 0.15;
     private ISSResponse currentISS;
+    private Tooltip tooltip;
 
     /**
      * Initializes the controller.
@@ -33,6 +37,10 @@ public class WhereISSController {
 
         issImageView.setFitWidth (iconScale * 400); // 400 = default height of the map image?
         issImageView.setFitHeight(iconScale * 400);
+
+        tooltip = new Tooltip();
+        Tooltip.install(issImageView, tooltip);
+        tooltip.setHideDelay(Duration.seconds(5));
     }
 
     /**
@@ -47,34 +55,61 @@ public class WhereISSController {
      * Updates the position of the ISS on the map.
      */
     public void updateISSPosition() {
-        currentISS = getISS("kilometers");
+        Platform.runLater(() -> {
+            currentISS = getISS("kilometers");
 
-        double imageWidth = mapImageView.getBoundsInParent().getWidth();
-        double imageHeight = mapImageView.getBoundsInParent().getHeight();
+            double imageWidth = mapImageView.getBoundsInParent().getWidth();
+            double imageHeight = mapImageView.getBoundsInParent().getHeight();
 
-        EquirectangularProjector projector = new EquirectangularProjector();
-        double[] xy = projector.latLongToXY(currentISS.getLatitude(), currentISS.getLongitude(), imageWidth, imageHeight);
+            EquirectangularProjector projector = new EquirectangularProjector();
+            double[] xy = projector.latLongToXY(currentISS.getLatitude(), currentISS.getLongitude(), imageWidth, imageHeight);
 
-        issImageView.setLayoutX(xy[0] - issImageView.getFitWidth() / 2);
-        issImageView.setLayoutY(xy[1] - issImageView.getFitHeight() / 2);
+            issImageView.setLayoutX(xy[0] - issImageView.getFitWidth() / 2);
+            issImageView.setLayoutY(xy[1] - issImageView.getFitHeight() / 2);
+
+            updateTooltip();
+        });
     }
+
+    private void updateTooltip() {
+        Platform.runLater(() -> {
+            String latitude = String.format("%.2f", currentISS.getLatitude());
+            String longitude = String.format("%.2f", currentISS.getLongitude());
+            String altitude = String.format("%.2f", currentISS.getAltitude());
+            String velocity = String.format("%.2f", currentISS.getVelocity());
+            String visibility = currentISS.getVisibility();
+
+            String newText = ("ISS live location: \n" +
+                    "Latitude: " + latitude + "\n" +
+                    "Longitude: " + longitude + "\n" +
+                    "Altitude: " + altitude + " km\n" +
+                    "Velocity: " + velocity + " km/h" + "\n\n" +
+                    "Visibility: " + visibility);
+
+            tooltip.setText(newText);
+        });
+    }
+
 
     /**
      * Makes sure the ISS icon stays on the right position on the map even when resizing window.
      */
     public void adjustToWindowSize (){
-        double windowWidth = mapImageView.getBoundsInParent().getWidth();
-        double windowHeight = mapImageView.getBoundsInParent().getHeight();
 
-        EquirectangularProjector projector = new EquirectangularProjector();
-        double[] xy = projector.latLongToXY(currentISS.getLatitude(), currentISS.getLongitude(), windowWidth, windowHeight);
+        Platform.runLater(() -> {
+            double windowWidth = mapImageView.getBoundsInParent().getWidth();
+            double windowHeight = mapImageView.getBoundsInParent().getHeight();
 
-        issImageView.setLayoutX(xy[0] - issImageView.getFitWidth() / 2);
-        issImageView.setLayoutY(xy[1] - issImageView.getFitHeight() / 2);
+            EquirectangularProjector projector = new EquirectangularProjector();
+            double[] xy = projector.latLongToXY(currentISS.getLatitude(), currentISS.getLongitude(), windowWidth, windowHeight);
 
-        double newScale = iconScale * Math.min(windowWidth, windowHeight);
-        issImageView.setFitWidth(newScale);
-        issImageView.setFitHeight(newScale);
+            issImageView.setLayoutX(xy[0] - issImageView.getFitWidth() / 2);
+            issImageView.setLayoutY(xy[1] - issImageView.getFitHeight() / 2);
+
+            double newScale = iconScale * Math.min(windowWidth, windowHeight);
+            issImageView.setFitWidth(newScale);
+            issImageView.setFitHeight(newScale);
+        });
     }
 
     /**

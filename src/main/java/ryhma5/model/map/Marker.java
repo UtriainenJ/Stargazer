@@ -5,6 +5,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 
+import java.util.function.Consumer;
+
 public class Marker {
     private final Circle circle;
     private final double relativeX;
@@ -12,6 +14,7 @@ public class Marker {
     private final double latitude;
     private final double longitude;
     private boolean isSelected = false;
+
 
     public Marker(double relativeX, double relativeY, double radius, double latitude, double longitude) {
         this.circle = createStyledMarkerCircle(radius);
@@ -23,8 +26,7 @@ public class Marker {
 
     private Circle createStyledMarkerCircle(double radius) {
         Circle circle = new Circle(radius);
-        Image iconImage = MarkerIconManager.getIconImage();
-
+        Image iconImage = MarkerIconManager.getInstance().getIconImage();
         if (iconImage != null) {
             circle.setFill(new ImagePattern(iconImage));
         } else {
@@ -36,7 +38,7 @@ public class Marker {
 
     public void selectMarker() {
         if (!isSelected) {
-            Image selectedIconImage = MarkerIconManager.getSelectedIconImage();
+            Image selectedIconImage = MarkerIconManager.getInstance().getSelectedIconImage();
             if (selectedIconImage != null) {
                 circle.setFill(new ImagePattern(selectedIconImage));
             } else {
@@ -48,7 +50,7 @@ public class Marker {
 
     public void deSelectMarker() {
         if (isSelected) {
-            Image iconImage = MarkerIconManager.getIconImage();
+            Image iconImage = MarkerIconManager.getInstance().getIconImage();
             if (iconImage != null) {
                 circle.setFill(new ImagePattern(iconImage));
             } else {
@@ -78,5 +80,7 @@ public class Marker {
         return longitude;
     }
 
-    public boolean getIsSelected() { return isSelected; }
+    public boolean isMarkerSelected() {
+        return isSelected;
+    }
 }
