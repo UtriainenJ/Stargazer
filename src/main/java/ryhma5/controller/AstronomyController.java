@@ -24,8 +24,11 @@ public class AstronomyController {
      * Initializes the controller.
      */
     public AstronomyController(){
-        responses = new ArrayList<>();
         responses = DataManager.loadDataAsList("astronomy_responses", AstronomyResponse.class);
+        if (responses == null) {
+            responses = new ArrayList<>();
+        }
+
         AstronomyHandler.loadAPICredentials();
     }
 
@@ -156,16 +159,19 @@ public class AstronomyController {
                     fromDate, toDate, time);
 
             if (cachedResponses == null){
+                System.out.println("No cached responses found for " + body
+                        + " at position " + latitude + ", " + longitude);
                 allFound = false;
                 break;
             }
             else {
-                allCachedBodies.addAll(cachedResponses);
+                allCachedBodies.add(cachedResponses.get(0));
             }
         }
 
         if (allFound) {
-            return allCachedBodies; // Return cached responses if available
+            System.out.println("All bodies found in cache for position "  + latitude + ", " + longitude);
+            return allCachedBodies; // Return cached responses if available for all bodies
         }
 
         // Fetch new body information if not cached
@@ -240,6 +246,7 @@ public class AstronomyController {
 
     // Get the responses from the cache
     private ArrayList<AstronomyResponse> getCachedResponses(String type, String body, Double lat, Double lon, String fromDate, String toDate, String time) {
+
         LocalDate from = LocalDate.parse(fromDate);
         LocalDate to = LocalDate.parse(toDate);
 
@@ -255,12 +262,13 @@ public class AstronomyController {
                 LocalTime responseTime = response.getDateTime().toLocalTime();
                 LocalTime userTime = LocalTime.parse(time);
 
-                if (response.getBodyName().equals(body) &&
-                        (responseDate.isEqual(from) || responseDate.isAfter(from)) &&
-                        (responseDate.isEqual(to) || responseDate.isBefore(to)) &&
-                        responseTime.equals(userTime) &&
-                        response.getObserverLatitude() == lat &&
-                        response.getObserverLongitude() == lon) {
+                if (isCloseEnough(response.getObserverLatitude(), lat) &&
+                    isCloseEnough(response.getObserverLongitude(), lon) &&
+                    response.getBodyName().equalsIgnoreCase(body) &&
+                    (responseDate.isEqual(from) || responseDate.isAfter(from)) &&
+                    (responseDate.isEqual(to) || responseDate.isBefore(to)) &&
+                    responseTime.equals(userTime)){
+
                     if (type.equals("event") && response.getEventType() != null) {
                         cachedEvents.add(response);
                     }
@@ -283,12 +291,12 @@ public class AstronomyController {
     private boolean allDatesCovered(List<AstronomyResponse> cachedResponses, LocalDate fromDate, LocalDate toDate) {
         List<LocalDate> allDates = Stream.iterate(fromDate, date -> date.plusDays(1))
                 .limit(fromDate.until(toDate).getDays() + 1)
-                .collect(Collectors.toList());
+                .toList();
 
         List<LocalDate> responseDates = cachedResponses.stream()
                 .map(response -> response.getDateTime().toLocalDate())
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
 
         for (LocalDate date : allDates) {
             if (!responseDates.contains(date)) {
@@ -296,5 +304,9 @@ public class AstronomyController {
             }
         }
         return true; // Return true if all dates are covered
+    }
+
+    private boolean isCloseEnough(double value1, double value2) {
+        return Math.abs(value1 - value2) < 0.1;
     }
 }
