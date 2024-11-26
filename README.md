@@ -13,6 +13,8 @@ Stargazer is an app that helps you discover and track celestial events in your a
 
 The project has currently been developed and tested using JetBrains' IntelliJ IDEA development environment. Therefore, the installation and usage instructions are provided with the assumption that IntelliJ IDEA is being used. Installation and usage instructions will be updated as the project progresses. For installation instructions for IntelliJ IDEA, visit the following link: https://www.jetbrains.com/help/idea/installation-guide.html .
 
+Remember, while configuring IntelliJ during installation, choose to create associations between IntelliJ and .java and .pom files. Its also good to update the PATH variables same time.
+
 The project uses Java 17, JavaFX 23 and Maven 3.9.9. Instructions for installing Java can be found at the following link:https://docs.oracle.com/en/java/javase/17/install/installation-jdk-microsoft-windows-platforms.html. 
 If you cannot install Java 17, Java 22 will also work.
 
@@ -32,22 +34,34 @@ In the "Open File or Project" window, select the cloned project and click "OK."
 
 3. The dependencies of of this project are managed with Maven. In IntelliJ GUI they can be installed by right clicking pom.xml and selecting "Add as Maven Project" or "reload project" if the project is already open.
 
-3. Run Stargazer:
+4. Run Stargazer:
 Navigate the project folder structure in IntelliJ IDEA and open Start.java.
 You can find this file by going to ryhma-5 -> src -> main -> java -> ryhma5.
 Once the file is open, click the "Run" button (a green arrow icon) at the top of the IntelliJ IDEA window.
 
+It is possible that the JDK is not fully configured to work with IntelliJ yet. To resolve this, go to File -> Project Structure -> SDKs (under Platform Settings), click the '+' icon to add a new SDK, and look under "Detected SDKs" for your installed JDK. Select it, then click "Apply".
+Alternative: After cloning the project, open it, and you may see a pop-up with the following warning: 'JDK "temurin-17" is missing — download Eclipse Temurin.'( You may need to open a Java file first to see this message. ) From this pop-up, you can update IntelliJ to include the JDK.
+
 ## Usage 
 
-The app is currently in a limited state, but more functionality will be added in the future, and this section will be updated accordingly.
+When the app is launched for the first time, the main window will open. This window includes a map as its primary display, with a sidebar button located on the left-hand side.
 
-Currently, users can click on the map to add stars. The most recently added star will remain active unless another non-active star is clicked to become active instead. Additionally, you can expand the sidebar by clicking the sidebar button located on the left side of the window.
+On the map, there is an icon representing the current location of the International Space Station (ISS). The ISS's position updates in real-time as it moves.
 
-## Upcoming Features
+Click the sidebar button on the left to expand the sidebar.
 
-Generate a star map of the user's location to help users locate celestial events in the night sky.
+There are two ways to get location:
 
-Get list of celestial events in users location within a selected timeframe.
+1. Enter a city name or location coordinates into the sidebar text field.
 
-Track the location of the International Space Station (ISS) by allowing users to see its current position and upcoming flyover times.
+2. Click directly on the map to select a location.
 
+Once a location is selected, click the "Search" button to retrieve celestial events for that area.
+
+The app will display celestial events, such as visible planets and phenomena like solar eclipses, based on the chosen location.
+
+The map will place a star marker to represent the selected location. Users can have up to three location markers on the map at a time. The active marker is animated to spin. To change the active marker, click on one of the inactive markers. Swapping the active marker will update the text field, allowing you to retrieve events for that location by clicking the 'Search' button.
+
+Event cards contain details about the event, such as the event name, date, time, and a star map button. You can click the star map button to view a star map from the event's location.
+
+From the second launch onward, the app will load all previous user data, including map markers, selected city/location, and date, and will update the UI accordingly.
