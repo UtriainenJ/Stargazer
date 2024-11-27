@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 public class AstronomyController {
 
     private List<AstronomyResponse> responses;
+    private int LAST3REQUESTS = 6006;
 
     /**
      * Initializes the controller.
@@ -280,10 +281,11 @@ public class AstronomyController {
     }
 
     /**
-     * save all responses as json
+     * save last 3 requests responses as json
      */
     public void saveAstronomyResponses(){
-        DataManager.saveData(responses, "astronomy_responses");
+        List<AstronomyResponse> last99Responses = responses.subList(Math.max(responses.size() - LAST3REQUESTS,0), responses.size());
+        DataManager.saveData(last99Responses, "astronomy_responses");
     }
 
     // Check if all dates between fromDate and toDate are covered in the cached responses
