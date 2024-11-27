@@ -3,12 +3,10 @@ package ryhma5;
 import java.io.IOException;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import ryhma5.controller.AstronomyController;
 import ryhma5.controller.MainViewController;
 import ryhma5.controller.WhereISSController;
 

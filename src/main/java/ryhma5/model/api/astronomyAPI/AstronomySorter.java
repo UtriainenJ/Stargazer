@@ -2,12 +2,7 @@ package ryhma5.model.api.astronomyAPI;
 
 import ryhma5.model.api.astronomyAPI.AstronomyResponse;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Iterator;
+import java.util.*;
 
 public class AstronomySorter {
     public static ArrayList<AstronomyResponse> getBrightestBodies(ArrayList<AstronomyResponse> bodyList) {
@@ -34,9 +29,7 @@ public class AstronomySorter {
         Set<String> bodiesToRemoveSet = new HashSet<>();
 
         // Add the bodies to be removed to the set (varargs allows you to pass multiple body names)
-        for (String body : bodiesToRemove) {
-            bodiesToRemoveSet.add(body);
-        }
+        bodiesToRemoveSet.addAll(Arrays.asList(bodiesToRemove));
 
         // Use an iterator to safely remove items while iterating
         Iterator<AstronomyResponse> iterator = bodyList.iterator();

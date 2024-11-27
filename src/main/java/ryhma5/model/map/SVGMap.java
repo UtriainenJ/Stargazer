@@ -22,11 +22,11 @@ import java.util.Locale;
 public class SVGMap {
 
     SVGLoader svgLoader;
-    private IProjector projector;
+    private final IProjector projector;
     private final List<Marker> markers = new ArrayList<>();
     private Marker selectedMarker = null;
 
-    private double markerRelativeSize = 0.03;
+    private final double markerRelativeSize = 0.03;
 
     protected SVGMap(String svgFilePath, IProjector projection) {
         this.svgLoader = new SVGLoader(svgFilePath);
@@ -67,11 +67,28 @@ public class SVGMap {
 
     public void addMarker(double x, double y, ImageView mapImageView, Pane mapPane, TextField searchField) {
         Platform.runLater(() -> {
+
+
             double imageWidth = mapImageView.getBoundsInParent().getWidth();
             double imageHeight = mapImageView.getBoundsInParent().getHeight();
 
             double markerRadius = markerRelativeSize * Math.min(imageWidth, imageHeight);
             if (imageWidth > 0 && imageHeight > 0) {
+
+                // check if there exists a marker at the same location, if so select that instead.
+                // practically the same check as addmarkerbycoordinates.
+                for (Marker marker : markers) {
+                    double markerX = marker.getRelativeX() * imageWidth;
+                    double markerY = marker.getRelativeY() * imageHeight;
+
+                    if (Math.abs(markerX - x) < markerRadius && Math.abs(markerY - y) < markerRadius) {
+                        System.out.println("Marker already exists at this location");
+                        selectMarker(marker, mapPane, false, searchField);
+                        return;
+                    }
+                }
+
+
                 // delete oldest marker if more than 3 exist (number subject to change)
                 if (markers.size() >= 3) {
                     Marker oldestMarker = markers.remove(0);

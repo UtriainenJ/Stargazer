@@ -6,26 +6,23 @@ import javafx.scene.image.ImageView;
 import ryhma5.controller.AstronomyController;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.CompletableFuture;
+import java.util.Objects;
 
 public class StarChartProxy {
     private final ImageView imageView;
     private final AstronomyController astronomyController;
     private final AstronomyResponse response;
-    private final Image placeholderImage;
     private final Image failedImage;
 
     public StarChartProxy(ImageView imageView, AstronomyController astronomyController, AstronomyResponse response) {
         this.imageView = imageView;
         this.astronomyController = astronomyController;
         this.response = response;
-        this.placeholderImage = new Image(getClass().getResourceAsStream("/images/loading.png"));
-        this.failedImage = new Image(getClass().getResourceAsStream("/images/loading_failed.png"));
+        Image placeholderImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/loading.png")));
+        this.failedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/loading_failed.png")));
 
         // Set the placeholder image initially
-        this.imageView.setImage(this.placeholderImage);
+        this.imageView.setImage(placeholderImage);
 
         // Start loading the actual image in the background
         loadStarChartImageAsync();

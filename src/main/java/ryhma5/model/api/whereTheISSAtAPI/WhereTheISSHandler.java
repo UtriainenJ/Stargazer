@@ -10,8 +10,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.List;
 
 /**
@@ -33,7 +31,8 @@ public class WhereTheISSHandler {
 
     /**
      * Fetches the current position of the ISS at the specified timestamp.
-     * @param units The units to use for the response. Can be "kilometers" or "miles".
+     *
+     * @param units     The units to use for the response. Can be "kilometers" or "miles".
      * @param timestamp The Unix timestamp (seconds since the epoch) for which to retrieve the ISS position.
      * @return An ISSResponse object containing the current position of the ISS.
      * @throws Exception If the request fails.
@@ -83,6 +82,7 @@ public class WhereTheISSHandler {
 
     /**
      * Fetches the current position of the ISS at the current time.
+     *
      * @param units The units to use for the response. Can be "kilometers" or "miles".
      * @return An ISSResponse object containing the current position of the ISS.
      * @throws Exception If the request fails.
@@ -94,9 +94,7 @@ public class WhereTheISSHandler {
         // Add query parameters if provided
         if (units != null) {
             apiUrl.append("?");
-            if (units != null) {
-                apiUrl.append("units=").append(URLEncoder.encode(units, "UTF-8"));
-            }
+            apiUrl.append("units=").append(URLEncoder.encode(units, "UTF-8"));
         }
 
         // Open the connection
@@ -131,11 +129,12 @@ public class WhereTheISSHandler {
     }
 
     /**
-     *  Fetches the positions of the ISS at the specified timestamps.
-     *  @param timestamps A list of Unix timestamps (seconds since the epoch) for which to retrieve the ISS positions.
-     *  @param units The units to use for the response. Can be "kilometers" or "miles".
-     *  @return A list of ISSResponse objects containing the ISS positions at the specified timestamps.
-     *  @throws Exception If the request fails.
+     * Fetches the positions of the ISS at the specified timestamps.
+     *
+     * @param timestamps A list of Unix timestamps (seconds since the epoch) for which to retrieve the ISS positions.
+     * @param units      The units to use for the response. Can be "kilometers" or "miles".
+     * @return A list of ISSResponse objects containing the ISS positions at the specified timestamps.
+     * @throws Exception If the request fails.
      */
     public static List<ISSResponse> fetchISSPositions(List<Long> timestamps, String units) throws Exception {
         // Construct the API URL
@@ -187,7 +186,8 @@ public class WhereTheISSHandler {
     private static List<ISSResponse> parseISSPositions(String jsonResponse) {
         // Use Gson to parse the JSON response
         Gson gson = new Gson();
-        return gson.fromJson(jsonResponse, new TypeToken<List<ISSResponse>>() {}.getType());
+        return gson.fromJson(jsonResponse, new TypeToken<List<ISSResponse>>() {
+        }.getType());
     }
 
     private static void tryLoadIcons() {
@@ -196,8 +196,9 @@ public class WhereTheISSHandler {
 
             if (iconStream != null) {
                 ISSIcon = new Image(iconStream);
+            } else {
+                System.err.println("Failed to load one or more marker icons");
             }
-            else{ System.err.println("Failed to load one or more marker icons"); }
 
             iconLoadAttempted = true;
         }
@@ -205,6 +206,7 @@ public class WhereTheISSHandler {
 
     /**
      * Returns the icon to use for the ISS icon
+     *
      * @return The icon to use for the ISS icon
      */
     public static Image getISSIcon() {

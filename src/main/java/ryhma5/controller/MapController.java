@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -17,6 +16,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class MapController {
     private final MainViewController mainViewController;
@@ -33,7 +33,7 @@ public class MapController {
         this.mapImageView = mapImageView;
         this.mapPane = mapPane;
         // set the background image, setting it inside .fxml doesn't work well
-        String imageUrl = getClass().getResource("/images/purple_dark_nebula.jpg").toExternalForm();
+        String imageUrl = Objects.requireNonNull(getClass().getResource("/images/purple_dark_nebula.jpg")).toExternalForm();
         mapPane.setStyle("-fx-background-image: url('" + imageUrl + "'); -fx-background-size: cover;");
 
         this.PROJECTION = Projections.EQUIRECTANGULAR;

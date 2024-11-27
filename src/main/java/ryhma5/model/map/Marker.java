@@ -5,8 +5,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 
-import java.util.function.Consumer;
-
 public class Marker {
     private final Circle circle;
     private final double relativeX;

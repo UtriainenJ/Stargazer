@@ -154,9 +154,7 @@ public class MainViewController {
 
         // Combine all the lists
         ArrayList<AstronomyResponse> eventList = new ArrayList<>();
-        if (brightestBodiesList != null){
-            eventList.addAll(brightestBodiesList);
-        }
+        eventList.addAll(brightestBodiesList);
         if (moonEventList != null){
             eventList.addAll(moonEventList);
         }
@@ -247,12 +245,10 @@ public class MainViewController {
                 } else {
                     // If the coordinates format is incorrect
                     showErrorMessage("Invalid coordinates format");
-                    return; // Stop further processing
                 }
             } catch (NumberFormatException e) {
                 // Handle invalid coordinate format
                 showErrorMessage("Invalid coordinates format");
-                return; // Stop further processing
             }
         } else {
             // If it's not coordinates, assume it's a city name
