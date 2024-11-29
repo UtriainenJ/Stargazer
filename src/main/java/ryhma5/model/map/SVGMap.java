@@ -16,7 +16,7 @@ import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import ryhma5.model.json.DataManager;
 
-public class SVGMap {
+public class SVGMap implements IMap {
 
     SVGLoader svgLoader;
     private final IProjector projector;
@@ -32,6 +32,7 @@ public class SVGMap {
 
 
     // Load the map image and bind its size to the Pane
+    @Override
     public ImageView loadMap(Pane mapPane) {
         ImageView mapImageView = (ImageView) svgLoader.loadSVG();
         if (mapImageView != null) {
@@ -42,6 +43,7 @@ public class SVGMap {
         return mapImageView;
     }
 
+    @Override
     public void addMarkerByCoordinates(double latitude, double longitude, ImageView mapImageView, Pane mapPane, TextField searchField) {
 
         // check if there exists a marker at the same location, if so select that instead. accurate to some decimals to account for error in conversion
@@ -61,6 +63,7 @@ public class SVGMap {
         addMarker(xy[0], xy[1], mapImageView, mapPane, searchField);
     }
 
+    @Override
     public void addMarker(double x, double y, ImageView mapImageView, Pane mapPane, TextField searchField) {
         Platform.runLater(() -> {
 
@@ -137,6 +140,7 @@ public class SVGMap {
      * @param marker  The marker to select
      * @param mapPane The Pane containing the map
      */
+    @Override
     public void selectMarker(Marker marker, Pane mapPane, boolean deleteIfReselected) {
         if (selectedMarker != null) {
             selectedMarker.deSelectMarker();
@@ -156,6 +160,7 @@ public class SVGMap {
      * @param marker  The marker to remove
      * @param mapPane The Pane containing the map
      */
+    @Override
     public void destroyMarker(Marker marker, Pane mapPane) {
         double markerRadius = marker.getCircle().getRadius();
         Timeline timeline = new Timeline(
@@ -174,6 +179,7 @@ public class SVGMap {
     }
 
     // Update the marker positions when the window is resized
+    @Override
     public void updateMarkers(ImageView mapImageView) {
         double imageWidth = mapImageView.getBoundsInParent().getWidth();
         double imageHeight = mapImageView.getBoundsInParent().getHeight();
@@ -197,6 +203,7 @@ public class SVGMap {
     /**
      * save all map markers coordinates as json, by making active marker last in the ArrayList
      */
+    @Override
     public void saveMarkersAsJson(){
         ArrayList<double[]> markersLatLong = new ArrayList<>();
         for (Marker marker : markers){
@@ -209,6 +216,7 @@ public class SVGMap {
         DataManager.saveData(markersLatLong, "map_markers");
     }
 
+    @Override
     public double[] getLatLongFromXY(double x, double y, double imageWidth, double imageHeight) {
         return projector.xyToLatLong(x, y, imageWidth, imageHeight);
     }
@@ -217,7 +225,8 @@ public class SVGMap {
      * methodused for unit testing
      * @return
      */
-    List<Marker> getMarkers() {
+    @Override
+    public List<Marker> getMarkers() {
         return markers;
     }
 }

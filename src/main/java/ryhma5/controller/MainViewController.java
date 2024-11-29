@@ -212,7 +212,7 @@ public class MainViewController {
                     System.out.println("Coordinates entered: (" + lat + ", " + lng + ")");
 
                     // Add marker to the map
-                    mapController.svgMap.addMarkerByCoordinates(lat, lng, mapController.mapImageView, mapController.mapPane, searchField);
+                    mapController.map.addMarkerByCoordinates(lat, lng, mapController.mapImageView, mapController.mapPane, searchField);
 
                     // Clear the event container while loading
                     eventContainer.getChildren().clear();
@@ -268,7 +268,7 @@ public class MainViewController {
                 System.out.println("Selected city: " + selectedCity.get().getCityName() + " (" + lat + ", " + lng + ")");
 
                 // Add marker to the map
-                mapController.svgMap.addMarkerByCoordinates(lat, lng, mapController.mapImageView, mapController.mapPane, searchField);
+                mapController.map.addMarkerByCoordinates(lat, lng, mapController.mapImageView, mapController.mapPane, searchField);
 
                 // Clear the event container while loading
                 eventContainer.getChildren().clear();

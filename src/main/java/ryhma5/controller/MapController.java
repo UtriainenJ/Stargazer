@@ -8,8 +8,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import ryhma5.model.json.DataManager;
+import ryhma5.model.map.IMap;
 import ryhma5.model.map.Projections;
-import ryhma5.model.map.SVGMap;
 import ryhma5.model.map.SVGMapFactory;
 
 import java.text.DecimalFormat;
@@ -25,7 +25,7 @@ public class MapController {
     Pane mapPane;
     //private List<Marker> markers = null;
     // map variables
-    SVGMap svgMap;
+    IMap map;
     ImageView mapImageView;
 
     public MapController(MainViewController mainViewController, Pane mapPane, ImageView mapImageView) {
@@ -40,9 +40,9 @@ public class MapController {
     }
 
     void initializeMap() {
-        svgMap = SVGMapFactory.createMap(PROJECTION);
+        map = SVGMapFactory.createMap(PROJECTION);
 
-        mapImageView = svgMap.loadMap(mapPane);
+        mapImageView = map.loadMap(mapPane);
         if (mapImageView != null) {
             mapPane.getChildren().add(mapImageView);
 
@@ -51,8 +51,8 @@ public class MapController {
         }
 
         // Reposition markers when the window is resized
-        mapPane.widthProperty().addListener((obs, oldVal, newVal) -> svgMap.updateMarkers(mapImageView));
-        mapPane.heightProperty().addListener((obs, oldVal, newVal) -> svgMap.updateMarkers(mapImageView));
+        mapPane.widthProperty().addListener((obs, oldVal, newVal) -> map.updateMarkers(mapImageView));
+        mapPane.heightProperty().addListener((obs, oldVal, newVal) -> map.updateMarkers(mapImageView));
         mapPane.widthProperty().addListener((obs, oldVal, newVal) -> mainViewController.getIssController().adjustToWindowSize());
         mapPane.heightProperty().addListener((obs, oldVal, newVal) -> mainViewController.getIssController().adjustToWindowSize());
 
@@ -67,12 +67,12 @@ public class MapController {
 
         System.out.println("Clicked X: " + x + ", Y: " + y);
 
-        svgMap.addMarker(x, y, mapImageView, mapPane, mainViewController.getSearchField());
+        map.addMarker(x, y, mapImageView, mapPane, mainViewController.getSearchField());
 
         double imageWidth = mapImageView.getBoundsInParent().getWidth();
         double imageHeight = mapImageView.getBoundsInParent().getHeight();
 
-        double[] latLong = svgMap.getLatLongFromXY(x, y, imageWidth, imageHeight);
+        double[] latLong = map.getLatLongFromXY(x, y, imageWidth, imageHeight);
 
         DecimalFormat df = new DecimalFormat("#.##", DecimalFormatSymbols.getInstance(Locale.US));
         BigDecimal latitude = BigDecimal.valueOf(latLong[0]).setScale(2, RoundingMode.HALF_UP);
@@ -93,7 +93,7 @@ public class MapController {
 
         for(double[] markerCoord : markersCoord){
             System.out.println("coord, lat " + markerCoord[0] + ", long " + markerCoord[1] );
-            svgMap.addMarkerByCoordinates(markerCoord[0], markerCoord[1], mapImageView, mapPane, mainViewController.getSearchField());
+            map.addMarkerByCoordinates(markerCoord[0], markerCoord[1], mapImageView, mapPane, mainViewController.getSearchField());
         }
     }
 
@@ -101,6 +101,6 @@ public class MapController {
      * call svgMap to save map markers
      */
     public void saveMapMarkers() {
-        svgMap.saveMarkersAsJson();
+        map.saveMarkersAsJson();
     }
 }
