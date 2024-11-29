@@ -440,8 +440,8 @@ public class MainViewController {
 
         // call mapController to save map markers
         mapController.saveMapMarkers();
-        // call astronomyController to save astronomy response events
-        astronomyController.saveAstronomyResponses();
+        // call astronomyController to save astronomy response events and urls
+        astronomyController.saveAstronomyData();
     }
 
     public WhereISSController getIssController() {

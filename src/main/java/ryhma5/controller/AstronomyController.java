@@ -1,9 +1,11 @@
 package ryhma5.controller;
 
+import com.google.gson.reflect.TypeToken;
 import ryhma5.model.api.astronomyAPI.AstronomyHandler;
 import ryhma5.model.api.astronomyAPI.AstronomyResponse;
 import ryhma5.model.json.DataManager;
 
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
@@ -24,12 +26,19 @@ public class AstronomyController {
      * Initializes the controller.
      */
     public AstronomyController(){
-        responses = DataManager.loadDataAsList("astronomy_responses", AstronomyResponse.class);
-        if (responses == null) {
-            responses = new ArrayList<>();
+        List<AstronomyResponse> loadedResponseData = DataManager.loadDataAsList("astronomy_responses", AstronomyResponse.class);
+        if (!loadedResponseData.isEmpty()) {
+            responses = loadedResponseData;
         }
 
         urls = new HashMap<>();
+        // get map type for loadDataAsObject
+        Type urlsType = new TypeToken<Map<String, String>>() {}.getType();
+        Map<String, String> loadedUrlsData = DataManager.loadDataAsObject("astronomy_urls", urlsType);
+        if(!loadedUrlsData.isEmpty()){
+            urls = loadedUrlsData;
+        }
+
         AstronomyHandler.loadAPICredentials();
     }
 
@@ -302,11 +311,14 @@ public class AstronomyController {
     }
 
     /**
-     * save last 3 requests responses as json
+     * save last 3 requests responses as json and urls as json
      */
-    public void saveAstronomyResponses(){
-        List<AstronomyResponse> last99Responses = responses.subList(Math.max(responses.size() - LAST3REQUESTS,0), responses.size());
-        DataManager.saveData(last99Responses, "astronomy_responses");
+    public void saveAstronomyData(){
+        List<AstronomyResponse> last3Requests = responses.subList(Math.max(responses.size() - LAST3REQUESTS,0), responses.size());
+        DataManager.saveData(last3Requests, "astronomy_responses");
+
+        //System.out.println(urls.size());
+        DataManager.saveData(urls, "astronomy_urls");
     }
 
     // Check if all dates between fromDate and toDate are covered in the cached responses
