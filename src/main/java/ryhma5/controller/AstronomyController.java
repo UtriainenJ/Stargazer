@@ -6,9 +6,7 @@ import ryhma5.model.json.DataManager;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -18,6 +16,8 @@ import java.util.stream.Stream;
 public class AstronomyController {
 
     private List<AstronomyResponse> responses;
+    private Map<String, String> urls;
+
     private int LAST3REQUESTS = 6006;
 
     /**
@@ -29,6 +29,7 @@ public class AstronomyController {
             responses = new ArrayList<>();
         }
 
+        urls = new HashMap<>();
         AstronomyHandler.loadAPICredentials();
     }
 
@@ -177,11 +178,11 @@ public class AstronomyController {
         // Fetch new body information if not cached
         try {
             ArrayList<AstronomyResponse> newBodies = AstronomyHandler.fetchAllBodies(latitude,
-                                                                                longitude,
-                                                                                elevation,
-                                                                                fromDate,
-                                                                                toDate,
-                                                                                time);
+                                                                                    longitude,
+                                                                                    elevation,
+                                                                                    fromDate,
+                                                                                    toDate,
+                                                                                    time);
 
                 bodies.addAll(newBodies);
                 responses.addAll(newBodies);
@@ -203,6 +204,13 @@ public class AstronomyController {
      * @return url of the star chart image
      */
     public String getConstellationStarChart(double latitude, double longitude, String date, String constellationId) {
+        String cacheKey = generateCacheKey(latitude, longitude, date, constellationId);
+
+        if (urls.containsKey(cacheKey)) {
+            System.out.println("Cache hit for key: " + cacheKey);
+            return urls.get(cacheKey);
+        }
+
         try {
             return AstronomyHandler.generateConstellationStarChart(latitude, longitude, date, constellationId);
         } catch (Exception e) {
@@ -221,6 +229,12 @@ public class AstronomyController {
      * @return url of the star chart image
      */
     public String getAreaStarChart(double latitude, double longitude, String date, Double rightAscension, Double declination, Integer zoom) {
+        String cacheKey = generateCacheKey(latitude, longitude, date, rightAscension, declination, zoom);
+
+        if (urls.containsKey(cacheKey)) {
+            System.out.println("Cache hit for key: " + cacheKey);
+            return urls.get(cacheKey);
+        }
         try {
             return AstronomyHandler.generateAreaStarChart(latitude, longitude, date, rightAscension, declination, zoom);
         } catch (Exception e) {
@@ -237,6 +251,13 @@ public class AstronomyController {
      * @return url of the moon phase image
      */
     public String getMoonPhaseImage(double latitude, double longitude, String date, String format) {
+        String cacheKey = generateCacheKey(latitude, longitude, date, format);
+
+        if (urls.containsKey(cacheKey)) {
+            System.out.println("Cache hit for key: " + cacheKey);
+            return urls.get(cacheKey);
+        }
+
         try {
             return AstronomyHandler.generateMoonPhaseImage(latitude, longitude, date, format);
         } catch (Exception e) {
@@ -310,4 +331,18 @@ public class AstronomyController {
     private boolean isCloseEnough(double value1, double value2) {
         return Math.abs(value1 - value2) < 0.1;
     }
+
+    /* Generates key for url cache
+        Object... params accepts any number of parameters
+     */
+    private String generateCacheKey(Object... parameters) {
+        Stream<Object> params = Arrays.stream(parameters);
+
+        // Convert each parameter to a string and join them with a "|" separator
+        return params
+                .map(String::valueOf)  // Convert each parameter to its string representation
+                .reduce((a, b) -> a + "|" + b)  // Combine the strings with "|" as a separator
+                .orElse("");  // Return an empty string if no parameters are provided
+    }
+
 }

@@ -6,6 +6,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
@@ -104,6 +105,15 @@ public class SVGMap {
                 // Set the marker's initial position
                 marker.getCircle().setCenterX(x);
                 marker.getCircle().setCenterY(y);
+
+                // Create a tooltip for the marker
+                String latitude = String.format("%.2f", latLong[0]);
+                String longitude = String.format("%.2f", latLong[1]);
+
+                String tooltipText = "Latitude: " + latitude + "\nLongitude: " + longitude;
+                Tooltip markerTooltip = new Tooltip(tooltipText);
+                markerTooltip.setShowDuration(Duration.INDEFINITE);
+                Tooltip.install(marker.getCircle(), markerTooltip);
 
                 // Add the marker to the mapPane
                 mapPane.getChildren().add(marker.getCircle());
