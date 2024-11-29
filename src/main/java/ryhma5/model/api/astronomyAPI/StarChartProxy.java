@@ -36,7 +36,7 @@ public class StarChartProxy {
 
         // create new thread to avoid blocking the GUI
         new Thread(() -> {
-            System.out.println("sending out the request");
+            System.out.println("sending out the starchart request");
             String starChartUrl = astronomyController.getConstellationStarChart(latitude, longitude, date, constellation);
             System.out.println("starcharturl " + starChartUrl);
 
