@@ -20,23 +20,29 @@ public class AstronomyController {
     private List<AstronomyResponse> responses;
     private Map<String, String> urls;
 
-    private int LAST3REQUESTS = 6006;
+    private static final int LAST3REQUESTS = 6006;
 
     /**
      * Initializes the controller.
      */
     public AstronomyController(){
         List<AstronomyResponse> loadedResponseData = DataManager.loadDataAsList("astronomy_responses", AstronomyResponse.class);
-        if (!loadedResponseData.isEmpty()) {
+        if (loadedResponseData != null) {
             responses = loadedResponseData;
         }
+        else {
+            responses = new ArrayList<>();
+        }
 
-        urls = new HashMap<>();
+
         // get map type for loadDataAsObject
         Type urlsType = new TypeToken<Map<String, String>>() {}.getType();
         Map<String, String> loadedUrlsData = DataManager.loadDataAsObject("astronomy_urls", urlsType);
-        if(!loadedUrlsData.isEmpty()){
+        if(loadedUrlsData != null){
             urls = loadedUrlsData;
+        }
+        else {
+            urls = new HashMap<>();
         }
 
         AstronomyHandler.loadAPICredentials();
@@ -53,14 +59,8 @@ public class AstronomyController {
      * @param time The time of the event information.
      * @return An ArrayList of AstronomyResponse objects containing the event information.
      */
-    public ArrayList<AstronomyResponse> getAstronomyEvent(String body,
-                                                        String latitude,
-                                                        String longitude,
-                                                        String elevation,
-                                                        String fromDate,
-                                                        String toDate,
-                                                        String time) {
-        ArrayList<AstronomyResponse> events = new ArrayList<>();
+    public ArrayList<AstronomyResponse> getAstronomyEvent(String body, String latitude, String longitude,
+                                                          String elevation, String fromDate, String toDate, String time){
 
         ArrayList<AstronomyResponse> cachedResponses = getCachedResponses("event", body,
                 Double.parseDouble(latitude), Double.parseDouble(longitude),
@@ -70,16 +70,10 @@ public class AstronomyController {
             return cachedResponses; // Return cached responses if available
         }
 
+        ArrayList<AstronomyResponse> events = new ArrayList<>();
         try {
-            ArrayList<AstronomyResponse> newEvents = AstronomyHandler.fetchAstronomyEvent(body,
-                                                                                    latitude,
-                                                                                    longitude,
-                                                                                    elevation,
-                                                                                    fromDate,
-                                                                                    toDate,
-                                                                                    time);
-
-
+            ArrayList<AstronomyResponse> newEvents = AstronomyHandler.fetchAstronomyEvent(body, latitude, longitude,
+                                                                                    elevation, fromDate, toDate, time);
 
             events.addAll(newEvents);
             responses.addAll(newEvents);
@@ -101,13 +95,8 @@ public class AstronomyController {
      * @param time The time of the event information.
      * @return An ArrayList of AstronomyResponse objects containing the event information.
      */
-    public ArrayList<AstronomyResponse> getAstronomyBody(String body,
-                                                       String latitude,
-                                                       String longitude,
-                                                       String elevation,
-                                                       String fromDate,
-                                                       String toDate,
-                                                       String time) {
+    public ArrayList<AstronomyResponse> getAstronomyBody(String body, String latitude, String longitude,
+                                                         String elevation, String fromDate, String toDate, String time){
         ArrayList<AstronomyResponse> bodies = new ArrayList<>();
 
         ArrayList<AstronomyResponse> cachedResponses = getCachedResponses("body", body,
@@ -120,13 +109,8 @@ public class AstronomyController {
 
         // Fetch new body information if not cached
         try {
-            ArrayList<AstronomyResponse> newBodies = AstronomyHandler.fetchAstronomyBody(body,
-                                                                                latitude,
-                                                                                longitude,
-                                                                                elevation,
-                                                                                fromDate,
-                                                                                toDate,
-                                                                                time);
+            ArrayList<AstronomyResponse> newBodies = AstronomyHandler.fetchAstronomyBody(body, latitude, longitude,
+                                                                                        elevation, fromDate, toDate, time);
 
                 bodies.addAll(newBodies);
                 responses.addAll(newBodies);
@@ -149,12 +133,8 @@ public class AstronomyController {
      * @param time The time of the event information.
      * @return An ArrayList of AstronomyResponse objects containing the event information.
      */
-    public ArrayList<AstronomyResponse> getAllAstronomyBodies(String latitude,
-                                                              String longitude,
-                                                              String elevation,
-                                                              String fromDate,
-                                                              String toDate,
-                                                              String time) {
+    public ArrayList<AstronomyResponse> getAllAstronomyBodies(String latitude, String longitude, String elevation,
+                                                              String fromDate, String toDate, String time) {
 
         ArrayList<AstronomyResponse> bodies = new ArrayList<>();
 
@@ -186,12 +166,8 @@ public class AstronomyController {
 
         // Fetch new body information if not cached
         try {
-            ArrayList<AstronomyResponse> newBodies = AstronomyHandler.fetchAllBodies(latitude,
-                                                                                    longitude,
-                                                                                    elevation,
-                                                                                    fromDate,
-                                                                                    toDate,
-                                                                                    time);
+            ArrayList<AstronomyResponse> newBodies = AstronomyHandler.fetchAllBodies(latitude, longitude, elevation,
+                                                                                    fromDate, toDate, time);
 
                 bodies.addAll(newBodies);
                 responses.addAll(newBodies);
@@ -221,7 +197,9 @@ public class AstronomyController {
         }
 
         try {
-            return AstronomyHandler.generateConstellationStarChart(latitude, longitude, date, constellationId);
+            String url = AstronomyHandler.generateConstellationStarChart(latitude, longitude, date, constellationId);
+            urls.put(cacheKey, url);
+            return url;
         } catch (Exception e) {
             return null;
         }
@@ -245,7 +223,9 @@ public class AstronomyController {
             return urls.get(cacheKey);
         }
         try {
-            return AstronomyHandler.generateAreaStarChart(latitude, longitude, date, rightAscension, declination, zoom);
+            String url = AstronomyHandler.generateAreaStarChart(latitude, longitude, date, rightAscension, declination, zoom);
+            urls.put(cacheKey, url);
+            return url;
         } catch (Exception e) {
             return null;
         }
@@ -268,7 +248,9 @@ public class AstronomyController {
         }
 
         try {
-            return AstronomyHandler.generateMoonPhaseImage(latitude, longitude, date, format);
+            String url = AstronomyHandler.generateMoonPhaseImage(latitude, longitude, date, format);
+            urls.put(cacheKey, url);
+            return url;
         } catch (Exception e) {
             return null;
         }
