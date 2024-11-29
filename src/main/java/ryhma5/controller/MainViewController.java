@@ -169,13 +169,7 @@ public class MainViewController {
         for (AstronomyResponse event : eventList) {
             System.out.println(event.toString());
         }
-        System.out.println("ooooooooooooooooooooooooooo     ISS    ooooooooooooooooooooooooooooooooooo");
-
-        ISSResponse issTest = issController.getISS("kilometers",
-                TimestampConverter.toTimestamp("2024-10-07","03:00:00"));
-        ISSResponse issTest2 = issController.getISS("kilometers", null);
-        System.out.println("ISS altitude at now: " + issTest2.getAltitude());
-        System.out.println("ISS velocity at 2024-10-7: " + issTest.getVelocity());
+        
         System.out.println("---------------------------------------------------------------------------");
 
         return eventList;
