@@ -1,40 +1,52 @@
 package ryhma5.controller;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.image.Image;
-import javafx.geometry.Insets;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import ryhma5.model.api.astronomyAPI.AstronomyResponse;
 import ryhma5.model.api.astronomyAPI.AstronomySorter;
 import ryhma5.model.api.astronomyAPI.StarChartProxy;
-import ryhma5.model.api.whereTheISSAtAPI.ISSResponse;
 import ryhma5.model.dateTimeUtils.DateShifter;
 import ryhma5.model.dateTimeUtils.LocalDateConverter;
-import ryhma5.model.dateTimeUtils.TimestampConverter;
 import ryhma5.model.json.City;
 import ryhma5.model.json.DataManager;
 import ryhma5.model.json.UserPreferences;
-
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-
-import java.time.LocalDate;
-import java.util.*;
-import java.util.concurrent.*;
 
 
 public class MainViewController {

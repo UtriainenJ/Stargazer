@@ -79,7 +79,6 @@ public class MapController {
         BigDecimal longitude = BigDecimal.valueOf(latLong[1]).setScale(2, RoundingMode.HALF_UP);
 
         String formattedCoordinates = df.format(latitude) + ", " + df.format(longitude);
-
         mainViewController.setSearchField(formattedCoordinates);
     }
 
