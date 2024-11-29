@@ -40,7 +40,7 @@ public class WhereISSController {
 
         tooltip = new Tooltip();
         Tooltip.install(issImageView, tooltip);
-        tooltip.setHideDelay(Duration.seconds(5));
+        tooltip.setShowDuration(Duration.INDEFINITE);
     }
 
     /**
@@ -77,14 +77,12 @@ public class WhereISSController {
             String longitude = String.format("%.2f", currentISS.getLongitude());
             String altitude = String.format("%.2f", currentISS.getAltitude());
             String velocity = String.format("%.2f", currentISS.getVelocity());
-            String visibility = currentISS.getVisibility();
 
             String newText = ("ISS live location: \n" +
                     "Latitude: " + latitude + "\n" +
                     "Longitude: " + longitude + "\n" +
                     "Altitude: " + altitude + " km\n" +
-                    "Velocity: " + velocity + " km/h" + "\n\n" +
-                    "Visibility: " + visibility);
+                    "Velocity: " + velocity + " km/h");
 
             tooltip.setText(newText);
         });
