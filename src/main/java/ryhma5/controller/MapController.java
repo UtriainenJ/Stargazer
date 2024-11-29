@@ -53,8 +53,8 @@ public class MapController {
         // Reposition markers when the window is resized
         mapPane.widthProperty().addListener((obs, oldVal, newVal) -> map.updateMarkers(mapImageView));
         mapPane.heightProperty().addListener((obs, oldVal, newVal) -> map.updateMarkers(mapImageView));
-        mapPane.widthProperty().addListener((obs, oldVal, newVal) -> mainViewController.getIssController().adjustToWindowSize());
-        mapPane.heightProperty().addListener((obs, oldVal, newVal) -> mainViewController.getIssController().adjustToWindowSize());
+        mapPane.widthProperty().addListener((obs, oldVal, newVal) -> WhereISSController.getInstance().adjustToWindowSize());
+        mapPane.heightProperty().addListener((obs, oldVal, newVal) -> WhereISSController.getInstance().adjustToWindowSize());
 
         Platform.runLater(()->{
             loadMapMarkers();
