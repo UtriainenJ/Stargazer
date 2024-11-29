@@ -27,16 +27,22 @@ public class AstronomyController {
      */
     public AstronomyController(){
         List<AstronomyResponse> loadedResponseData = DataManager.loadDataAsList("astronomy_responses", AstronomyResponse.class);
-        if (!loadedResponseData.isEmpty()) {
+        if (loadedResponseData != null) {
             responses = loadedResponseData;
         }
+        else {
+            responses = new ArrayList<>();
+        }
 
-        urls = new HashMap<>();
+
         // get map type for loadDataAsObject
         Type urlsType = new TypeToken<Map<String, String>>() {}.getType();
         Map<String, String> loadedUrlsData = DataManager.loadDataAsObject("astronomy_urls", urlsType);
-        if(!loadedUrlsData.isEmpty()){
+        if(loadedUrlsData != null){
             urls = loadedUrlsData;
+        }
+        else {
+            urls = new HashMap<>();
         }
 
         AstronomyHandler.loadAPICredentials();
@@ -221,7 +227,9 @@ public class AstronomyController {
         }
 
         try {
-            return AstronomyHandler.generateConstellationStarChart(latitude, longitude, date, constellationId);
+            String url = AstronomyHandler.generateConstellationStarChart(latitude, longitude, date, constellationId);
+            urls.put(cacheKey, url);
+            return url;
         } catch (Exception e) {
             return null;
         }
@@ -245,7 +253,9 @@ public class AstronomyController {
             return urls.get(cacheKey);
         }
         try {
-            return AstronomyHandler.generateAreaStarChart(latitude, longitude, date, rightAscension, declination, zoom);
+            String url = AstronomyHandler.generateAreaStarChart(latitude, longitude, date, rightAscension, declination, zoom);
+            urls.put(cacheKey, url);
+            return url;
         } catch (Exception e) {
             return null;
         }
@@ -268,7 +278,9 @@ public class AstronomyController {
         }
 
         try {
-            return AstronomyHandler.generateMoonPhaseImage(latitude, longitude, date, format);
+            String url = AstronomyHandler.generateMoonPhaseImage(latitude, longitude, date, format);
+            urls.put(cacheKey, url);
+            return url;
         } catch (Exception e) {
             return null;
         }
