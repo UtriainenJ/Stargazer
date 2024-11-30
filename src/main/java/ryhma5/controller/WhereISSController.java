@@ -18,7 +18,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class WhereISSController {
 
+    private static WhereISSController instance = new WhereISSController();
+
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
     private ImageView issImageView;
     private ImageView mapImageView;
 
@@ -41,6 +44,13 @@ public class WhereISSController {
         tooltip = new Tooltip();
         Tooltip.install(issImageView, tooltip);
         tooltip.setShowDuration(Duration.INDEFINITE);
+    }
+
+    public static synchronized WhereISSController getInstance() {
+        if (instance == null) {
+            instance = new WhereISSController();
+        }
+        return instance;
     }
 
     /**

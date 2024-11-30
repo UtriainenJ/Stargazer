@@ -22,7 +22,7 @@ public class Start extends Application {
 
 
         MainViewController mainController = fxmlLoader.getController();
-        WhereISSController issController = new WhereISSController();
+        WhereISSController issController = WhereISSController.getInstance();
         issController.initialize();  // Manually call initialize to set up the ImageView
 
         // Inject issController into mainController

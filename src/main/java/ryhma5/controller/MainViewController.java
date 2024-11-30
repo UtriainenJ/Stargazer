@@ -84,8 +84,6 @@ public class MainViewController {
     // textfield suggestions variables
     private List<City> cityList;
 
-    private WhereISSController issController;
-
     public void initialize() {
         // Sidebar is moved out of the way at start
         if (sidebar != null) {
@@ -102,7 +100,7 @@ public class MainViewController {
 
         mapController.initializeMap();
 
-        astronomyController = new AstronomyController();
+        astronomyController = AstronomyController.getInstance();
     }
 
     void setSearchField(String data) {
@@ -114,7 +112,6 @@ public class MainViewController {
     }
 
     public void setISSController(WhereISSController issController) {
-        this.issController = issController;
         issController.setMapImageView(mapController.mapImageView);
 
 
@@ -444,9 +441,6 @@ public class MainViewController {
         astronomyController.saveAstronomyData();
     }
 
-    public WhereISSController getIssController() {
-        return issController;
-    }
 
     @FXML
     public void addEventCard(AstronomyResponse event, double latitude, double longitude) {
