@@ -17,6 +17,7 @@ import java.util.stream.Stream;
  */
 public class AstronomyController {
 
+    private static AstronomyController instance;
     private List<AstronomyResponse> responses;
     private Map<String, String> urls;
 
@@ -25,7 +26,7 @@ public class AstronomyController {
     /**
      * Initializes the controller.
      */
-    public AstronomyController(){
+    private AstronomyController(){
         List<AstronomyResponse> loadedResponseData = DataManager.loadDataAsList("astronomy_responses", AstronomyResponse.class);
         if (loadedResponseData != null) {
             responses = loadedResponseData;
@@ -46,6 +47,17 @@ public class AstronomyController {
         }
 
         AstronomyHandler.loadAPICredentials();
+    }
+
+    /**
+     * Public static method to get the singleton instance of the class.
+     * @return The singleton instance of AstronomyController.
+     */
+    public static synchronized AstronomyController getInstance() {
+        if (instance == null) {
+            instance = new AstronomyController();
+        }
+        return instance;
     }
 
     /**

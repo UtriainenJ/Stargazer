@@ -100,7 +100,7 @@ public class MainViewController {
 
         mapController.initializeMap();
 
-        astronomyController = new AstronomyController();
+        astronomyController = AstronomyController.getInstance();
     }
 
     void setSearchField(String data) {
