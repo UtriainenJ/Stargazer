@@ -1,17 +1,18 @@
 package ryhma5.controller;
 
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import javafx.application.Platform;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
-import ryhma5.model.map.EquirectangularProjector;
 import ryhma5.model.api.whereTheISSAtAPI.ISSResponse;
 import ryhma5.model.api.whereTheISSAtAPI.WhereTheISSHandler;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import ryhma5.model.map.EquirectangularProjector;
 
 /**
  * A controller class for the ISS
@@ -25,7 +26,7 @@ public class WhereISSController {
     private ImageView issImageView;
     private ImageView mapImageView;
 
-    private double iconScale = 0.15;
+    private double iconScale = 0.1;
     private ISSResponse currentISS;
     private Tooltip tooltip;
 
@@ -52,7 +53,7 @@ public class WhereISSController {
         }
         return instance;
     }
-
+ 
     /**
      * Sets the map image view.
      * @param mapImageView The map image view to set.

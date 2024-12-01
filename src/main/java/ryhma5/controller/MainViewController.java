@@ -60,6 +60,9 @@ public class MainViewController {
     private HBox sidebarContainer;
 
     @FXML
+    private Button toggleButton;
+
+    @FXML
     private TextField searchField;
 
     @FXML
@@ -91,6 +94,22 @@ public class MainViewController {
         } else {
             System.out.println("Sidebar is not loaded.");
         }
+
+        toggleButton.setOnMouseEntered(e -> toggleButton.setStyle(
+            "-fx-background-color: #ffffff;" +
+            "-fx-font-size: 30;" +
+            "-fx-background-radius: 0 0 30 0; " +
+            "-fx-text-fill: #000000; " +
+            "-fx-effect: null; " +
+            "-fx-cursor: hand;"));
+
+        toggleButton.setOnMouseExited(e -> toggleButton.setStyle(
+            "-fx-background-color: #7b50b5; " +
+            "-fx-font-size: 30;" +
+            "-fx-background-radius: 0 0 30 0; " +
+            "-fx-text-fill: #FFFFFF; " +
+            "-fx-effect: null; " +
+            "-fx-cursor: hand;"));
 
         loadUserPreferences();
         loadCities();
@@ -134,7 +153,7 @@ public class MainViewController {
         // Length of the timeframe
         int monthsToShift = 6;
         String toDate = DateShifter.shiftDateByMonths(date, monthsToShift);
-        String time = "12:00:00";
+        String time = "00:00:00";
 
 
         ArrayList<AstronomyResponse> moonEventList = astronomyController.getAstronomyEvent(
@@ -173,14 +192,14 @@ public class MainViewController {
 
         // Sort the list by date (using dateTime as the key for sorting)
         eventList.sort(Comparator.comparing(AstronomyResponse::getDateTime));
-
+        /* 
         System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx       ALL EVENTS       xxxxxxxxxxxxxxxxxxxxxxxxxx");
         for (AstronomyResponse event : eventList) {
             System.out.println(event.toString());
         }
         
         System.out.println("---------------------------------------------------------------------------");
-
+        */
         return eventList;
     }
 
@@ -464,25 +483,37 @@ public class MainViewController {
         // Determine the main image path based on the event name using a switch statement
         switch (eventName.toLowerCase()) {
             case "moon":
-                mainImagePath = "/icons/meteor.png";
+                mainImagePath = "/icons/moon.png";
                 break;
             case "jupiter":
-                mainImagePath = "/icons/saturn.png";
+                mainImagePath = "/icons/jupiter.png";
                 break;
             case "mars":
-                mainImagePath = "/icons/saturn.png";
+                mainImagePath = "/icons/mars.png";
                 break;
             case "saturn":
                 mainImagePath = "/icons/saturn.png";
                 break;
             case "venus":
-                mainImagePath = "/icons/saturn.png";
+                mainImagePath = "/icons/venus.png";
                 break;
             case "lunar eclipse":
-                mainImagePath = "/icons/darkstar.png";
+                mainImagePath = "/icons/moon_dark.png";
                 break;
             case "total solar eclipse":
-                mainImagePath = "/icons/darkstar.png";
+                mainImagePath = "/icons/full_eclipse.png";
+                break;
+            case "annular solar eclipse":
+                mainImagePath = "/icons/full_eclipse.png";
+                break;
+            case "penumbral lunar eclipse":
+                mainImagePath = "/icons/moon_dark.png";
+                break;
+            case "partial solar eclipse":
+                mainImagePath = "/icons/partial_eclipse.png";
+                break;
+            case "partial lunar eclipse":
+                mainImagePath = "/icons/moon_dark.png";
                 break;
             // Add more cases for other celestial bodies as needed
             default:
@@ -507,50 +538,66 @@ public class MainViewController {
 
         // Main ImageView
         ImageView mainImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(mainImagePath))));
-        mainImageView.setFitWidth(120);
-        mainImageView.setFitHeight(129);
+        mainImageView.setFitWidth(140);
+        mainImageView.setFitHeight(140);
+        mainImageView.setPreserveRatio(true);
         AnchorPane.setLeftAnchor(mainImageView, 40.0);
         AnchorPane.setTopAnchor(mainImageView, 40.0);
 
         // Title Text
         Text title = new Text(eventName);
-        title.setFont(Font.font("Unispace-Bold", 36));
+        if (eventName.length() > 15) {
+            title.setFont(Font.font("Unispace-Bold", 28)); // Smaller font size for long titles
+        } else {
+            title.setFont(Font.font("Unispace-Bold", 36)); // Default font size
+        }
         title.setFill(Color.WHITE);
         AnchorPane.setLeftAnchor(title, 40.0);
-        AnchorPane.setBottomAnchor(title, 40.0);
+        AnchorPane.setBottomAnchor(title, 25.0);
 
         // Date Text
         Text date = new Text(formattedDate);  // Use the formatted date part
         date.setFont(Font.font("Unispace-Bold", 40));
         date.setFill(Color.WHITE);
-        AnchorPane.setTopAnchor(date, 20.0);
+        AnchorPane.setTopAnchor(date, 40.0);
         AnchorPane.setRightAnchor(date, 45.0);
 
-        // Time Text
-        Text time = new Text(formattedTime);  // Use the formatted time part
-        time.setFont(Font.font("Unispace-Bold", 40));
-        time.setFill(Color.WHITE);
-        AnchorPane.setTopAnchor(time, 78.0);
-        AnchorPane.setRightAnchor(time, 45.0);
+        
 
         // Add the button with ImageView only if the event is not a special event type (like an eclipse)
         if (event.getEventType() == null) {
             // Button with ImageView inside (for non-event types like celestial bodies)
             Button iconButton = new Button();
-            iconButton.setPrefSize(120, 120);
+            iconButton.setPrefSize(150, 150);
             iconButton.setStyle(
-                    "-fx-background-color: #f2edf8; " +
-                            "-fx-background-radius: 100; " +
-                            "-fx-border-color: #34125f; " +
-                            "-fx-border-radius: 100; " +
-                            "-fx-border-width: 5; " +
-                            "-fx-cursor: hand;");
+                "-fx-background-color: #1F034C; " +
+                "-fx-background-radius: 100; " +
+                "-fx-border-color: #D1C0F5; " +
+                "-fx-border-radius: 100; " +
+                "-fx-border-width: 5; " +
+                "-fx-cursor: hand;");
             AnchorPane.setBottomAnchor(iconButton, 30.0);
             AnchorPane.setRightAnchor(iconButton, 50.0);
 
+            iconButton.setOnMouseEntered(e -> iconButton.setStyle(
+                "-fx-background-color: #2C0669; " +
+                "-fx-background-radius: 100; " +
+                "-fx-border-color: #ffffff; " +
+                "-fx-border-radius: 100; " +
+                "-fx-border-width: 5; " +
+                "-fx-cursor: hand;"));
+    
+            iconButton.setOnMouseExited(e -> iconButton.setStyle(
+                "-fx-background-color: #1F034C; " +
+                "-fx-background-radius: 100; " +
+                "-fx-border-color: #D1C0F5; " +
+                "-fx-border-radius: 100; " +
+                "-fx-border-width: 5; " +
+                "-fx-cursor: hand;"));
+
             ImageView buttonImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(buttonImagePath))));
-            buttonImageView.setFitWidth(91);
-            buttonImageView.setFitHeight(87);
+            buttonImageView.setFitWidth(110);
+            buttonImageView.setFitHeight(110);
             iconButton.setGraphic(buttonImageView);
 
             // open star chart on click
@@ -558,10 +605,18 @@ public class MainViewController {
 
             // Add the button to the AnchorPane
             anchorPane.getChildren().add(iconButton);
+        } else {
+            // Time Text
+            Text time = new Text(formattedTime);  // Use the formatted time part
+            time.setFont(Font.font("Unispace-Bold", 40));
+            time.setFill(Color.WHITE);
+            AnchorPane.setTopAnchor(time, 100.0);
+            AnchorPane.setRightAnchor(time, 55.0);
+            anchorPane.getChildren().add(time);
         }
 
         // Add all components to the AnchorPane
-        anchorPane.getChildren().addAll(mainImageView, title, date, time);
+        anchorPane.getChildren().addAll(mainImageView, title, date);
 
         // Add the AnchorPane to the VBox container
         eventContainer.getChildren().add(anchorPane);
@@ -596,5 +651,4 @@ public class MainViewController {
         // Initialize StarChartProxy, which will handle loading the image asynchronously
         new StarChartProxy(imageView, astronomyController, event);
     }
-
 }
