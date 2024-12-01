@@ -2,7 +2,7 @@
 
 ## Creators
 
-Eetu Soronen, Jaakko Elomaa Jaakko Utriainen ja Teemu Ranne.
+Eetu Soronen, Jaakko Elomaa, Jaakko Utriainen & Teemu Ranne.
 
 ## Description
 
